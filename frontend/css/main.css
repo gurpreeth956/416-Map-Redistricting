@@ -1,0 +1,13 @@
+.summary-section { 
+	text-align: center;
+}
+
+.summary-paragraph {
+	padding-right: 70px;
+	padding-left: 70px;
+}
+
+.sidebar{
+	height: 100%;
+	position: fixed;
+}
