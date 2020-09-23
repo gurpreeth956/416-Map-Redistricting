@@ -13,4 +13,4 @@ This project allows the user to choose one of three states (California, Pennsylv
 Gurpreeth Singh,
 Raymond Huang,
 Tenzin Loden,
-Tenzin Jangchup.
+Tenzin Jangchup
