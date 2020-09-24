@@ -5,7 +5,7 @@ $('#body-row .collapse').collapse('hide');
 $('#collapse-icon').addClass('fa-angle-double-left'); 
 
 // Collapse click
-$('[data-toggle=sidebar-colapse]').click(function() {
+$('[data-toggle=sidebar-collapse]').click(function() {
     SidebarCollapse();
 });
 
@@ -13,6 +13,7 @@ function SidebarCollapse () {
     $('.menu-collapsed').toggleClass('d-none');
     $('.sidebar-submenu').toggleClass('d-none');
     $('.submenu-icon').toggleClass('d-none');
+    $('.summary-button').toggleClass('d-none');
     $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
     
     // Treating d-flex/d-none on separators with title

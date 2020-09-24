@@ -2,6 +2,7 @@
 <html>
 <head>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+<!-- <<<<<<< Updated upstream -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -14,327 +15,361 @@
 		crossorigin=""></script>
 		<link href="/css/main.css" rel="stylesheet">
 		<style>
-			#mapid { position: relative;; top:50px; left:12.5%;  height:70%; width:75%;}
+			#mapid { position: relative; height:80%;}
 		</style>
+<!-- 		=======
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin=""/>
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script>
+		<style>
+			#mapid { position: relative;; top:50px; left:12.5%;  height:70%; width:75%;}
+		</style> -->
+		<!-- >>>>>>> Stashed changes -->
 
 		<link href="/css/main.css" rel="stylesheet">
 		<script src="/js/main.js"></script>
-</head>
-<body class = "vsc-initialized">
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-		<a class="navbar-brand" href="#">Navbar</a>
-		<div class="collapse navbar-collapse"></div>
-		<div class="collapse navbar-collapse">
-			<ul class="navbar-nav justify-content-center">
-				<li class="nav-item active">
-					<a class="nav-link" href="#">Current Map</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="#">Generated Maps</a>
-				</li>
-			</ul>
-		</div>
-	</nav>
-	<!-- <div class = container-fluid> -->
-		<div class = row id="body-row">
-			<div id="sidebar-container" class="sidebar-sticky sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
-				<!-- Bootstrap List Group -->
-				<ul class="list-group">
-					<!-- Separator with title -->
-					<li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
-						<small>MAIN MENU</small>
+	</head>
+	<body class = "vsc-initialized">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+			<a class="navbar-brand" href="#">Navbar</a>
+			<div class="collapse navbar-collapse"></div>
+			<div class="collapse navbar-collapse">
+				<ul class="navbar-nav justify-content-center">
+					<li class="nav-item active">
+						<a class="nav-link" href="#">Current Map</a>
 					</li>
-					<!-- /END Separator -->
-					<!-- Menu with submenu -->
-					<a href="#" data-toggle="sidebar-colapse" class="bg-light list-group-item list-group-item-action d-flex align-items-center">
-						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span id="collapse-icon" class="fa fa-2x mr-3"></span>
-							<span id="collapse-text" class="menu-collapsed">Collapse</span>
-						</div>
-					</a>
-					<a href="#home-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-home fa-fw mr-3"></span>
-							<span class="menu-collapsed">Home</span>
-							<span class="submenu-icon ml-auto"></span>
-						</div>
-					</a>
-					<!-- Submenu content -->
-					<div id='home-submenu' class="collapse sidebar-submenu card">
-						<article class="card-group-item">
-							<header class="card-header">
-								<h6 class="title">Generate Maps</h6>
-							</header>
-							<div class="generate-content">
-								<div class="card-body">
-									<form>
-										<div class="form-row align-items-center">
-											<div class="col-auto my-1">
-												<label class="mr-sm-2" for="inlineFormCustomSelect">Preference</label>
-												<select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-													<option selected>State</option>
-													<option value="1">California</option>
-													<option value="2">Lousiana</option>
-													<option value="3">Pennslyvania</option>
-												</select>
-											</div>
-										</div>
-									</form>
-
-									<label>Population Treshold</label>
-									<div class="slidecontainer">
-										<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-									</div>
-
-									<label>Compactness Treshold</label>
-									<div class="slidecontainer">
-										<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-									</div>
-
-									<label>Maps to Generate</label>
-									<div class="slidecontainer">
-										<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-									</div>
-
-									<button type="button" class="btn btn-primary">Generate</button>
-									<button type="button" class="btn fa fa-stop"></button>
-								</div>
-							</div>
-							<header class="card-header">
-								<h6 class="title">Generation Progress</h6>
-							</header>
-							<div class="generation-progress-content">
-								<div class="card-body">
-									<label>Job Waiting in Queue</label>
-									<label>X maps generated</label>
-									<div class="progress">
-										<div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-									</div>
-								</div>
-							</div>
-						</article>
-					</div>
-					<a href="#filter-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-filter fa-fw mr-3"></span>
-							<span class="menu-collapsed">Filters</span>
-							<span class="submenu-icon ml-auto"></span>
-						</div>
-					</a>
-					<div id='filter-submenu' class="collapse sidebar-submenu card">
-						<article class="card-group-item">
-							<header class="card-header">
-								<h6 class="title">Filter Map Data </h6>
-							</header>
-							<div class="map-filter-content">
-								<div class="card-body">
-									<form>
-										<label class="mr-sm-2" for="inlineFormCustomSelect">Race/Ethnicity</label>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-label">
-												Black/African American
-											</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-label">
-												Hispanic or Latino
-											</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-label">
-												Asian
-											</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-label">
-												White
-											</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-label">
-												American Indian or Alaskan Native
-											</span>
-										</label>
-										<label class="form-check">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-label">
-												Native Hawaiian or Other Pacfic Islander
-											</span>
-										</label>
-									</form>
-
-
-								</div>
-							</div>
-							<header class="card-header">
-								<h6 class="title">Filter Generated Maps</h6>
-							</header>
-							<div class="generated-map-content">
-								<div class="card-body">
-									<form>
-										<div class="form-row align-items-center">
-											<div class="col-auto my-1">
-												<label class="mr-sm-2" for="inlineFormCustomSelect">Sort By</label>
-												<select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-													<option selected>Featured</option>
-													<option value="1">Racial Fairness: Best to Worst</option>
-													<option value="2">Racial Fairness: Worst to Best</option>
-												</select>
-											</div>
-										</div>
-									</form>
-								</div>
-							</div>
-						</article>
-					</div>
-					<a href="#history-modal" data-toggle="modal" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-history fa-fw mr-3"></span>
-							<span class="menu-collapsed">History</span>
-						</div>
-					</a>
-					<a href="#compare-modal" data-toggle="modal" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-exchange fa-fw mr-3"></span>
-							<span class="menu-collapsed">Compare Districts</span>
-						</div>
-					</a>
-					<a href="#settings-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
-						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-cog fa-fw mr-3"></span>
-							<span class="menu-collapsed">Settings</span>
-							<span class="submenu-icon ml-auto"></span>
-						</div>
-					</a>
-					<div id='settings-submenu' class="collapse sidebar-submenu card">
-						<article class="card-group-item">
-							<div class="generate-content">
-								<div class="card-body">
-									<div class = "row justify-content-center">
-										<button type="button" class="setting-button btn fa fa-floppy-o btn-success"> Save</button>
-									</div>
-									<div class = "row justify-content-center">
-										<button type="button" class="setting-button btn fa fa-download btn-primary"> Import</button>
-									</div>
-									<div class = "row justify-content-center">
-										<button type="button" class="setting-button btn fa fa-upload btn-secondary"> Export</button>
-									</div>
-								</div>
-							</div>
-						</article>
-					</div>
-					<li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
-						<small>SUMMARY OPTIONS</small>
+					<li class="nav-item">
+						<a class="nav-link" href="#">Generated Maps</a>
 					</li>
-
-					<div class="btn-group btn-group-toggle summary-button" data-toggle="buttons">
-						<label class="btn btn-secondary active">
-							<input type="radio" name="options" id="option1" autocomplete="off"> Generation Summary
-						</label>
-						<label class="btn btn-secondary">
-							<input type="radio" name="options" id="option2" autocomplete="off" checked> Data Summary
-						</label>
-					</div>
-					<li class="list-group-item sidebar-separator menu-collapsed"></li>
-
 				</ul>
 			</div>
-			<div class="col bg-light" id="body-col">
-				<div id="mapid"></div>
-				<script>
-					var map = L.map('mapid').setView([51.505, -0.09], 13);
-					L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-						maxZoom: 18,
-						id: 'mapbox/streets-v11',
-						tileSize: 512,
-						zoomOffset: -1,
-						accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
-					}).addTo(map);
-				</script>
-				<div id="cy">
-					<div id ="summary" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-						<div class = "summary-section">
-							<h1 style = "padding-bottom: 50px; padding-top: 50px;">Summary</h1>
-							<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-							<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-							<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-							<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		</nav>
+		<!-- <div class = container-fluid> -->
+			<div class = row id="body-row">
+				<div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+					<!-- Bootstrap List Group -->
+					<ul class="list-group">
+						<!-- Separator with title -->
+						<li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+							<small>MAIN MENU</small>
+						</li>
+						<!-- /END Separator -->
+						<!-- Menu with submenu -->
+						<a href="#" data-toggle="sidebar-collapse" class="bg-light list-group-item list-group-item-action d-flex align-items-center">
+							<div class="d-flex w-100 justify-content-start align-items-center">
+								<span id="collapse-icon" class="fa fa-2x mr-3"></span>
+								<span id="collapse-text" class="menu-collapsed">Collapse</span>
+							</div>
+						</a>
+						<a href="#home-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+							<div class="d-flex w-100 justify-content-start align-items-center">
+								<span class="fa fa-home fa-fw mr-3"></span>
+								<span class="menu-collapsed">Home</span>
+								<span class="submenu-icon ml-auto"></span>
+							</div>
+						</a>
+						<!-- Submenu content -->
+						<div id='home-submenu' class="collapse sidebar-submenu card">
+							<article class="card-group-item">
+								<header class="card-header">
+									<h6 class="title">Generate Maps</h6>
+								</header>
+								<div class="generate-content">
+									<div class="card-body">
+										<form>
+											<div class="form-row align-items-center">
+												<div class="col-auto my-1">
+													<label class="mr-sm-2" for="inlineFormCustomSelect">Preference</label>
+													<select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+														<option selected>State</option>
+														<option value="1">California</option>
+														<option value="2">Lousiana</option>
+														<option value="3">Pennslyvania</option>
+													</select>
+												</div>
+											</div>
+										</form>
+
+										<label>Population Treshold</label>
+										<div class="slidecontainer">
+											<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+										</div>
+
+										<label>Compactness Treshold</label>
+										<div class="slidecontainer">
+											<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+										</div>
+
+										<label>Maps to Generate</label>
+										<div class="slidecontainer">
+											<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+										</div>
+
+										<button type="button" class="btn btn-primary">Generate</button>
+										<button type="button" class="btn fa fa-stop"></button>
+									</div>
+								</div>
+								<header class="card-header">
+									<h6 class="title">Generation Progress</h6>
+								</header>
+								<div class="generation-progress-content">
+									<div class="card-body">
+										<label>Job Waiting in Queue</label>
+										<label>X maps generated</label>
+										<div class="progress">
+											<div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+										</div>
+									</div>
+								</div>
+							</article>
+						</div>
+						<a href="#filter-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+							<div class="d-flex w-100 justify-content-start align-items-center">
+								<span class="fa fa-filter fa-fw mr-3"></span>
+								<span class="menu-collapsed">Filters</span>
+								<span class="submenu-icon ml-auto"></span>
+							</div>
+						</a>
+						<div id='filter-submenu' class="collapse sidebar-submenu card">
+							<article class="card-group-item">
+								<header class="card-header">
+									<h6 class="title">Filter Map Data </h6>
+								</header>
+								<div class="map-filter-content">
+									<div class="card-body">
+										<form>
+											<label class="mr-sm-2" for="inlineFormCustomSelect">Race/Ethnicity</label>
+											<label class="form-check">
+												<input class="form-check-input" type="checkbox" value="">
+												<span class="form-check-label">
+													Black/African American
+												</span>
+											</label>
+											<label class="form-check">
+												<input class="form-check-input" type="checkbox" value="">
+												<span class="form-check-label">
+													Hispanic or Latino
+												</span>
+											</label>
+											<label class="form-check">
+												<input class="form-check-input" type="checkbox" value="">
+												<span class="form-check-label">
+													Asian
+												</span>
+											</label>
+											<label class="form-check">
+												<input class="form-check-input" type="checkbox" value="">
+												<span class="form-check-label">
+													White
+												</span>
+											</label>
+											<label class="form-check">
+												<input class="form-check-input" type="checkbox" value="">
+												<span class="form-check-label">
+													American Indian or Alaskan Native
+												</span>
+											</label>
+											<label class="form-check">
+												<input class="form-check-input" type="checkbox" value="">
+												<span class="form-check-label">
+													Native Hawaiian or Other Pacfic Islander
+												</span>
+											</label>
+										</form>
+
+
+									</div>
+								</div>
+								<header class="card-header">
+									<h6 class="title">Filter Generated Maps</h6>
+								</header>
+								<div class="generated-map-content">
+									<div class="card-body">
+										<form>
+											<div class="form-row align-items-center">
+												<div class="col-auto my-1">
+													<label class="mr-sm-2" for="inlineFormCustomSelect">Sort By</label>
+													<select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+														<option selected>Featured</option>
+														<option value="1">Racial Fairness: Best to Worst</option>
+														<option value="2">Racial Fairness: Worst to Best</option>
+													</select>
+												</div>
+											</div>
+										</form>
+									</div>
+								</div>
+							</article>
+						</div>
+						<a href="#history-modal" data-toggle="modal" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+							<div class="d-flex w-100 justify-content-start align-items-center">
+								<span class="fa fa-history fa-fw mr-3"></span>
+								<span class="menu-collapsed">History</span>
+							</div>
+						</a>
+						<a href="#compare-modal" data-toggle="modal" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+							<div class="d-flex w-100 justify-content-start align-items-center">
+								<span class="fa fa-exchange fa-fw mr-3"></span>
+								<span class="menu-collapsed">Compare Districts</span>
+							</div>
+						</a>
+						<a href="#settings-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+							<div class="d-flex w-100 justify-content-start align-items-center">
+								<span class="fa fa-cog fa-fw mr-3"></span>
+								<span class="menu-collapsed">Settings</span>
+								<span class="submenu-icon ml-auto"></span>
+							</div>
+						</a>
+						<div id='settings-submenu' class="collapse sidebar-submenu card">
+							<article class="card-group-item">
+								<div class="generate-content">
+									<div class="card-body">
+										<div class = "row justify-content-center">
+											<button type="button" class="setting-button btn fa fa-floppy-o btn-success"> Save</button>
+										</div>
+										<div class = "row justify-content-center">
+											<button type="button" class="setting-button btn fa fa-download btn-primary"> Import</button>
+										</div>
+										<div class = "row justify-content-center">
+											<button type="button" class="setting-button btn fa fa-upload btn-secondary"> Export</button>
+										</div>
+									</div>
+								</div>
+							</article>
+						</div>
+						<li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+							<small>SUMMARY OPTIONS</small>
+						</li>
+
+						<div class="btn-group btn-group-toggle summary-button" data-toggle="buttons">
+							<label class="btn btn-secondary active">
+								<input type="radio" name="options" id="option1" autocomplete="off"> Generation Summary
+							</label>
+							<label class="btn btn-secondary">
+								<input type="radio" name="options" id="option2" autocomplete="off" checked> Data Summary
+							</label>
+						</div>
+						<li class="list-group-item sidebar-separator menu-collapsed"></li>
+
+					</ul>
+				</div>
+				<div class="col bg-light" id="body-col">
+					<div id="mapid"></div>
+					<script>
+						var map = L.map('mapid').setView([51.505, -0.09], 13);
+						L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+							maxZoom: 18,
+							id: 'mapbox/streets-v11',
+							tileSize: 512,
+							zoomOffset: -1,
+							accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
+						}).addTo(map);
+					</script>
+					<div id="cy">
+						<div id ="summary" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+							<div class = "summary-section">
+								<h1 style = "padding-bottom: 50px; padding-top: 50px;">Summary</h1>
+								<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+								<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+								<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+								<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+							</div>
+						</div>
+					</div>
+					<!-- Modal -->
+					<div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="historyTitle" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="historyTitle">Past Generated Maps</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<div class="list-group">
+										<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+											<div class="d-flex w-100 justify-content-between">
+												<h5 class="mb-1">Example Generation Data</h5>
+												<small>Example Date</small>
+											</div>
+											<p class="mb-1">Summary data about generated map</p>
+										</a>
+										<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+											<div class="d-flex w-100 justify-content-between">
+												<h5 class="mb-1">Example Generation Data</h5>
+												<small>Example Date</small>
+											</div>
+											<p class="mb-1">Summary data about generated map</p>
+										</a>
+										<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+											<div class="d-flex w-100 justify-content-between">
+												<h5 class="mb-1">Example Generation Data</h5>
+												<small>Example Date</small>
+											</div>
+											<p class="mb-1">Summary data about generated map</p>
+										</a>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-primary">Load Map</button>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
-				<!-- Modal -->
-				<div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="historyTitle" aria-hidden="true">
+
+				<div class="modal fade" id="compare-modal" tabindex="-1" role="dialog" aria-labelledby="compareTitle" aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
-								<h5 class="modal-title" id="historyTitle">Past Generated Maps</h5>
+								<h5 class="modal-title" id="compareTitle">Compare Districts</h5>
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
 								</button>
 							</div>
 							<div class="modal-body">
-								<div class="list-group">
-									<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-										<div class="d-flex w-100 justify-content-between">
-											<h5 class="mb-1">Example Generation Data</h5>
-											<small>Example Date</small>
+								<div class="row text-center">
+									<div class="col-md">
+										<h5>District to Compare</h5>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Map Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
 										</div>
-										<p class="mb-1">Summary data about generated map</p>
-									</a>
-									<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-										<div class="d-flex w-100 justify-content-between">
-											<h5 class="mb-1">Example Generation Data</h5>
-											<small>Example Date</small>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">State</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
 										</div>
-										<p class="mb-1">Summary data about generated map</p>
-									</a>
-									<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-										<div class="d-flex w-100 justify-content-between">
-											<h5 class="mb-1">Example Generation Data</h5>
-											<small>Example Date</small>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">District Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
 										</div>
-										<p class="mb-1">Summary data about generated map</p>
-									</a>
+									</div>
 								</div>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								<button type="button" class="btn btn-primary">Load Map</button>
+								<button type="button" class="btn btn-primary">Load Comparison</button>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<div class="modal fade" id="compare-modal" tabindex="-1" role="dialog" aria-labelledby="compareTitle" aria-hidden="true">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="compareTitle">Compare Districts</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<div class="row-md">
-
-							</div>
-							<div class="row-md">
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-primary">Load Map</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</body>
-	</html>
+			<script src="/js/main.js"></script>
+		</body>
+		</html>
