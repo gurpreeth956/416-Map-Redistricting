@@ -2,28 +2,28 @@
 <html>
 <head>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-	integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-	crossorigin=""/>
-	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-	integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-	crossorigin=""></script>
-	<link href="/css/main.css" rel="stylesheet">
-	<style>
-		#mapid { position: relative;; top:50px; left:12.5%;  height:70%; width:75%;}
-	</style>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+		crossorigin=""/>
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+		crossorigin=""></script>
+		<link href="/css/main.css" rel="stylesheet">
+		<style>
+			#mapid { position: relative;; top:50px; left:12.5%;  height:70%; width:75%;}
+		</style>
 
-	<link href="/css/main.css" rel="stylesheet">	
-	<script src="/js/main.js"></script>
+		<link href="/css/main.css" rel="stylesheet">
+		<script src="/js/main.js"></script>
 </head>
 <body class = "vsc-initialized">
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
 		<a class="navbar-brand" href="#">Navbar</a>
-		<div class="collapse navbar-collapse"></div> 
+		<div class="collapse navbar-collapse"></div>
 		<div class="collapse navbar-collapse">
 			<ul class="navbar-nav justify-content-center">
 				<li class="nav-item active">
@@ -54,7 +54,7 @@
 					</a>
 					<a href="#home-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-home fa-fw mr-3"></span> 
+							<span class="fa fa-home fa-fw mr-3"></span>
 							<span class="menu-collapsed">Home</span>
 							<span class="submenu-icon ml-auto"></span>
 						</div>
@@ -98,7 +98,7 @@
 
 									<button type="button" class="btn btn-primary">Generate</button>
 									<button type="button" class="btn fa fa-stop"></button>
-								</div> 
+								</div>
 							</div>
 							<header class="card-header">
 								<h6 class="title">Generation Progress</h6>
@@ -116,7 +116,7 @@
 					</div>
 					<a href="#filter-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-filter fa-fw mr-3"></span> 
+							<span class="fa fa-filter fa-fw mr-3"></span>
 							<span class="menu-collapsed">Filters</span>
 							<span class="submenu-icon ml-auto"></span>
 						</div>
@@ -141,7 +141,7 @@
 											<span class="form-check-label">
 												Hispanic or Latino
 											</span>
-										</label> 
+										</label>
 										<label class="form-check">
 											<input class="form-check-input" type="checkbox" value="">
 											<span class="form-check-label">
@@ -167,8 +167,8 @@
 											</span>
 										</label>
 									</form>
-									
-									
+
+
 								</div>
 							</div>
 							<header class="card-header">
@@ -190,23 +190,23 @@
 									</form>
 								</div>
 							</div>
-						</article> 
+						</article>
 					</div>
 					<a href="#history-modal" data-toggle="modal" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-start align-items-center">
 							<span class="fa fa-history fa-fw mr-3"></span>
 							<span class="menu-collapsed">History</span>
 						</div>
-					</a> 
+					</a>
 					<a href="#compare-modal" data-toggle="modal" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-start align-items-center">
 							<span class="fa fa-exchange fa-fw mr-3"></span>
 							<span class="menu-collapsed">Compare Districts</span>
 						</div>
-					</a>  
+					</a>
 					<a href="#settings-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
 						<div class="d-flex w-100 justify-content-start align-items-center">
-							<span class="fa fa-cog fa-fw mr-3"></span> 
+							<span class="fa fa-cog fa-fw mr-3"></span>
 							<span class="menu-collapsed">Settings</span>
 							<span class="submenu-icon ml-auto"></span>
 						</div>
@@ -240,24 +240,24 @@
 							<input type="radio" name="options" id="option2" autocomplete="off" checked> Data Summary
 						</label>
 					</div>
-					<li class="list-group-item sidebar-separator menu-collapsed"></li>            
+					<li class="list-group-item sidebar-separator menu-collapsed"></li>
 
 				</ul>
 			</div>
 			<div class="col bg-light" id="body-col">
+				<div id="mapid"></div>
+				<script>
+					var map = L.map('mapid').setView([51.505, -0.09], 13);
+					L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+						maxZoom: 18,
+						id: 'mapbox/streets-v11',
+						tileSize: 512,
+						zoomOffset: -1,
+						accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
+					}).addTo(map);
+				</script>
 				<div id="cy">
-					<div id="mapid"></div>
-					<script>
-						var map = L.map('mapid').setView([51.505, -0.09], 13);
-						L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-							maxZoom: 18,
-							id: 'mapbox/streets-v11',
-							tileSize: 512,
-							zoomOffset: -1,
-							accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
-						}).addTo(map);
-					</script>
 					<div id ="summary" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 						<div class = "summary-section">
 							<h1 style = "padding-bottom: 50px; padding-top: 50px;">Summary</h1>
