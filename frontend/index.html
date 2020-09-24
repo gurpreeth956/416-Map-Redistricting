@@ -245,19 +245,19 @@
 				</ul>
 			</div>
 			<div class="col bg-light" id="body-col">
+				<div id="mapid"></div>
+				<script>
+					var map = L.map('mapid').setView([51.505, -0.09], 13);
+					L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+						maxZoom: 18,
+						id: 'mapbox/streets-v11',
+						tileSize: 512,
+						zoomOffset: -1,
+						accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
+					}).addTo(map);
+				</script>
 				<div id="cy">
-					<div id="mapid"></div>
-					<script>
-						var map = L.map('mapid').setView([51.505, -0.09], 13);
-						L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-							attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-							maxZoom: 18,
-							id: 'mapbox/streets-v11',
-							tileSize: 512,
-							zoomOffset: -1,
-							accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
-						}).addTo(map);
-					</script>
 					<div id ="summary" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 						<div class = "summary-section">
 							<h1 style = "padding-bottom: 50px; padding-top: 50px;">Summary</h1>
