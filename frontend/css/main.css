@@ -13,9 +13,17 @@
 	min-width: 300px;
 }
 
-/*.sidebar-sticky {
-	max-width: 5%;
-}*/
+.sidebar-list-expanded {
+	height: 100%;
+    position: fixed;
+    width: 230px;
+}
+
+.sidebar-list-collapsed {
+	height: 100%;
+    position: fixed;
+    width: 60px;
+}
 
 .navbar-nav > li{
   margin-left:30px;
@@ -122,12 +130,6 @@
   background: #4CAF50;
   cursor: pointer;
 }
-
-/*.summary-button{
-	margin-top: 10px;
-	margin-left: 5px;
-	margin-right: 5px;
-}*/
 
 .setting-button {
 	margin-bottom: 10px;
