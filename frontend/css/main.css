@@ -1,13 +1,138 @@
-.summary-section { 
+.summary-section {
 	text-align: center;
 }
 
 .summary-paragraph {
-	padding-right: 70px;
-	padding-left: 70px;
+	padding-right: 10%;
+	padding-left: 10%;
 }
 
-.sidebar{
+.sidebar {
 	height: 100%;
 	position: fixed;
+	min-width: 300px;
+}
+
+/*.sidebar-sticky {
+	max-width: 5%;
+}*/
+
+.navbar-nav > li{
+  margin-left:30px;
+  margin-right:30px;
+}
+
+
+#body-row {
+    margin-left:0;
+    margin-right:0;
+}
+
+#sidebar-container {
+    min-height: 100vh;   
+    background-color: white;
+    padding: 0;
+}
+
+/* Sidebar sizes when expanded and expanded */
+.sidebar-expanded {
+    width: 230px;
+}
+.sidebar-collapsed {
+    width: 60px;
+}
+
+/* Menu item*/
+#sidebar-container .list-group a {
+    height: 50px;
+    color: black;
+}
+
+/* Submenu item*/
+#sidebar-container .list-group .sidebar-submenu a {
+    height: 45px;
+    padding-left: 30px;
+}
+.sidebar-submenu {
+    font-size: 0.9rem;
+}
+
+/* Separators */
+.sidebar-separator-title {
+    /*background-color: #333;*/
+    height: 35px;
+}
+.sidebar-separator {
+    /*background-color: #333;*/
+    height: 25px;
+}
+.logo-separator {
+    /*background-color: #333;    */
+    height: 60px;
+}
+
+/* Closed submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
+  content: " \f0d7";
+  font-family: FontAwesome;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+/* Opened submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
+  content: " \f0da";
+  font-family: FontAwesome;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+
+#body-col {
+    background-color: #333;
+}
+
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;  
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%; 
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.summary-button{
+/*	margin-top: 10px;
+	margin-left: 5px;
+	margin-right: 5px;*/
+}
+
+.setting-button {
+	margin-bottom: 10px;
+}
+
+#summary {
+	position: relative;
 }
