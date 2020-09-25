@@ -7,6 +7,14 @@
 	padding-left: 10%;
 }
 
+.plot-section {
+    height: 500px; 
+    width: 80%;
+    
+	padding-right: 10%;
+	padding-left: 10%;
+}
+
 .sidebar {
 	height: 100%;
 	position: fixed;
@@ -26,8 +34,8 @@
 }
 
 .navbar-nav > li{
-  margin-left:30px;
-  margin-right:30px;
+    margin-left:30px;
+    margin-right:30px;
 }
 
 

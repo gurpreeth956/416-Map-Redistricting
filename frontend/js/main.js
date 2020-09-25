@@ -16,7 +16,6 @@ function CurrentMapToggle() {
     $('.summary-button').addClass('d-none')
     $('.summary-options').addClass('d-none')
     $('#compare-sidebar-button').addClass('d-none');
-    $('#history-sidebar-button').addClass('d-none');
     $('#summary-sidebar-button').addClass('d-none');
     $('#map-pagination').addClass('d-none');
     
@@ -29,7 +28,6 @@ function GeneratedMapToggle() {
     $('.summary-button').removeClass('d-none')
     $('.summary-options').removeClass('d-none')
     $('#compare-sidebar-button').removeClass('d-none');
-    $('#history-sidebar-button').removeClass('d-none');
     $('#summary-sidebar-button').removeClass('d-none');
     $('#map-pagination').removeClass('d-none');
     
