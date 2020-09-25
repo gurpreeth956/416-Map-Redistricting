@@ -13,7 +13,7 @@
 		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
 		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
 		crossorigin=""></script>
-		<link href="/css/main.css" rel="stylesheet">
+		<link href="./css/main.css" rel="stylesheet">
 		<style>
 			#mapid { position: relative; height:80%;}
 		</style>
@@ -213,13 +213,36 @@
 								<span class="fa fa-history fa-fw mr-3"></span>
 								<span class="menu-collapsed">History</span>
 							</div>
-						</a>
+                        </a>
+                        <a href="#compare-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
+							<div class="d-flex w-100 justify-content-start align-items-center">
+								<span class="fa fa-exchange fa-fw mr-3"></span>
+                                <span class="menu-collapsed">Compare</span>
+								<span class="submenu-icon ml-auto"></span>
+							</div>
+                        </a>
+                        <div id='compare-submenu' class="collapse sidebar-submenu card">
+                            <article class="card-group-item">
+								<div class="generate-content">
+									<div class="card-body">
+										<div class = "row justify-content-center">
+                                            <button href="#compare-map-modal" data-toggle="modal" type="button" class="compare-button btn btn-primary">Compare Map</button>
+                                        </div>
+										<div class = "row justify-content-center">
+											<button href="#compare-district-modal" data-toggle="modal" type="button" class="compare-button btn btn-primary">Compare District</button>
+										</div>
+									</div>
+								</div>
+							</article>
+                        </div>
+                        <!--
 						<a href="#compare-modal" data-toggle="modal" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
 							<div class="d-flex w-100 justify-content-start align-items-center">
 								<span class="fa fa-exchange fa-fw mr-3"></span>
 								<span class="menu-collapsed">Compare Districts</span>
 							</div>
-						</a>
+                        </a>
+                        -->
 						<a href="#settings-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
 							<div class="d-flex w-100 justify-content-start align-items-center">
 								<span class="fa fa-cog fa-fw mr-3"></span>
@@ -283,7 +306,8 @@
 								<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 							</div>
 						</div>
-					</div>
+                    </div>
+                    
 					<!-- Modal -->
 					<div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="historyTitle" aria-hidden="true">
 						<div class="modal-dialog" role="document">
@@ -326,9 +350,58 @@
 							</div>
 						</div>
 					</div>
+                </div>
+                
+                <div class="modal fade" id="compare-map-modal" tabindex="-1" role="dialog" aria-labelledby="compareTitle" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="compareTitle">Compare Maps</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<div class="row text-center">
+									<div class="col-md">
+										<h5>First Map</h5>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Generation Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+										</div>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Map Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+										</div>
+                                        <h5>Second Map</h5>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Generation Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+										</div>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Map Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+										</div>
+                                    </div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								<button type="button" class="btn btn-primary">Load Comparison</button>
+							</div>
+						</div>
+					</div>
 				</div>
 
-				<div class="modal fade" id="compare-modal" tabindex="-1" role="dialog" aria-labelledby="compareTitle" aria-hidden="true">
+				<div class="modal fade" id="compare-district-modal" tabindex="-1" role="dialog" aria-labelledby="compareTitle" aria-hidden="true">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 							<div class="modal-header">
@@ -340,7 +413,13 @@
 							<div class="modal-body">
 								<div class="row text-center">
 									<div class="col-md">
-										<h5>District to Compare</h5>
+										<h5>First District</h5>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Generation Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+										</div>
 										<div class="input-group mb-3">
 											<div class="input-group-prepend">
 												<span class="input-group-text" id="inputGroup-sizing-default">Map Number</span>
@@ -349,7 +428,20 @@
 										</div>
 										<div class="input-group mb-3">
 											<div class="input-group-prepend">
-												<span class="input-group-text" id="inputGroup-sizing-default">State</span>
+												<span class="input-group-text" id="inputGroup-sizing-default">District Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                                        </div>
+                                        <h5>Second District</h5>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Generation Number</span>
+											</div>
+											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+										</div>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="inputGroup-sizing-default">Map Number</span>
 											</div>
 											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
 										</div>
@@ -359,7 +451,7 @@
 											</div>
 											<input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
 										</div>
-									</div>
+                                    </div>
 								</div>
 							</div>
 							<div class="modal-footer">
@@ -370,6 +462,6 @@
 					</div>
 				</div>
 			</div>
-			<script src="/js/main.js"></script>
+			<script src="./js/main.js"></script>
 		</body>
 		</html>
