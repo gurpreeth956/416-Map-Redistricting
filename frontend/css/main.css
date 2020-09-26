@@ -157,6 +157,11 @@ body {
 	margin-bottom: 10px;
 }
 
+#mapid { 
+    position: relative; 
+    height: 80%;
+}
+
 #summary {
 	position: relative;
 }

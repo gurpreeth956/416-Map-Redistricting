@@ -14,11 +14,6 @@
 	integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
 	crossorigin=""></script>
 	<link href="./css/main.css" rel="stylesheet">
-	<style>
-		#mapid { position: relative; height:80%;}
-	</style>
-
-	<link href="./css/main.css" rel="stylesheet">
 </head>
 <body class = "vsc-initialized">
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
@@ -309,35 +304,32 @@
                             <div class= "plot-section" id="chartContainer">
                                 <script>
                                     window.onload = function () {
-                                    
-                                    var chart = new CanvasJS.Chart("chartContainer", {
-                                        animationEnabled: true,
-                                        title:{
-                                            text: "BVAP"
-                                        },
-                                        axisY: {
-                                            title: "BVAP (in percentage)",
-                                            prefix: "%",
-                                            interval: 10
-                                        },
-                                        data: [{
-                                            type: "boxAndWhisker",
-                                            upperBoxColor: "#FFC28D",
-                                            lowerBoxColor: "#9ECCB8",
-                                            color: "black",
-                                            yValueFormatString: "$#,##0",
-                                            dataPoints: [
-                                                { label: "District 1", y: [15, 20, 25, 30, 22.5] },
-                                                { label: "District 2", y: [20, 25, 50, 52.5, 37.5] },
-                                                { label: "District 3", y: [15, 20, 25, 30, 22.5] },	
-                                                { label: "District 4", y: [55, 70, 85, 90, 82.5] },
-                                                { label: "District 5", y: [15, 30, 35, 50, 32.5] },
-                                                { label: "District 6", y: [15, 20, 25, 40, 22.5] }
-                                            ]
-                                        }]
-                                    });
+                                        // This function is for the box and whiskers plot
+                                        var chart = new CanvasJS.Chart("chartContainer", {
+                                            animationEnabled: true, // Animation when page is loaded
+                                            title:{ // Title of the plot
+                                                text: "BVAP" 
+                                            },
+                                            axisY: { // Y axis details
+                                                title: "BVAP (in %)",
+                                                interval: 10
+                                            },
+                                            data: [{
+                                                type: "boxAndWhisker",
+                                                upperBoxColor: "#FFC28D",
+                                                lowerBoxColor: "#9ECCB8",
+                                                color: "black",
+                                                dataPoints: [ // This is the data (y: [Min, Lower Q, High Q, Max, Median])
+                                                    { label: "District 1", y: [15, 20, 25, 30, 22.5] },
+                                                    { label: "District 2", y: [20, 25, 50, 52.5, 37.5] },
+                                                    { label: "District 3", y: [15, 20, 25, 30, 22.5] },	
+                                                    { label: "District 4", y: [55, 70, 85, 90, 82.5] },
+                                                    { label: "District 5", y: [15, 30, 35, 50, 32.5] },
+                                                    { label: "District 6", y: [15, 20, 25, 40, 22.5] }
+                                                ]
+                                            }]
+                                        });
                                     chart.render();
-                                    
                                     }
                                 </script>
                             </div>
