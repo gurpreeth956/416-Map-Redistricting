@@ -14,6 +14,7 @@
 	integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
 	crossorigin=""></script>
 	<link href="./css/main.css" rel="stylesheet">
+	<link href="./css/map.css" rel="stylesheet">
 	<style>
 		#mapid { position: relative; height:80%;}
 	</style>
@@ -287,16 +288,97 @@
 						</li>
 					</ul>
 				</nav>
+        <script src="./js/us-states.js"></script>
 				<script>
-					var map = L.map('mapid').setView([51.505, -0.09], 13);
-					L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-						attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-						maxZoom: 18,
-						id: 'mapbox/streets-v11',
-						tileSize: 512,
-						zoomOffset: -1,
-						accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
-					}).addTo(map);
+					// creates map
+          var map = L.map('mapid').setView([37.8, -96], 5);
+          L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: '...',
+            maxZoom: 5,
+            minZoom: 5,
+            id: 'mapbox/light-v9',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
+          }).addTo(map);
+					map.dragging.disable(); //no map dragging
+					function getColor(d) { //Set color of our three states
+					    if( d === "California" || d === "Louisiana" || d === "Pennsylvania"){
+								return '#E31A1C';
+							}
+					}
+          function style(feature) { //styles all of the US states
+              return {
+                  fillColor: getColor(feature.properties.name),
+                  weight: 2,
+                  opacity: 1,
+                  color: 'white',
+                  dashArray: '3',
+                  fillOpacity: 0.7
+              };
+          }
+					function highlightFeature(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
+							if( e.target.feature.properties.name === "California" ||
+									e.target.feature.properties.name === "Louisiana"||
+									e.target.feature.properties.name === "Pennsylvania"){
+							    var layer = e.target;
+							    layer.setStyle({
+							        weight: 5,
+							        color: '#666',
+							        dashArray: '',
+							        fillOpacity: 0.7
+							    });
+									info.update(layer.feature.properties);
+
+							}
+					    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+					        layer.bringToFront();
+					    }
+					}
+					function resetHighlight(e) { // listener for when mouse stops hovering state
+							info.update();
+					    geojson.resetStyle(e.target);
+					}
+          function zoomToFeature(e) { //depending on state zooms in and changes zoom settings
+							if( e.target.feature.properties.name === "California"){
+								map.setMaxZoom(6);
+								map.setMinZoom(6);
+	              map.flyToBounds(e.target.getBounds());
+							}
+							else if(	e.target.feature.properties.name === "Louisiana"||
+												e.target.feature.properties.name === "Pennsylvania"){
+								map.setMaxZoom(8);
+								map.setMinZoom(8);
+	              map.flyToBounds(e.target.getBounds());
+							}
+							else{ // if you click any of the other states than you are sent back to the starting position
+								map.setMaxZoom(5);
+								map.setMinZoom(5);
+								map.setView([37.8, -96], 5);
+							}
+          }
+          function onEachFeature(feature, layer) { //functions on states based on mouse actions
+              layer.on({
+									mouseover: highlightFeature,
+        					mouseout: resetHighlight,
+                  click: zoomToFeature
+              });
+          }
+					var info = L.control();
+					info.onAdd = function (map) {
+					    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+					    this.update();
+					    return this._div;
+					};
+					// method that we will use to update the control based on feature properties passed
+					info.update = function (props) {
+					    this._div.innerHTML = '<h4>US Place Holder</h4>' +  (props ?
+					        '<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
+					        : 'Hover over a state');
+					};
+					info.addTo(map);
+					var geojson;
+          geojson = L.geoJson(statesData, {style: style, onEachFeature: onEachFeature}).addTo(map); //loads geojson file with functions provided
 				</script>
 				<div id="cy">
 					<div id ="summary" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -309,7 +391,7 @@
                             <div class= "plot-section" id="chartContainer">
                                 <script>
                                     window.onload = function () {
-                                    
+
                                     var chart = new CanvasJS.Chart("chartContainer", {
                                         animationEnabled: true,
                                         title:{
@@ -329,7 +411,7 @@
                                             dataPoints: [
                                                 { label: "District 1", y: [15, 20, 25, 30, 22.5] },
                                                 { label: "District 2", y: [20, 25, 50, 52.5, 37.5] },
-                                                { label: "District 3", y: [15, 20, 25, 30, 22.5] },	
+                                                { label: "District 3", y: [15, 20, 25, 30, 22.5] },
                                                 { label: "District 4", y: [55, 70, 85, 90, 82.5] },
                                                 { label: "District 5", y: [15, 30, 35, 50, 32.5] },
                                                 { label: "District 6", y: [15, 20, 25, 40, 22.5] }
@@ -337,7 +419,7 @@
                                         }]
                                     });
                                     chart.render();
-                                    
+
                                     }
                                 </script>
                             </div>
