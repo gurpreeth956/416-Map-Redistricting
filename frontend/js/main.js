@@ -15,9 +15,11 @@ function CurrentMapToggle() {
     $('#gen-map-li').removeClass('active');
     $('.summary-button').addClass('d-none')
     $('.summary-options').addClass('d-none')
+    $('#generate-sidebar-button').removeClass('d-none');
     $('#compare-sidebar-button').addClass('d-none');
     $('#summary-sidebar-button').addClass('d-none');
     $('#map-pagination').addClass('d-none');
+    $('.generated-map-filter-content').addClass('d-none');
     
     $('.collapse').collapse('hide');
 }
@@ -27,9 +29,11 @@ function GeneratedMapToggle() {
     $('#gen-map-li').addClass('active');
     $('.summary-button').removeClass('d-none')
     $('.summary-options').removeClass('d-none')
+    $('#generate-sidebar-button').addClass('d-none');
     $('#compare-sidebar-button').removeClass('d-none');
     $('#summary-sidebar-button').removeClass('d-none');
     $('#map-pagination').removeClass('d-none');
+    $('.generated-map-filter-content').removeClass('d-none');
     
     $('.collapse').collapse('hide');
 }
