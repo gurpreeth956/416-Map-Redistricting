@@ -1,3 +1,7 @@
+body {
+    height: 100%;
+}
+
 .summary-section {
 	text-align: center;
 }
@@ -8,9 +12,8 @@
 }
 
 .plot-section {
-    height: 500px; 
+    height: 500px;
     width: 80%;
-    
 	padding-right: 10%;
 	padding-left: 10%;
 }
@@ -24,7 +27,8 @@
 .sidebar-list-expanded {
 	height: 100%;
     position: fixed;
-    width: 230px;
+    width: 250px;
+    padding-bottom: 5%;
 }
 
 .sidebar-list-collapsed {
@@ -32,6 +36,12 @@
     position: fixed;
     width: 60px;
 }
+
+/*.navbar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+}*/
 
 .navbar-nav > li{
     margin-left:30px;
@@ -45,14 +55,14 @@
 }
 
 #sidebar-container {
-    min-height: 100vh;   
+    min-height: 100vh;
     background-color: white;
     padding: 0;
 }
 
 /* Sidebar sizes when expanded and expanded */
 .sidebar-expanded {
-    width: 230px;
+    width: 250px;
 }
 .sidebar-collapsed {
     width: 60px;
@@ -113,7 +123,7 @@
   -webkit-appearance: none;
   width: 100%;
   height: 15px;
-  border-radius: 5px;  
+  border-radius: 5px;
   background: #d3d3d3;
   outline: none;
   opacity: 0.7;
@@ -126,7 +136,7 @@
   appearance: none;
   width: 25px;
   height: 25px;
-  border-radius: 50%; 
+  border-radius: 50%;
   background: #4CAF50;
   cursor: pointer;
 }
