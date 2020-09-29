@@ -13,6 +13,7 @@
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
 	integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
 	crossorigin=""></script>
+	<script src="/js/leaflet-0.7.2/leaflet.ajax.min.js"></script>
     <link href="./css/main.css" rel="stylesheet">
     <link href="./css/map.css" rel="stylesheet">
 </head>
@@ -284,7 +285,8 @@
 					</ul>
 				</nav>
                     <script src="./js/us-states.js"></script>
-                            <script>
+										<script src="./js/districts.js"></script>
+                    <script>
                                 // creates map
                     var map = L.map('mapid').setView([42.0, -96], 5);
                     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -296,7 +298,40 @@
                         zoomOffset: -1,
                         accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
                     }).addTo(map);
+										setTimeout(function(){ map.invalidateSize()}, 400);
                                 map.dragging.disable(); //no map dragging
+
+																//Districts
+																function districtHighlight(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
+																	layer.setStyle({
+																		weight: 3,
+																		color: '#1',
+																		dashArray: '',
+																		fillOpacity: 0.7
+															    });
+																  if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+																  	layer.bringToFront();
+																  }
+																}
+
+																function districtBorder(feature){
+																	return {
+																		weight: 2,
+																		color: 'black'
+																	};
+																}
+																function resetDistrictHighlight(e) { // listener for when mouse stops hovering state
+																    geojson.resetStyle(e.target);
+																}
+																function onEachDistrict(feature, layer) { //functions on states based on mouse actions
+						                        layer.on({
+						                        		mouseover: highlightDistrict,
+						                            mouseout: resetDistrictHighlight
+						                        });
+						                    }
+																var districts;
+																districts = L.geoJson(allDistricts, {style: districtBorder}).addTo(map);
+
                                 function getColor(d) { //Set color of our three states
                                     if( d === "California" || d === "Louisiana" || d === "Pennsylvania"){
                                             return '#E31A1C';
@@ -336,8 +371,8 @@
 					}
                     function zoomToFeature(e) { //depending on state zooms in and changes zoom settings
                         if( e.target.feature.properties.name === "California"){
-                            map.setMaxZoom(6);
-                            map.setMinZoom(6);
+                            map.setMaxZoom(6.5);
+                            map.setMinZoom(6.5);
                             map.flyToBounds(e.target.getBounds());
                         }
                         else if(	e.target.feature.properties.name === "Louisiana"||
@@ -373,7 +408,7 @@
                     };
                     info.addTo(map);
                     var geojson;
-                        geojson = L.geoJson(statesData, {style: style, onEachFeature: onEachFeature}).addTo(map); //loads geojson file with functions provided
+                    geojson = L.geoJson(statesData, {style: style, onEachFeature: onEachFeature}).addTo(map); //loads geojson file with functions provided
 				</script>
 				<div id="cy">
 					<div id ="summary" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -390,7 +425,7 @@
                                         var chart = new CanvasJS.Chart("chartContainer", {
                                             animationEnabled: true, // Animation when page is loaded
                                             title:{ // Title of the plot
-                                                text: "BVAP" 
+                                                text: "BVAP"
                                             },
                                             axisY: { // Y axis details
                                                 title: "BVAP (in %)",
@@ -404,7 +439,7 @@
                                                 dataPoints: [ // This is the data (y: [Min, Lower Q, High Q, Max, Median])
                                                     { label: "District 1", y: [15, 20, 25, 30, 22.5] },
                                                     { label: "District 2", y: [20, 25, 50, 52.5, 37.5] },
-                                                    { label: "District 3", y: [15, 20, 25, 30, 22.5] },	
+                                                    { label: "District 3", y: [15, 20, 25, 30, 22.5] },
                                                     { label: "District 4", y: [55, 70, 85, 90, 82.5] },
                                                     { label: "District 5", y: [15, 30, 35, 50, 32.5] },
                                                     { label: "District 6", y: [15, 20, 25, 40, 22.5] }
