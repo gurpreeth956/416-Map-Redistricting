@@ -6,9 +6,6 @@ import java.util.Objects;
 
 public class Cluster {
 
-//    static final int IDEAL_BALANCE_MAX = ;
-//    static final int IDEAL_BALANCE_MIN = ;
-
     int summary, uniqueId;
     Set<Node> nodes;
     Set<Cluster> neighbors;
@@ -129,6 +126,8 @@ public class Cluster {
         }
         System.out.println();
     }
+
+    // NEED METHOD FOR FINDING BORDER NODES
 
     // Override equals method to be able to use in set.
     @Override

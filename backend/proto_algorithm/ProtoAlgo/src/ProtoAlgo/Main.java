@@ -106,15 +106,15 @@ public class Main {
         clusters.add(cluster9);
         clusters.add(cluster10);
 
-        // To add all the initial cluster neighbors, use addNeighborClusters(Set<Cluster> clusters)
-        // else use addNeighborClusters(Cluster c1, Cluster c2)
-        Algorithm.addNeighborClusters(clusters);
+        // To add all the initial cluster neighbors, use graph.addNeighborClusters(Set<Cluster> clusters)
+        // else use parentCluster.combineClusters(childCluster)
+        graph.addNeighborClusters(clusters);
 
         for (Cluster cluster : clusters) {
             cluster.printCluster();
         }
 
-        Set<Cluster> combinedClusters = Algorithm.combineClusters(clusters, 10);
+        Set<Cluster> combinedClusters = graph.combineClusters(clusters, 5);
 
         for (Cluster cluster : combinedClusters) {
             cluster.printCluster();
