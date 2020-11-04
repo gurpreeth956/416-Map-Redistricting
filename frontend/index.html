@@ -129,7 +129,7 @@
 									<label class="form-check-label" for="inlineRadio3">Not Compact</label>
 								</div>
 
-								<button type="button" class="btn btn-primary">Generate Maps</button>
+								<button type="button" class="btn btn-primary" data-toggle="modal" href="#generation-modal">Generate Maps</button>
 							</div>
 						</div>
 					</article>
@@ -251,7 +251,8 @@
 								<p>State: Lousiana</p>
 								<p>Maps to Generate: 5000</p> 
 								<p>Compactness: Somewhat</p>
-								<p> Population Limit Difference: 500</p>
+								<p>Population Limit Difference: 500</p>
+								<button type="button" class="btn btn-secondary">Cancel Job</button>
 							</a>
 							<a class="list-group-item list-group-item-action history-item" data-toggle="modal" href="#history-modal" role="tab">
 								<div class="d-flex h-100 justify-content-between">
@@ -261,7 +262,7 @@
 								<p>State: California</p>
 								<p>Maps to Generate: 10000</p> 
 								<p>Compactness: Very</p>
-								<p> Population Limit Difference: 1000</p>
+								<p>Population Limit Difference: 1000</p>
 							</a>
 							<a class="list-group-item list-group-item-action history-item" data-toggle="modal" href="#history-modal" role="tab">
 								<div class="d-flex h-100 justify-content-between">
@@ -271,7 +272,8 @@
 								<p>State: Pennslyvania</p>
 								<p>Maps to Generate: 7000</p> 
 								<p>Compactness: Somewhat</p>
-								<p> Population Limit Difference: 750</p>
+								<p>Population Limit Difference: 750</p>
+								<button type="button" class="btn btn-danger">Delete Job</button>
 							</a>
 							<a class="list-group-item list-group-item-action history-item" data-toggle="modal" href="#history-modal" role="tab">
 								<div class="d-flex h-100 justify-content-between">
@@ -281,7 +283,8 @@
 								<p>State: Lousiana</p>
 								<p>Maps to Generate: 1000</p> 
 								<p>Compactness: Not</p>
-								<p> Population Limit Difference: 200</p>
+								<p>Population Limit Difference: 200</p>
+								<button type="button" class="btn btn-primary">Load Map</button>
 							</a>
 						</div>
 					</article>
@@ -497,9 +500,31 @@
                 				</div>
                 			</div>
                 			<div class="modal-footer">
-                				<button type="button" class="btn btn-primary">Load Map</button>
-                				<button type="button" class="btn btn-secondary">Cancel Job</button>
-                				<button type="button" class="btn btn-danger">Delete Job</button>
+                				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                			</div>
+                		</div>
+                	</div>
+
+                </div>
+                <div class="modal fade" id="generation-modal" tabindex="-1" role="dialog" aria-labelledby="generationTitle" aria-hidden="true">
+                	<div class="modal-dialog modal-sm" role="document">
+                		<div class="modal-content">
+                			<div class="modal-header">
+                				<h5 class="modal-title" id="generationTitle">Job Successfully Created</h5>
+                			</div>
+                			<div class="modal-body history-item">
+                				<h5>Job Info</h5>
+                				<hr>
+                				<p>Job ID#: 1</p>
+                				<p>State: Lousiana</p>
+                				<p>Maps to Generate: 5000</p>
+                				<p>Number of Districts: 6</p>
+                				<p>Ethnicities: Black/African American, Asian</p>
+                				<p>Compactness: Somewhat</p>
+                				<p>Population Limit Difference: 500</p>
+                			</div>
+                			<div class="modal-footer">
+                				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 			</div>
                 		</div>
                 	</div>
@@ -565,4 +590,4 @@
 	    </script>
 	    <script src="./js/main.js"></script>
 	</body>
-</html>
+	</html>
