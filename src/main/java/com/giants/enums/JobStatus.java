@@ -1,4 +1,4 @@
-package enums;
+package com.giants.enums;
 
 public enum JobStatus {
     RUNNING,

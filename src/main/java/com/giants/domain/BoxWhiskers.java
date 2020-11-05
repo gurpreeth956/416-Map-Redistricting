@@ -1,4 +1,4 @@
-package domain;
+package com.giants.domain;
 
 import lombok.Getter;
 import lombok.Setter;
