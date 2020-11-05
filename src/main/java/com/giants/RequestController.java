@@ -1,12 +1,19 @@
-import domain.Job;
-import enums.Ethnicity;
-import enums.JobStatus;
-import enums.StateAbbreviation;
+package com.giants;
+
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.giants.domain.Job;
+import com.giants.enums.Ethnicity;
+import com.giants.enums.StateAbbreviation;
+import com.giants.enums.JobStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@RestController
 public class RequestController {
     private JobHandler jobHandler;
     private Map<Integer, Job> jobs;
@@ -85,5 +92,17 @@ public class RequestController {
     // Saw this method in Class Diagram not sure what it does though
     public void pingSeaWulf() {
 
+    }
+
+    // Testing/working post method
+    @PostMapping("/hello")
+    public void hello() {
+        System.out.println("hello");
+    }
+
+    // Testing/working post method
+    @GetMapping("/bye")
+    public void bye() {
+        System.out.println("bye");
     }
 }

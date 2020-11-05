@@ -1,4 +1,4 @@
-package enums;
+package com.giants.enums;
 
 public enum Ethnicity {
     BLACK_OR_AFRICAN_AMERICAN,

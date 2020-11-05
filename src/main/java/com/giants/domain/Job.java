@@ -1,8 +1,8 @@
-package domain;
+package com.giants.domain;
 
-import enums.Ethnicity;
-import enums.JobStatus;
-import enums.StateAbbreviation;
+import com.giants.enums.Ethnicity;
+import com.giants.enums.JobStatus;
+import com.giants.enums.StateAbbreviation;
 import lombok.*;
 
 import java.util.List;

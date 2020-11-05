@@ -1,7 +1,9 @@
-import domain.Job;
-import enums.Ethnicity;
-import enums.JobStatus;
-import enums.StateAbbreviation;
+package com.giants;
+
+import com.giants.domain.Job;
+import com.giants.enums.Ethnicity;
+import com.giants.enums.StateAbbreviation;
+import com.giants.enums.JobStatus;
 
 import java.util.ArrayList;
 import java.util.List;

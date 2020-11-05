@@ -1,6 +1,6 @@
-package domain;
+package com.giants.domain;
 
-import enums.Ethnicity;
+import com.giants.enums.Ethnicity;
 import lombok.Getter;
 import lombok.Setter;
 
