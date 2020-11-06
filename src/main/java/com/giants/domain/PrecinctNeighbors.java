@@ -1,11 +1,22 @@
 package com.giants.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class PrecinctNeighbors {
     private int id;
     private int neighborId;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getNeighborId() {
+        return neighborId;
+    }
+
+    public void setNeighborId(int neighborId) {
+        this.neighborId = neighborId;
+    }
 }
