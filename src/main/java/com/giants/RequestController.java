@@ -19,7 +19,6 @@ public class RequestController {
     private JobHandler jobHandler;
     private Map<Integer, Job> jobs;
     private List<Integer> jobsToCheckStatus;
-    // Need to import Json type, not sure yet
     private String pennsylvaniaGeoJson;
     private String louisianaGeoJson;
     private String californiaGeoJson;
@@ -37,7 +36,10 @@ public class RequestController {
             }
         }
 
-        // Need a way to get current Map GEOJSON still ask baloo
+        // Need a to verify format for Precinct GeoJSON
+        pennsylvaniaGeoJson = jobHandler.loadPrecinctGeoJson(StateAbbreviation.PA);
+        louisianaGeoJson = jobHandler.loadPrecinctGeoJson(StateAbbreviation.LA);
+        californiaGeoJson = jobHandler.loadPrecinctGeoJson(StateAbbreviation.CA);
         return true;
     }
 
@@ -62,8 +64,8 @@ public class RequestController {
             method = RequestMethod.GET)
     @ResponseBody
     public String getDistricting(@RequestParam int stateId) {
-        State state = jobHandler.loadStateData(stateId);
-        return "";
+        String geoJson = jobHandler.loadDistrictingData(stateId);
+        return geoJson;
     }
 
     @RequestMapping(value = "/initializeJob",
@@ -119,11 +121,6 @@ public class RequestController {
         for(Job job : changedJobs) {
             jobs.replace(job.getId(), job);
         }
-    }
-
-    // Saw this method in Class Diagram not sure what it does though
-    public void pingSeaWulf() {
-
     }
 
     // Testing/working post method

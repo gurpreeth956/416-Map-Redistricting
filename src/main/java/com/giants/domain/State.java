@@ -1,7 +1,5 @@
 package com.giants.domain;
 
-import lombok.Getter;
-import lombok.Setter;
 //import javax.persistence.Entity;
 //import javax.persistence.EntityManager;
 //import javax.persistence.EntityManagerFactory;
@@ -10,8 +8,6 @@ import lombok.Setter;
 
 //@Entity
 //@Table(name = "STATE")
-@Getter
-@Setter
 public class State {
 //    @PersistenceContext
 //    EntityManager entityManager;
@@ -20,4 +16,28 @@ public class State {
     private int id;
     private int population;
     private float compactness;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(int population) {
+        this.population = population;
+    }
+
+    public float getCompactness() {
+        return compactness;
+    }
+
+    public void setCompactness(float compactness) {
+        this.compactness = compactness;
+    }
 }

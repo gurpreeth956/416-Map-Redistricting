@@ -18,8 +18,6 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     compile group: 'org.hibernate', name: 'hibernate-gradle-plugin', version: '5.4.23.Final'
-    compileOnly 'org.projectlombok:lombok:1.18.16'
-    annotationProcessor 'org.projectlombok:lombok:1.18.16'
 }
 
 test {

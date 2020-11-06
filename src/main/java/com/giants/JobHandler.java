@@ -1,6 +1,8 @@
 package com.giants;
 
+import com.giants.domain.District;
 import com.giants.domain.Job;
+import com.giants.domain.Precinct;
 import com.giants.domain.State;
 import com.giants.enums.Ethnicity;
 import com.giants.enums.StateAbbreviation;
@@ -45,9 +47,26 @@ public class JobHandler {
         return new ArrayList<Job>();
     }
 
-    public State loadStateData(int stateId) {
+    public String loadDistrictingData(int stateId) {
         // Get State from entityManager
-        return new State();
+        // Get all District objects where StateId == stateId
+        List<District> districts = new ArrayList<District>();
+        String geoJson = "";
+        for(District district:districts){
+            geoJson += district.getGeoJson();
+        }
+        return geoJson;
+    }
+
+    public String loadPrecinctGeoJson(StateAbbreviation stateAbbreviation) {
+        // Get State from entityManager
+        // Get all Precinct objects where StateAbbreviation == stateAbbreviation
+        List<Precinct> precincts = new ArrayList<Precinct>();
+        String geoJson = "";
+        for(Precinct precinct:precincts){
+            geoJson += precinct.getGeoJson();
+        }
+        return geoJson;
     }
 
     public List<Job> getJobStatusSeaWulf(List<Job> jobs) {
