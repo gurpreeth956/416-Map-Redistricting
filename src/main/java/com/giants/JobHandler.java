@@ -1,6 +1,7 @@
 package com.giants;
 
 import com.giants.domain.Job;
+import com.giants.domain.State;
 import com.giants.enums.Ethnicity;
 import com.giants.enums.StateAbbreviation;
 import com.giants.enums.JobStatus;
@@ -42,6 +43,11 @@ public class JobHandler {
     public List<Job> loadAllJobData() {
         // Get jobs from entityManager
         return new ArrayList<Job>();
+    }
+
+    public State loadStateData(int stateId) {
+        // Get State from entityManager
+        return new State();
     }
 
     public List<Job> getJobStatusSeaWulf(List<Job> jobs) {

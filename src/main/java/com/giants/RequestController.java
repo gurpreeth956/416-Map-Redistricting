@@ -1,14 +1,15 @@
 package com.giants;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.giants.domain.State;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.*;
 
 import com.giants.domain.Job;
 import com.giants.enums.Ethnicity;
 import com.giants.enums.StateAbbreviation;
 import com.giants.enums.JobStatus;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,14 @@ public class RequestController {
     private Map<Integer, Job> jobs;
     private List<Integer> jobsToCheckStatus;
     // Need to import Json type, not sure yet
-//    private Json pennsylvaniaGeoJson;
-//    private Json louisianaGeoJson;
-//    private Json californiaGeoJson;
+    private String pennsylvaniaGeoJson;
+    private String louisianaGeoJson;
+    private String californiaGeoJson;
 
+
+    // I think this is right
+    // https://www.baeldung.com/spring-postconstruct-predestroy
+    @PostConstruct
     public boolean initalSetup() {
         List<Job> jobList = jobHandler.loadAllJobData();
         for(Job job : jobList){
@@ -37,22 +42,41 @@ public class RequestController {
     }
 
     // Need to import Json type, not sure yet
+    // Seems like @ResponseBody will take String and insert directly into resposne without modifications
+    // This should work since our GeoJson String will already be in Json format
 
-//    public Json getState() {
-//        return "";
-//    }
-//
-//    public Json getDistricting() {
-//        return "";
-//    }
+    @RequestMapping(value = "/getState",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public String getState(@RequestParam("id") StateAbbreviation stateAbbreviation) {
+        if(stateAbbreviation == StateAbbreviation.CA) {
+            return californiaGeoJson;
+        } else if(stateAbbreviation == StateAbbreviation.PA) {
+            return pennsylvaniaGeoJson;
+        } else {
+            return louisianaGeoJson;
+        }
+    }
 
-    public int submitJob(StateAbbreviation stateName, int userCompactness, int populationDifferenceLimit, List<Ethnicity> ethnicities, int numberOfMaps, int numberOfDistricts) {
+    @RequestMapping(value = "/getDistricting",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public String getDistricting(@RequestParam int stateId) {
+        State state = jobHandler.loadStateData(stateId);
+        return "";
+    }
+
+    @RequestMapping(value = "/initializeJob",
+            method = RequestMethod.POST)
+    public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam int populationDifferenceLimit, @RequestParam List<Ethnicity> ethnicities, @RequestParam int numberOfMaps, @RequestParam int numberOfDistricts) {
         Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps, numberOfDistricts);
         jobs.put(job.getId(), job);
         return job.getId();
     }
 
-    public boolean cancelJob(int jobId) {
+    @RequestMapping(value = "/cancelJob",
+            method = RequestMethod.POST)
+    public boolean cancelJob(@RequestParam int jobId) {
         boolean isCancelled = jobHandler.cancelJobData(jobId);
         if(isCancelled) {
             Job job = jobs.get(jobId);
@@ -62,6 +86,8 @@ public class RequestController {
         return isCancelled;
     }
 
+    @RequestMapping(value = "/getJobHistory",
+            method = RequestMethod.GET)
     public List<Job> getHistory() {
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
@@ -70,7 +96,9 @@ public class RequestController {
         return jobList;
     }
 
-    public boolean deleteJob(int jobId) {
+    @RequestMapping(value = "/deleteJob",
+            method = RequestMethod.POST)
+    public boolean deleteJob(@RequestParam int jobId) {
         boolean isDeleted = jobHandler.deleteJobData(jobId);
         if(isDeleted) {
             jobs.remove(jobId);
@@ -78,6 +106,10 @@ public class RequestController {
         return isDeleted;
     }
 
+    // Current scheduled for every 5 seconds
+    // fixedDelay is in milliseconds
+    // https://www.baeldung.com/spring-scheduled-tasks
+    @Scheduled(fixedDelay = 5000)
     public void checkJobStatus() {
         List<Job> jobsToCheck = new ArrayList<Job>();
         for(int id : jobsToCheckStatus) {

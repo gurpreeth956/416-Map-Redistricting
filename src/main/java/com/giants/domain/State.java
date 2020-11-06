@@ -16,6 +16,7 @@ public class State {
 //    @PersistenceContext
 //    EntityManager entityManager;
 
+    // How are we storing the relationships between states/districts/precincts now?
     private int id;
     private int population;
     private float compactness;
