@@ -37,9 +37,9 @@ public class RequestController {
         }
 
         // Need a to verify format for Precinct GeoJSON
-        pennsylvaniaGeoJson = jobHandler.loadPrecinctGeoJson(StateAbbreviation.PA);
-        louisianaGeoJson = jobHandler.loadPrecinctGeoJson(StateAbbreviation.LA);
-        californiaGeoJson = jobHandler.loadPrecinctGeoJson(StateAbbreviation.CA);
+        pennsylvaniaGeoJson = jobHandler.loadPrecinctData(StateAbbreviation.PA);
+        louisianaGeoJson = jobHandler.loadPrecinctData(StateAbbreviation.LA);
+        californiaGeoJson = jobHandler.loadPrecinctData(StateAbbreviation.CA);
         return true;
     }
 
