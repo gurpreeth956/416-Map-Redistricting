@@ -1,6 +1,7 @@
 package com.giants;
 
 import com.giants.domain.State;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,24 +12,33 @@ import com.giants.enums.JobStatus;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+@EnableScheduling
+//@Component
 public class RequestController {
+
     private JobHandler jobHandler;
     private Map<Integer, Job> jobs;
     private List<Integer> jobsToCheckStatus;
-    private String pennsylvaniaGeoJson;
-    private String louisianaGeoJson;
-    private String californiaGeoJson;
+    private String pennsylvaniaPrecinctData;
+    private String louisianaPrecinctData;
+    private String californiaPrecinctData;
 
 
-    // I think this is right
+    // Everything we need to do when server starts up goes here
     // https://www.baeldung.com/spring-postconstruct-predestroy
     @PostConstruct
-    public boolean initalSetup() {
+    public void initialSetup() {
+        System.out.println("please");
+        jobHandler = new JobHandler();
+        jobs = new HashMap<Integer, Job>();
         List<Job> jobList = jobHandler.loadAllJobData();
+        jobsToCheckStatus = new ArrayList<Integer>();
         for(Job job : jobList){
             jobs.put(job.getId(), job);
             if(job.getStatus() != JobStatus.COMPLETED) {
@@ -37,47 +47,40 @@ public class RequestController {
         }
 
         // Need a to verify format for Precinct GeoJSON
-        pennsylvaniaGeoJson = jobHandler.loadPrecinctData(StateAbbreviation.PA);
-        louisianaGeoJson = jobHandler.loadPrecinctData(StateAbbreviation.LA);
-        californiaGeoJson = jobHandler.loadPrecinctData(StateAbbreviation.CA);
-        return true;
+        pennsylvaniaPrecinctData = jobHandler.loadPrecinctData(StateAbbreviation.PA);
+        louisianaPrecinctData = jobHandler.loadPrecinctData(StateAbbreviation.LA);
+        californiaPrecinctData = jobHandler.loadPrecinctData(StateAbbreviation.CA);
     }
 
-    // Need to import Json type, not sure yet
-    // Seems like @ResponseBody will take String and insert directly into resposne without modifications
-    // This should work since our GeoJson String will already be in Json format
-
-    @RequestMapping(value = "/getState",
-            method = RequestMethod.GET)
-    @ResponseBody
+    // This will return the specified state's precinct data
+    @RequestMapping(value = "/getState", method = RequestMethod.POST)
     public String getState(@RequestParam("id") StateAbbreviation stateAbbreviation) {
         if(stateAbbreviation == StateAbbreviation.CA) {
-            return californiaGeoJson;
+            return californiaPrecinctData;
         } else if(stateAbbreviation == StateAbbreviation.PA) {
-            return pennsylvaniaGeoJson;
+            return pennsylvaniaPrecinctData;
         } else {
-            return louisianaGeoJson;
+            return louisianaPrecinctData;
         }
     }
 
-    @RequestMapping(value = "/getDistricting",
-            method = RequestMethod.GET)
-    @ResponseBody
+    // This will return the specified state's district data
+    @RequestMapping(value = "/getDistricting", method = RequestMethod.POST)
     public String getDistricting(@RequestParam int stateId) {
         String geoJson = jobHandler.loadDistrictingData(stateId);
         return geoJson;
     }
 
-    @RequestMapping(value = "/initializeJob",
-            method = RequestMethod.POST)
+    // This will be called when a the user creates a job
+    @RequestMapping(value = "/initializeJob", method = RequestMethod.POST)
     public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam int populationDifferenceLimit, @RequestParam List<Ethnicity> ethnicities, @RequestParam int numberOfMaps, @RequestParam int numberOfDistricts) {
         Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps, numberOfDistricts);
         jobs.put(job.getId(), job);
         return job.getId();
     }
 
-    @RequestMapping(value = "/cancelJob",
-            method = RequestMethod.POST)
+    // This will cancel the specified job
+    @RequestMapping(value = "/cancelJob", method = RequestMethod.POST)
     public boolean cancelJob(@RequestParam int jobId) {
         boolean isCancelled = jobHandler.cancelJobData(jobId);
         if(isCancelled) {
@@ -88,8 +91,8 @@ public class RequestController {
         return isCancelled;
     }
 
-    @RequestMapping(value = "/getJobHistory",
-            method = RequestMethod.GET)
+    // This will ret
+    @RequestMapping(value = "/getJobHistory", method = RequestMethod.POST)
     public List<Job> getHistory() {
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
@@ -98,8 +101,8 @@ public class RequestController {
         return jobList;
     }
 
-    @RequestMapping(value = "/deleteJob",
-            method = RequestMethod.POST)
+    // This will delete the specified job
+    @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
     public boolean deleteJob(@RequestParam int jobId) {
         boolean isDeleted = jobHandler.deleteJobData(jobId);
         if(isDeleted) {
@@ -125,8 +128,9 @@ public class RequestController {
 
     // Testing/working post method
     @PostMapping("/hello")
-    public void hello() {
-        System.out.println("hello");
+    public String hello(@RequestParam("id") String string) {
+        System.out.println(string);
+        return "MMMM";
     }
 
     // Testing/working post method
