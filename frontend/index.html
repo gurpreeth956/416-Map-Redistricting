@@ -4,6 +4,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
@@ -45,93 +46,7 @@
 						<header class="card-header">
 							<h6 class="title">Generate Maps</h6>
 						</header>
-						<div class="generate-content">
-							<div class="card-body">
-								<form>
-									<label class="font-weight-bold">State</label>
-									<div class="form-row align-items-center">
-										<div class="col-auto my-1">
-											<select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-												<option selected>State</option>
-												<option value="1">California</option>
-												<option value="2">Lousiana</option>
-												<option value="3">Pennslyvania</option>
-											</select>
-										</div>
-									</div>
-								</form>
-
-								<div class="form-group">
-									<label class="font-weight-bold">Number of Maps to Generate</label>
-									<input class="form-control" id="exampleInputPassword1" placeholder="Number of Maps">
-								</div>
-
-								<div class="form-group">
-									<label class="font-weight-bold">Number of Districts to Generate</label>
-									<input class="form-control" id="exampleInputPassword1" placeholder="Number of Districts">
-								</div>
-								<form>
-									<label class="font-weight-bold">Race/Ethnicity</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Black/African American
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Hispanic or Latino
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Asian
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											White
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											American Indian or Alaskan Native
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Native Hawaiian or Other Pacfic Islander
-										</span>
-									</label>
-								</form>
-
-								<div class="form-group">
-									<label class="font-weight-bold">Population Difference Limit</label>
-									<input class="form-control" id="exampleInputPassword1" placeholder="Difference Limit">
-								</div>
-
-								<label class="font-weight-bold">Compactness Treshold</label>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">
-									<label class="form-check-label" for="inlineRadio1">Very Compact</label>
-								</div>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value=".5">
-									<label class="form-check-label" for="inlineRadio2">Somewhat Compact</label>
-								</div>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0">
-									<label class="form-check-label" for="inlineRadio3">Not Compact</label>
-								</div>
-
-								<button type="button" class="btn btn-primary" data-toggle="modal" href="#generation-modal">Generate Maps</button>
-							</div>
-						</div>
+						<div id="GenerateMapForm"></div>
 					</article>
 				</div>
 				<a href="#filter-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start">
@@ -249,7 +164,7 @@
 									<small>Waiting in Queue</small>
 								</div>
 								<p>State: Lousiana</p>
-								<p>Maps to Generate: 5000</p> 
+								<p>Maps to Generate: 5000</p>
 								<p>Compactness: Somewhat</p>
 								<p>Population Limit Difference: 500</p>
 								<button type="button" class="btn btn-secondary">Cancel Job</button>
@@ -260,7 +175,7 @@
 									<small>Running</small>
 								</div>
 								<p>State: California</p>
-								<p>Maps to Generate: 10000</p> 
+								<p>Maps to Generate: 10000</p>
 								<p>Compactness: Very</p>
 								<p>Population Limit Difference: 1000</p>
 							</a>
@@ -270,7 +185,7 @@
 									<small>Cancelled</small>
 								</div>
 								<p>State: Pennslyvania</p>
-								<p>Maps to Generate: 7000</p> 
+								<p>Maps to Generate: 7000</p>
 								<p>Compactness: Somewhat</p>
 								<p>Population Limit Difference: 750</p>
 								<button type="button" class="btn btn-danger">Delete Job</button>
@@ -281,7 +196,7 @@
 									<small>Completed</small>
 								</div>
 								<p>State: Lousiana</p>
-								<p>Maps to Generate: 1000</p> 
+								<p>Maps to Generate: 1000</p>
 								<p>Compactness: Not</p>
 								<p>Population Limit Difference: 200</p>
 								<button type="button" class="btn btn-primary">Load Map</button>
@@ -495,7 +410,7 @@
                 					<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                 					<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                 					<div class= "plot-section" id="chartContainer2">
-                						
+
                 					</div>
                 				</div>
                 			</div>
@@ -506,6 +421,7 @@
                 	</div>
 
                 </div>
+								<!--
                 <div class="modal fade" id="generation-modal" tabindex="-1" role="dialog" aria-labelledby="generationTitle" aria-hidden="true">
                 	<div class="modal-dialog modal-sm" role="document">
                 		<div class="modal-content">
@@ -529,7 +445,7 @@
                 		</div>
                 	</div>
 
-                </div>
+                </div>-->
             </div>
         </div>
         <script>
@@ -589,5 +505,14 @@
 	        }
 	    </script>
 	    <script src="./js/main.js"></script>
+
+			<!-- load react scripts -->
+			<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+ 			<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+			<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+			<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+			<script type="text/babel" src="./js/GenerateMapForm.js"></script>
 	</body>
 	</html>
