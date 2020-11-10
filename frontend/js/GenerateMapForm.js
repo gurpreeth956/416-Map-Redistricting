@@ -94,7 +94,6 @@ class GenerateMapForm extends React.Component {
     console.log(this.state.numMaps)
     console.log(this.state.numDists)
     console.log(ethnicity.toString())
-    const Http = new XMLHttpRequest()
     const data = {stateName: this.state.state, userCompactness: this.state.compactness,
     populationDifferenceLimit: this.state.popDiff, ethnicities: ethnicity.toString(),
     numberOfMaps: this.state.numMaps, numberOfDistricts: this.state.numDists}
@@ -184,12 +183,12 @@ class GenerateMapForm extends React.Component {
 
         								<label class="font-weight-bold">Compactness Treshold</label>
         								<div class="form-check form-check-inline">
-        									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1"
+        									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="2"
                           onChange={this.handleCompactnessChange}/>
         									<label class="form-check-label" for="inlineRadio1">Very Compact</label>
         								</div>
         								<div class="form-check form-check-inline">
-        									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value=".5"
+        									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1"
                           onChange={this.handleCompactnessChange}/>
         									<label class="form-check-label" for="inlineRadio2">Somewhat Compact</label>
         								</div>
