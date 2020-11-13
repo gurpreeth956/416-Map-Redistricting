@@ -7,7 +7,6 @@ class GenerateMapForm extends React.Component {
     this.state = {
       state: '',
       numMaps: '',
-      numDists: '',
       black: false,
       hispanic: false,
       asian: false,
@@ -27,12 +26,6 @@ class GenerateMapForm extends React.Component {
   handleNumMapsChange = event => {
 		this.setState({
 			numMaps: event.target.value
-		})
-	}
-
-  handleNumDistsChange = event => {
-		this.setState({
-			numDists: event.target.value
 		})
 	}
 
@@ -61,7 +54,6 @@ class GenerateMapForm extends React.Component {
 		alert(`
       ${this.state.state}
       ${this.state.numMaps}
-      ${this.state.numDists}
       Black/African American: ${this.state.black}
       Hispanic or Latino: ${this.state.hispanic}
       Asian: ${this.state.asian}
@@ -92,11 +84,10 @@ class GenerateMapForm extends React.Component {
     console.log(this.state.popDiff)
     console.log(ethnicity.toString())
     console.log(this.state.numMaps)
-    console.log(this.state.numDists)
     console.log(ethnicity.toString())
     const data = {stateName: this.state.state, userCompactness: this.state.compactness,
     populationDifferenceLimit: this.state.popDiff, ethnicities: ethnicity.toString(),
-    numberOfMaps: this.state.numMaps, numberOfDistricts: this.state.numDists}
+    numberOfMaps: this.state.numMaps}
     const url = 'http://localhost:8080/initializeJob'
     $.ajax({
       url:url,
@@ -106,7 +97,7 @@ class GenerateMapForm extends React.Component {
 	}
 
   render() {
-      const { state, numMaps, numDists, ethnicity, popDiff, compactness } = this.state
+      const { state, numMaps, ethnicity, popDiff, compactness } = this.state
       return (
         <div class="generate-content">
         							<div class="card-body">
@@ -131,11 +122,6 @@ class GenerateMapForm extends React.Component {
                            value={numMaps} onChange={this.handleNumMapsChange}/>
         								</div>
 
-        								<div class="form-group">
-        									<label class="font-weight-bold">Number of Districts to Generate</label>
-        									<input class="form-control" id="exampleInputPassword1" placeholder="Number of Districts"
-                          value={numDists} onChange={this.handleNumDistsChange}/>
-        								</div>
         								<form>
         									<label class="font-weight-bold">Race/Ethnicity</label>
         									<label class="form-check">
