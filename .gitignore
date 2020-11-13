@@ -1,6 +1,7 @@
 .DS_Store
 .idea
 
+
 ### Java ###
 *.class
 
@@ -22,6 +23,9 @@ hs_err_pid*
 ### Gradle ###
 .gradle
 /build/
+
+# Resources #
+src/main/resources
 
 # Ignore Gradle GUI config
 gradle-app.setting
