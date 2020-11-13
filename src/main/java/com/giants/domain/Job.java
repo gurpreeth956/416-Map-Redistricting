@@ -13,19 +13,17 @@ public class Job {
     private int userCompactness;
     private int populationDifferenceLimit;
     private int numberOfMaps;
-    private int numberOfDistricts;
     private List<Ethnicity> ethnicities;
     private boolean onSeaWulf;
     private BoxWhiskers boxWhiskers;
     private int averageStateId;
     private int extremeStateId;
 
-    public Job(StateAbbreviation abbreviation, int userCompactness, int populationDifferenceLimit, int numberOfMaps, int numberOfDistricts, List<Ethnicity> ethnicities) {
+    public Job(StateAbbreviation abbreviation, int userCompactness, int populationDifferenceLimit, int numberOfMaps, List<Ethnicity> ethnicities) {
         this.abbreviation = abbreviation;
         this.userCompactness = userCompactness;
         this.populationDifferenceLimit = populationDifferenceLimit;
         this.numberOfMaps = numberOfMaps;
-        this.numberOfDistricts = numberOfDistricts;
         this.ethnicities = ethnicities;
     }
 
@@ -75,14 +73,6 @@ public class Job {
 
     public void setNumberOfMaps(int numberOfMaps) {
         this.numberOfMaps = numberOfMaps;
-    }
-
-    public int getNumberOfDistricts() {
-        return numberOfDistricts;
-    }
-
-    public void setNumberOfDistricts(int numberOfDistricts) {
-        this.numberOfDistricts = numberOfDistricts;
     }
 
     public List<Ethnicity> getEthnicities() {

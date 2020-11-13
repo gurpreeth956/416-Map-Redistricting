@@ -73,8 +73,8 @@ public class RequestController {
 
     // This will be called when a the user creates a job
     @RequestMapping(value = "/initializeJob", method = RequestMethod.POST)
-    public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam int populationDifferenceLimit, @RequestParam List<Ethnicity> ethnicities, @RequestParam int numberOfMaps, @RequestParam int numberOfDistricts) {
-        Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps, numberOfDistricts);
+    public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam int populationDifferenceLimit, @RequestParam List<Ethnicity> ethnicities, @RequestParam int numberOfMaps) {
+        Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps);
         jobs.put(job.getId(), job);
         return job.getId();
     }

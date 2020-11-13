@@ -11,8 +11,8 @@ import java.util.List;
 
 public class JobHandler {
 
-    public Job createJob(StateAbbreviation stateName, int userCompactness, int populationDifferenceLimit, List<Ethnicity> ethnicities, int numberOfMaps, int numberOfDistricts) {
-        Job job = new Job(stateName, userCompactness, populationDifferenceLimit, numberOfMaps, numberOfDistricts, ethnicities);
+    public Job createJob(StateAbbreviation stateName, int userCompactness, int populationDifferenceLimit, List<Ethnicity> ethnicities, int numberOfMaps) {
+        Job job = new Job(stateName, userCompactness, populationDifferenceLimit, numberOfMaps, ethnicities);
         if (numberOfMaps > 100) {
             job.setOnSeaWulf(true);
             job.setStatus(JobStatus.WAITING);
