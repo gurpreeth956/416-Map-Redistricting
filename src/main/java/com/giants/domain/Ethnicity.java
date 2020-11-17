@@ -16,6 +16,10 @@ public class Ethnicity {
         private int jobId;
         private RaceEthnicity ethnicity;
 
+        public EthnicityKey() {
+
+        }
+
         public EthnicityKey(int jobId, RaceEthnicity ethnicity) {
             this.jobId = jobId;
             this.ethnicity = ethnicity;
@@ -31,11 +35,11 @@ public class Ethnicity {
         }
 
         @Column(name = "ethnicity")
-        public RaceEthnicity getStateId() {
+        public RaceEthnicity getEthnicity() {
             return ethnicity;
         }
 
-        public void setStateId(RaceEthnicity ethnicity) {
+        public void setEthnicity(RaceEthnicity ethnicity) {
             this.ethnicity = ethnicity;
         }
 

@@ -29,11 +29,11 @@ public class BoxWhisker {
         }
 
         @Column(name = "positionNum")
-        public int getStateId() {
+        public int getPositionNum() {
             return positionNum;
         }
 
-        public void setStateId(int positionNum) {
+        public void setPositionNum(int positionNum) {
             this.positionNum = positionNum;
         }
 

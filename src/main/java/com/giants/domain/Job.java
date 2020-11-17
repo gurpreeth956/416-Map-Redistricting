@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "Jobs")
+@Table(name="Jobs")
+@NamedQuery(name="Jobs.getJobs", query="SELECT j FROM Job j")
 public class Job {
 
     private int id;
@@ -150,8 +151,8 @@ public class Job {
         this.states = states;
     }
 
-    public void executeSeaWulfJob() {
-
+    public int executeSeaWulfJob() {
+        return 1;
     }
 
     public void executeLocalJob() {
