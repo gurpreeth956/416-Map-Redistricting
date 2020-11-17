@@ -1,22 +1,33 @@
 package com.giants.domain;
 
-//import javax.persistence.Entity;
-//import javax.persistence.EntityManager;
-//import javax.persistence.EntityManagerFactory;
-//import javax.persistence.PersistenceContext;
-//import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
-//@Entity
-//@Table(name = "STATE")
+@Entity
+@Table(name = "States")
 public class State {
-//    @PersistenceContext
-//    EntityManager entityManager;
 
-    // How are we storing the relationships between states/districts/precincts now?
     private int id;
+    private Job job;
     private int population;
-    private float compactness;
+    private double compactness;
+    private List<District> districts;
 
+    public State() {
+
+    }
+
+    public State(Job job, int population, double compactness) {
+        this.job = job;
+        this.population = population;
+        this.compactness = compactness;
+        this.districts = new ArrayList<>();
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     public int getId() {
         return id;
     }
@@ -25,6 +36,17 @@ public class State {
         this.id = id;
     }
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="jobId", referencedColumnName = "id", insertable = false, updatable = false)
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
+    @Column(name = "population")
     public int getPopulation() {
         return population;
     }
@@ -33,11 +55,21 @@ public class State {
         this.population = population;
     }
 
-    public float getCompactness() {
+    @Column(name = "compactness")
+    public double getCompactness() {
         return compactness;
     }
 
-    public void setCompactness(float compactness) {
+    public void setCompactness(double compactness) {
         this.compactness = compactness;
+    }
+
+    @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<District> getDistricts() {
+        return districts;
+    }
+
+    public void setDistricts(List<District> districts) {
+        this.districts = districts;
     }
 }

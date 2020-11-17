@@ -1,7 +1,7 @@
 package com.giants;
 
 import com.giants.domain.*;
-import com.giants.enums.Ethnicity;
+import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
 import com.giants.enums.JobStatus;
 import javax.persistence.EntityManager;
@@ -11,17 +11,21 @@ import java.util.List;
 
 public class JobHandler {
 
-    public Job createJob(StateAbbreviation stateName, int userCompactness, int populationDifferenceLimit, List<Ethnicity> ethnicities, int numberOfMaps) {
-        Job job = new Job(stateName, userCompactness, populationDifferenceLimit, numberOfMaps, ethnicities);
+    public Job createJob(StateAbbreviation stateName, int userCompactness, double populationDifferenceLimit,
+                         List<RaceEthnicity> ethnicities, int numberOfMaps) {
+        Job job = new Job(stateName, userCompactness, populationDifferenceLimit, numberOfMaps);
         if (numberOfMaps > 100) {
-            job.setOnSeaWulf(true);
-            job.setStatus(JobStatus.WAITING);
+            job.setOnSeaWulf(0);
+            job.setJobStatus(JobStatus.WAITING);
             job.executeSeaWulfJob();
+            // CHANGE SEAWULF TO JOB ID IN DATABASE
         } else {
-            job.setOnSeaWulf(false);
-            job.setStatus(JobStatus.RUNNING);
+            job.setOnSeaWulf(-1);
+            job.setJobStatus(JobStatus.RUNNING);
             job.executeLocalJob();
         }
+
+        // CREATE ETHNICITY OBJECTS THEN PERSIST
 
         // Now add job to database
         EntityManager em = JPAUtility.getEntityManager();
@@ -33,7 +37,7 @@ public class JobHandler {
             // Return some kind of error here
 
         } finally {
-            em.close();
+
         }
         return job;
     }
@@ -59,8 +63,7 @@ public class JobHandler {
                 // Return some kind of error here
                 return false;
             } finally {
-                em.close();
-                // End of transaction
+
             }
         }
 
@@ -81,8 +84,7 @@ public class JobHandler {
             // Return some kind of error here
             return false;
         } finally {
-            em.close();
-            // End of transaction
+
         }
 
         return true;
@@ -122,8 +124,7 @@ public class JobHandler {
             // Return some kind of error here
 
         } finally {
-            em.close();
-            // End of transaction
+
         }
 
         // Return
@@ -151,8 +152,7 @@ public class JobHandler {
             // Return some kind of error here
 
         } finally {
-            em.close();
-            // End of transaction
+
         }
 
         String geoJson = "";
@@ -166,13 +166,13 @@ public class JobHandler {
         // For each job in jobs that is waiting or running check SeaWulf
         // Pretend status is returned from SeaWulf
         for(Job job : jobs) {
-            if (job.getStatus() == JobStatus.RUNNING || job.getStatus() == JobStatus.WAITING) {
+            if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
                 // Send slurm to check current status
                 String status = "COMPLETED";
                 if (status.equals(JobStatus.COMPLETED.toString())) {
                     // Send slurm script to calculate data (avg, extreme, boxwhiskers
-                    job.setStatus(JobStatus.COMPLETED);
-                    String filePath = job.getSeaWulfData();
+                    job.setJobStatus(JobStatus.COMPLETED);
+                    String filePath = job.retrieveSeaWulfData();
                     // Methods below here return boolean not sure if check is necessary
                     job.countCounties(filePath);
                     job.generateJsonFile(filePath);
@@ -188,8 +188,8 @@ public class JobHandler {
                         Query q = em.createQuery("UPDATE Jobs SET status = :status, averageStateId = :averageStateId," +
                                 "extremeStateId = :extremeStateId WHERE id = :id");
                         q.setParameter("id", job.getId());
-                        q.setParameter("averageStateId", job.getAverageState());
-                        q.setParameter("extremeStateId", job.getExtremeState());
+                        q.setParameter("averageStateId", job.getAverageStateId());
+                        q.setParameter("extremeStateId", job.getExtremeStateId());
                         q.setParameter("status", "cancelled");
                         q.executeUpdate();
 
@@ -200,10 +200,10 @@ public class JobHandler {
                         // Return some kind of error here
 
                     } finally {
-                        em.close();
+
                     }
-                } else if (!job.getStatus().equals(JobStatus.valueOf(status))) {
-                    job.setStatus(JobStatus.valueOf(status));
+                } else if (!job.getJobStatus().equals(JobStatus.valueOf(status))) {
+                    job.setJobStatus(JobStatus.valueOf(status));
                     // Merge in Entity Manager
                 } else {
                     // Only jobs with changed status will stay in list of jobs to return

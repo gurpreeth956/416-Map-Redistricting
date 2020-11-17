@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import com.giants.domain.Job;
-import com.giants.enums.Ethnicity;
+import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
 import com.giants.enums.JobStatus;
 
@@ -41,7 +41,7 @@ public class RequestController {
         jobsToCheckStatus = new ArrayList<Integer>();
         for(Job job : jobList){
             jobs.put(job.getId(), job);
-            if(job.getStatus() != JobStatus.COMPLETED) {
+            if(job.getJobStatus() != JobStatus.COMPLETED) {
                 jobsToCheckStatus.add(job.getId());
             }
         }
@@ -73,7 +73,7 @@ public class RequestController {
 
     // This will be called when a the user creates a job
     @RequestMapping(value = "/initializeJob", method = RequestMethod.POST)
-    public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam int populationDifferenceLimit, @RequestParam List<Ethnicity> ethnicities, @RequestParam int numberOfMaps) {
+    public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam int populationDifferenceLimit, @RequestParam List<RaceEthnicity> ethnicities, @RequestParam int numberOfMaps) {
         Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps);
         jobs.put(job.getId(), job);
         return job.getId();
@@ -85,7 +85,7 @@ public class RequestController {
         boolean isCancelled = jobHandler.cancelJobData(jobId);
         if(isCancelled) {
             Job job = jobs.get(jobId);
-            job.setStatus(JobStatus.CANCELLED);
+            job.setJobStatus(JobStatus.CANCELLED);
         }
         // Based on cancellation, a modal should popup with details
         return isCancelled;

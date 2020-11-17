@@ -1,11 +1,17 @@
 package com.giants.domain;
 
+import com.giants.enums.StateAbbreviation;
+
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "GeoJsons")
 public class GeoJSON {
+
+    private int id;
+    private StateAbbreviation abbreviation;
     private int population;
-    // IDK what WKT is ask Baloo for info
-    // WKT stands for Well Known Text representing as String for now
-    // Might need parser to convert? https://locationtech.github.io/jts/javadoc/org/locationtech/jts/io/WKTReader.html
-    private String coordinates;
     private int blackPop;
     private int blackVap;
     private int asianPop;
@@ -16,7 +22,50 @@ public class GeoJSON {
     private int hawaiianVap;
     private int hispanicPop;
     private int hispanicVap;
+    private List<GeoCoord> geoCoords;
 
+    public GeoJSON() {
+
+    }
+
+    public GeoJSON(StateAbbreviation abbreviation, int population, int blackPop, int blackVap, int asianPop,
+                   int asianVap, int nativePop, int nativeVap, int hawaiianPop, int hawaiianVap, int hispanicPop,
+                   int hispanicVap) {
+        this.abbreviation = abbreviation;
+        this.population = population;
+        this.blackPop = blackPop;
+        this.blackVap = blackVap;
+        this.asianPop = asianPop;
+        this.asianVap = asianVap;
+        this.nativePop = nativePop;
+        this.nativeVap = nativeVap;
+        this.hawaiianPop = hawaiianPop;
+        this.hawaiianVap = hawaiianVap;
+        this.hispanicPop = hispanicPop;
+        this.hispanicVap = hispanicVap;
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Column(name = "abbreviation")
+    public StateAbbreviation getAbbreviation() {
+        return abbreviation;
+    }
+
+    public void setAbbreviation(StateAbbreviation abbreviation) {
+        this.abbreviation = abbreviation;
+    }
+
+    @Column(name = "population")
     public int getPopulation() {
         return population;
     }
@@ -25,14 +74,7 @@ public class GeoJSON {
         this.population = population;
     }
 
-    public String getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(String coordinates) {
-        this.coordinates = coordinates;
-    }
-
+    @Column(name = "blackPop")
     public int getBlackPop() {
         return blackPop;
     }
@@ -41,6 +83,7 @@ public class GeoJSON {
         this.blackPop = blackPop;
     }
 
+    @Column(name = "blackVap")
     public int getBlackVap() {
         return blackVap;
     }
@@ -49,6 +92,7 @@ public class GeoJSON {
         this.blackVap = blackVap;
     }
 
+    @Column(name = "asianPop")
     public int getAsianPop() {
         return asianPop;
     }
@@ -57,6 +101,7 @@ public class GeoJSON {
         this.asianPop = asianPop;
     }
 
+    @Column(name = "asianVap")
     public int getAsianVap() {
         return asianVap;
     }
@@ -65,6 +110,7 @@ public class GeoJSON {
         this.asianVap = asianVap;
     }
 
+    @Column(name = "nativePop")
     public int getNativePop() {
         return nativePop;
     }
@@ -73,6 +119,7 @@ public class GeoJSON {
         this.nativePop = nativePop;
     }
 
+    @Column(name = "nativeVap")
     public int getNativeVap() {
         return nativeVap;
     }
@@ -81,6 +128,7 @@ public class GeoJSON {
         this.nativeVap = nativeVap;
     }
 
+    @Column(name = "hawaiianPop")
     public int getHawaiianPop() {
         return hawaiianPop;
     }
@@ -89,6 +137,7 @@ public class GeoJSON {
         this.hawaiianPop = hawaiianPop;
     }
 
+    @Column(name = "hawaiianVap")
     public int getHawaiianVap() {
         return hawaiianVap;
     }
@@ -97,6 +146,7 @@ public class GeoJSON {
         this.hawaiianVap = hawaiianVap;
     }
 
+    @Column(name = "hispanicPop")
     public int getHispanicPop() {
         return hispanicPop;
     }
@@ -105,11 +155,21 @@ public class GeoJSON {
         this.hispanicPop = hispanicPop;
     }
 
+    @Column(name = "hispanicVap")
     public int getHispanicVap() {
         return hispanicVap;
     }
 
     public void setHispanicVap(int hispanicVap) {
         this.hispanicVap = hispanicVap;
+    }
+
+    @OneToMany(mappedBy = "geoJson", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<GeoCoord> getGeoCoords() {
+        return geoCoords;
+    }
+
+    public void setGeoCoords(List<GeoCoord> geoCoords) {
+        this.geoCoords = geoCoords;
     }
 }
