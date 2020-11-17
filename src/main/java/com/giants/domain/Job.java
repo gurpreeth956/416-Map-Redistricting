@@ -4,29 +4,40 @@ import com.giants.enums.Ethnicity;
 import com.giants.enums.JobStatus;
 import com.giants.enums.StateAbbreviation;
 
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
+@Table(name="Jobs")
+@NamedQuery(name="Jobs.getJobs", query="SELECT j FROM Job j")
 public class Job {
     private int id;
     private JobStatus status;
     private StateAbbreviation abbreviation;
     private int userCompactness;
-    private int populationDifferenceLimit;
+    private double populationDifferenceLimit;
     private int numberOfMaps;
-    private List<Ethnicity> ethnicities;
-    private boolean onSeaWulf;
-    private BoxWhiskers boxWhiskers;
+//    private List<Ethnicity> ethnicities;
+    private int onSeaWulf;
+//    private BoxWhiskers boxWhiskers;
     private int averageStateId;
     private int extremeStateId;
 
-    public Job(StateAbbreviation abbreviation, int userCompactness, int populationDifferenceLimit, int numberOfMaps, List<Ethnicity> ethnicities) {
+    public Job() {
+
+    }
+
+    public Job(StateAbbreviation abbreviation, int userCompactness, double populationDifferenceLimit, int numberOfMaps, List<Ethnicity> ethnicities) {
         this.abbreviation = abbreviation;
         this.userCompactness = userCompactness;
         this.populationDifferenceLimit = populationDifferenceLimit;
         this.numberOfMaps = numberOfMaps;
-        this.ethnicities = ethnicities;
+//        this.ethnicities = ethnicities;
     }
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     public int getId() {
         return id;
     }
@@ -35,6 +46,7 @@ public class Job {
         this.id = id;
     }
 
+    @Column(name = "jobStatus")
     public JobStatus getStatus() {
         return status;
     }
@@ -43,6 +55,7 @@ public class Job {
         this.status = status;
     }
 
+    @Column(name = "abbreviation")
     public StateAbbreviation getAbbreviation() {
         return abbreviation;
     }
@@ -51,6 +64,7 @@ public class Job {
         this.abbreviation = abbreviation;
     }
 
+    @Column(name = "userCompactness")
     public int getUserCompactness() {
         return userCompactness;
     }
@@ -59,14 +73,16 @@ public class Job {
         this.userCompactness = userCompactness;
     }
 
-    public int getPopulationDifferenceLimit() {
+    @Column(name = "populationDifferenceLimit")
+    public double getPopulationDifferenceLimit() {
         return populationDifferenceLimit;
     }
 
-    public void setPopulationDifferenceLimit(int populationDifferenceLimit) {
+    public void setPopulationDifferenceLimit(double populationDifferenceLimit) {
         this.populationDifferenceLimit = populationDifferenceLimit;
     }
 
+    @Column(name = "numberOfMaps")
     public int getNumberOfMaps() {
         return numberOfMaps;
     }
@@ -75,30 +91,32 @@ public class Job {
         this.numberOfMaps = numberOfMaps;
     }
 
-    public List<Ethnicity> getEthnicities() {
-        return ethnicities;
-    }
+//    public List<Ethnicity> getEthnicities() {
+//        return ethnicities;
+//    }
+//
+//    public void setEthnicities(List<Ethnicity> ethnicities) {
+//        this.ethnicities = ethnicities;
+//    }
 
-    public void setEthnicities(List<Ethnicity> ethnicities) {
-        this.ethnicities = ethnicities;
-    }
-
-    public boolean isOnSeaWulf() {
+    @Column(name = "onSeaWulf")
+    public int isOnSeaWulf() {
         return onSeaWulf;
     }
 
-    public void setOnSeaWulf(boolean onSeaWulf) {
+    public void setOnSeaWulf(int onSeaWulf) {
         this.onSeaWulf = onSeaWulf;
     }
 
-    public BoxWhiskers getBoxWhiskers() {
-        return boxWhiskers;
-    }
+//    public BoxWhiskers getBoxWhiskers() {
+//        return boxWhiskers;
+//    }
+//
+//    public void setBoxWhiskers(BoxWhiskers boxWhiskers) {
+//        this.boxWhiskers = boxWhiskers;
+//    }
 
-    public void setBoxWhiskers(BoxWhiskers boxWhiskers) {
-        this.boxWhiskers = boxWhiskers;
-    }
-
+    @Column(name = "averageStateId")
     public int getAverageState() {
         return averageStateId;
     }
@@ -107,6 +125,7 @@ public class Job {
         this.averageStateId = averageStateId;
     }
 
+    @Column(name = "extremeStateId")
     public int getExtremeState() {
         return extremeStateId;
     }
@@ -115,15 +134,15 @@ public class Job {
         this.extremeStateId = extremeStateId;
     }
 
-    public void executeSeaWulfJob() {
-
+    public int executeSeaWulfJob() {
+        return 1;
     }
 
     public void executeLocalJob() {
 
     }
 
-    public String getSeaWulfData() {
+    public String retrieveSeaWulfData() {
         return "";
     }
 

@@ -1,8 +1,8 @@
 package com.giants.enums;
 
 public enum JobStatus {
-    RUNNING,
     WAITING,
+    RUNNING,
     CANCELLED,
     COMPLETED
 }
