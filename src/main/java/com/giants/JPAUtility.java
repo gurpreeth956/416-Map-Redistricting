@@ -6,7 +6,7 @@ import javax.persistence.Persistence;
 
 public class JPAUtility {
 
-    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.test");
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.giants");
     private static EntityManager em = emf.createEntityManager();
 
     public static EntityManager getEntityManager() {
