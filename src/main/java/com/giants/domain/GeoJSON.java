@@ -164,7 +164,8 @@ public class GeoJSON {
         this.hispanicVap = hispanicVap;
     }
 
-    @OneToMany(mappedBy = "geoJson", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
     public List<GeoCoord> getGeoCoords() {
         return geoCoords;
     }

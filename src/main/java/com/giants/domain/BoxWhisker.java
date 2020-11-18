@@ -53,15 +53,13 @@ public class BoxWhisker {
     }
 
     private BoxWhiskerKey primaryKey;
-    private Job job;
 
     public BoxWhisker() {
 
     }
 
-    public BoxWhisker(Job job, int position) {
-        this.primaryKey = new BoxWhiskerKey(job.getId(), position);
-        this.job = job;
+    public BoxWhisker(int jobId, int position) {
+        this.primaryKey = new BoxWhiskerKey(jobId, position);
     }
 
     @EmbeddedId
@@ -73,14 +71,4 @@ public class BoxWhisker {
         this.primaryKey = primaryKey;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId("jobId")
-    @JoinColumn(name="jobId", referencedColumnName = "id", insertable = false, updatable = false)
-    public Job getJob() {
-        return job;
-    }
-
-    public void setJob(Job job) {
-        this.job = job;
-    }
 }

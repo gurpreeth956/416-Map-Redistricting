@@ -54,11 +54,11 @@ public class JobHandler {
             // Create and add all the ethnicities
             List<Ethnicity> jobEthnicities = new ArrayList<>();
             for (RaceEthnicity userEthnicity : userEthnicities) {
-                jobEthnicities.add(new Ethnicity(job, userEthnicity));
+                jobEthnicities.add(new Ethnicity(job.getId(), userEthnicity));
             }
-            for (Ethnicity jobEthnicity : jobEthnicities) {
-                em.persist(jobEthnicity);
-            }
+//            for (Ethnicity jobEthnicity : jobEthnicities) {
+//                em.persist(jobEthnicity);
+//            }
 
             job.setEthnicities(jobEthnicities);
             em.getTransaction().commit();
