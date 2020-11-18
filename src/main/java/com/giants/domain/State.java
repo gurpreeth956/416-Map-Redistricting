@@ -9,7 +9,7 @@ import java.util.List;
 public class State {
 
     private int id;
-    private Job job;
+    private int jobId;
     private int population;
     private double compactness;
     private List<District> districts;
@@ -18,8 +18,8 @@ public class State {
 
     }
 
-    public State(Job job, int population, double compactness) {
-        this.job = job;
+    public State(int jobId, int population, double compactness) {
+        this.jobId = jobId;
         this.population = population;
         this.compactness = compactness;
         this.districts = new ArrayList<>();
@@ -36,14 +36,13 @@ public class State {
         this.id = id;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="jobId", referencedColumnName = "id", insertable = false, updatable = false)
-    public Job getJob() {
-        return job;
+    @Column(name = "jobId")
+    public int getJobId() {
+        return jobId;
     }
 
-    public void setJob(Job job) {
-        this.job = job;
+    public void setJobId(int jobId) {
+        this.jobId = jobId;
     }
 
     @Column(name = "population")
@@ -64,7 +63,8 @@ public class State {
         this.compactness = compactness;
     }
 
-    @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "stateId", referencedColumnName = "id")
     public List<District> getDistricts() {
         return districts;
     }
