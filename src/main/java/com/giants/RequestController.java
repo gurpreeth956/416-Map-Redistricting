@@ -93,7 +93,7 @@ public class RequestController {
         }
 
         // This will ret
-        @RequestMapping(value = "/getJobHistory", method = RequestMethod.POST)
+        @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
         public List<Job> getHistory () {
             List<Job> jobList = new ArrayList<Job>();
             for (Integer id : jobs.keySet()) {

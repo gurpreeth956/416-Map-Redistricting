@@ -53,17 +53,13 @@ public class DistrictPrecinct {
     }
 
     private DistrinctPrecinctKey primaryKey;
-    private District district;
-    private Precinct precinct;
 
     public DistrictPrecinct() {
 
     }
 
-    public DistrictPrecinct(District district, Precinct precinct) {
-        this.primaryKey = new DistrinctPrecinctKey(district.getId(), precinct.getId());
-        this.district = district;
-        this.precinct = precinct;
+    public DistrictPrecinct(int districtId, int precinctId) {
+        this.primaryKey = new DistrinctPrecinctKey(districtId, precinctId);
     }
 
     @EmbeddedId
@@ -75,25 +71,4 @@ public class DistrictPrecinct {
         this.primaryKey = primaryKey;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId("districtId")
-    @JoinColumn(name="districtId", referencedColumnName = "id", insertable = false, updatable = false)
-    public District getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(District district) {
-        this.district = district;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId("precinctId")
-    @JoinColumn(name="precinctId", referencedColumnName = "id", insertable = false, updatable = false)
-    public Precinct getPrecinct() {
-        return precinct;
-    }
-
-    public void setPrecinct(Precinct precinct) {
-        this.precinct = precinct;
-    }
 }

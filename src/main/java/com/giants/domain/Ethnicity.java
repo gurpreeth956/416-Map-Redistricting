@@ -59,15 +59,13 @@ public class Ethnicity {
     }
 
     private EthnicityKey primaryKey;
-    private Job job;
 
     public Ethnicity() {
 
     }
 
-    public Ethnicity(Job job, RaceEthnicity ethnicity) {
-        this.primaryKey = new EthnicityKey(job.getId(), ethnicity);
-        this.job = job;
+    public Ethnicity(int jobId, RaceEthnicity ethnicity) {
+        this.primaryKey = new EthnicityKey(jobId, ethnicity);
     }
 
     @EmbeddedId
@@ -79,14 +77,4 @@ public class Ethnicity {
         this.primaryKey = primaryKey;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId("jobId")
-    @JoinColumn(name="jobId", referencedColumnName = "id", insertable = false, updatable = false)
-    public Job getJob() {
-        return job;
-    }
-
-    public void setJob(Job job) {
-        this.job = job;
-    }
 }

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="Jobs")
-@NamedQuery(name="Jobs.getJobs", query="SELECT j FROM Job j")
+@Table(name = "Jobs")
+@NamedQuery(name = "Jobs.getJobs", query = "SELECT j FROM Job j")
 public class Job {
 
     private int id;
@@ -124,7 +124,8 @@ public class Job {
         this.extremeStateId = extremeStateId;
     }
 
-    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "jobId", referencedColumnName = "id")
     public List<Ethnicity> getEthnicities() {
         return ethnicities;
     }
@@ -133,7 +134,8 @@ public class Job {
         this.ethnicities = ethnicities;
     }
 
-    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "jobId", referencedColumnName = "id")
     public List<BoxWhisker> getBoxWhiskers() {
         return boxWhiskers;
     }
@@ -142,7 +144,8 @@ public class Job {
         this.boxWhiskers = boxWhiskers;
     }
 
-    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "jobId", referencedColumnName = "id")
     public List<State> getStates() {
         return states;
     }

@@ -53,17 +53,13 @@ public class PrecinctNeighbor {
     }
 
     private PrecinctNeighborKey primaryKey;
-    private Precinct precinct1;
-    private Precinct precinct2;
 
     public PrecinctNeighbor() {
 
     }
 
-    public PrecinctNeighbor(Precinct precinct1, Precinct precinct2) {
-        this.primaryKey = new PrecinctNeighborKey(precinct1.getId(), precinct2.getId());
-        this.precinct1 = precinct1;
-        this.precinct2 = precinct2;
+    public PrecinctNeighbor(int precinct1Id, int precinct2Id) {
+        this.primaryKey = new PrecinctNeighborKey(precinct1Id, precinct2Id);
     }
 
     @EmbeddedId
@@ -75,25 +71,4 @@ public class PrecinctNeighbor {
         this.primaryKey = primaryKey;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId("id")
-    @JoinColumn(name="id", referencedColumnName = "id", insertable = false, updatable = false)
-    public Precinct getPrecinct1() {
-        return precinct1;
-    }
-
-    public void setPrecinct1(Precinct precinct1) {
-        this.precinct1 = precinct1;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId("precinctId")
-    @JoinColumn(name="precinctId", referencedColumnName = "id", insertable = false, updatable = false)
-    public Precinct getPrecinct2() {
-        return precinct2;
-    }
-
-    public void setPrecinct2(Precinct precinct2) {
-        this.precinct2 = precinct2;
-    }
 }

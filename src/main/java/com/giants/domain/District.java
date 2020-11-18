@@ -9,10 +9,10 @@ import java.util.List;
 public class District {
 
     private int id;
+    private int stateId;
     private int districtNumber;
     private double compactness;
     private int numberOfCounties;
-    private State state;
     private GeoJSON geoJson;
     private List<DistrictPrecinct> districtPrecincts;
 
@@ -20,8 +20,8 @@ public class District {
 
     }
 
-    public District(State state, int districtNumber, double compactness, int numberOfCounties) {
-        this.state = state;
+    public District(int stateId, int districtNumber, double compactness, int numberOfCounties) {
+        this.stateId = stateId;
         this.districtNumber = districtNumber;
         this.compactness = compactness;
         this.numberOfCounties = numberOfCounties;
@@ -38,6 +38,15 @@ public class District {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Column(name = "stateId")
+    public int getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(int stateId) {
+        this.stateId = stateId;
     }
 
     @Column(name = "districtNumber")
@@ -67,18 +76,8 @@ public class District {
         this.numberOfCounties = numberOfCounties;
     }
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name="stateId", referencedColumnName = "id", insertable = false, updatable = false)
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="geoJsonId", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
     public GeoJSON getGeoJson() {
         return geoJson;
     }
@@ -87,7 +86,8 @@ public class District {
         this.geoJson = geoJson;
     }
 
-    @OneToMany(mappedBy = "district", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "districtId", referencedColumnName = "id")
     public List<DistrictPrecinct> getDistrictPrecincts() {
         return districtPrecincts;
     }
@@ -95,4 +95,5 @@ public class District {
     public void setDistrictPrecincts(List<DistrictPrecinct> districtPrecincts) {
         this.districtPrecincts = districtPrecincts;
     }
+
 }

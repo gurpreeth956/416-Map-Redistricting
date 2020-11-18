@@ -71,9 +71,8 @@ public class GeoCoord {
 
     }
 
-    public GeoCoord(GeoJSON geoJson, double latitude, double longitude) {
-        this.geoCoordsKey = new GeoCoordsKey(geoJson.getId(), latitude, longitude);
-        this.geoJson = geoJson;
+    public GeoCoord(int geoJsonId, double latitude, double longitude) {
+        this.geoCoordsKey = new GeoCoordsKey(geoJsonId, latitude, longitude);
     }
 
     @EmbeddedId
@@ -85,14 +84,4 @@ public class GeoCoord {
         this.geoCoordsKey = geoCoordsKey;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @MapsId("geoJsonId")
-    @JoinColumn(name="geoJsonId", referencedColumnName = "id", insertable = false, updatable = false)
-    public GeoJSON getGeoJson() {
-        return geoJson;
-    }
-
-    public void setGeoJson(GeoJSON geoJson) {
-        this.geoJson = geoJson;
-    }
 }

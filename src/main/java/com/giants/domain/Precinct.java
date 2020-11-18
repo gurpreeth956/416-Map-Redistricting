@@ -56,8 +56,8 @@ public class Precinct {
         this.countyId = countyId;
     }
 
-    @OneToOne(optional = false)
-    @JoinColumn(name="geoJsonId", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
     public GeoJSON getGeoJson() {
         return geoJson;
     }
@@ -66,7 +66,8 @@ public class Precinct {
         this.geoJson = geoJson;
     }
 
-    @OneToMany(mappedBy = "precinct1", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "precinctId", referencedColumnName = "id")
     public List<PrecinctNeighbor> getPrecinctNeighbors() {
         return precinctNeighbors;
     }
