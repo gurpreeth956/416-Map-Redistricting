@@ -110,7 +110,7 @@ class HistoryList extends React.Component {
 				{jobs.map((job, index) => {
 					if(job.jobStatus === "WAITING" || job.jobStatus === "RUNNING") {
 						return(
-							<a key = {job.id} class="list-group-item list-group-item-action history-item" data-toggle="modal" href="#history-modal" role="tab">
+							<div key = {job.id} class="list-group-item history-item" role="tab">
 							<div class="d-flex h-100 justify-content-between">
 								<h6>ID# {job.id} </h6>
 								<small> {job.jobStatus} </small>
@@ -119,13 +119,15 @@ class HistoryList extends React.Component {
 							<p>Maps to Generate: {job.numberOfMaps}</p>
 							<p>Compactness: {job.userCompactness}</p>
 							<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
-							<button type="button" class="btn btn-secondary" onClick={(e) => this.cancelJob(index)}>Cancel Job</button>
-							<button type="button" class="btn btn-danger" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
-							</a>
+							<div class= "btn-group">
+							<button type="button" class="btn btn-secondary history-item-button text-nowrap enabled" onClick={(e) => this.cancelJob(index)}>Cancel Job</button>
+							<button type="button" class="btn btn-danger history-item-button text-nowrap enabled" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
+							</div>
+							</div>
 							)
 					} else if(job.jobStatus === "COMPLETED") {
 						return(
-							<a key = {job.id} class="list-group-item list-group-item-action history-item" data-toggle="modal" href="#history-modal" role="tab">
+							<a key = {job.id} class="list-group-item list-group-item-action history-item" data-toggle="collapse" href={"#expand-item-"+job.id} role="tab">
 							<div class="d-flex h-100 justify-content-between">
 								<h6>ID# {job.id} </h6>
 								<small> {job.jobStatus} </small>
@@ -134,13 +136,21 @@ class HistoryList extends React.Component {
 							<p>Maps to Generate: {job.numberOfMaps}</p>
 							<p>Compactness: {job.userCompactness}</p>
 							<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
-							<button type="button" class="btn btn-primary" onClick={() => {loadAverageMap(index); loadExtremeMap(index); }}>Load Job</button>
-							<button type="button" class="btn btn-danger" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
+							<div class= "btn-group">
+								<button type="button" class="btn btn-primary history-item-button text-nowrap" onClick={(e) => {e.stopPropagation(); this.loadAverageMap(index); this.loadExtremeMap(index); }}>Load Job</button>
+								<button type="button" class="btn btn-danger history-item-button text-nowrap" onClick={(e) => {e.stopPropagation(); this.deleteJob(index); }}>Delete Job</button>
+							</div>
+							<div class="collapse multi-collapse" id={"expand-item-"+job.id}>
+								<div class="card card-body">
+            						<h4>Summary</h4>
+            						<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+								</div>
+							</div>
 							</a>
 							)
 					} else {
 						return(
-							<a key = {job.id} class="list-group-item list-group-item-action history-item" data-toggle="modal" href="#history-modal" role="tab">
+							<div key = {job.id} class="list-group-item history-item" role="tab">
 							<div class="d-flex h-100 justify-content-between">
 								<h6>ID# {job.id} </h6>
 								<small> {job.jobStatus} </small>
@@ -149,8 +159,8 @@ class HistoryList extends React.Component {
 							<p>Maps to Generate: {job.numberOfMaps}</p>
 							<p>Compactness: {job.userCompactness}</p>
 							<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
-							<button type="button" class="btn btn-danger" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
-							</a>
+							<button type="button" class="btn btn-danger history-item-button text-nowrap" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
+							</div>
 
 							)
 					}
