@@ -24,7 +24,8 @@ hs_err_pid*
 /build/
 
 # Resources #
-src/main/resources
+src/main/resources/META-INF
+src/main/resources/application.properties
 
 # Ignore Gradle GUI config
 gradle-app.setting

@@ -124,7 +124,7 @@ public class Job {
         this.extremeStateId = extremeStateId;
     }
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "jobId", referencedColumnName = "id")
     public List<Ethnicity> getEthnicities() {
         return ethnicities;
