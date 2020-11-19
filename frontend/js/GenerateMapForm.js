@@ -168,21 +168,23 @@ class GenerateMapForm extends React.Component {
         								</div>
 
         								<label class="font-weight-bold">Compactness Treshold</label>
-        								<div class="form-check form-check-inline">
-        									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="2"
-                          onChange={this.handleCompactnessChange}/>
-        									<label class="form-check-label" for="inlineRadio1">Very Compact</label>
-        								</div>
-        								<div class="form-check form-check-inline">
-        									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1"
-                          onChange={this.handleCompactnessChange}/>
-        									<label class="form-check-label" for="inlineRadio2">Somewhat Compact</label>
-        								</div>
-        								<div class="form-check form-check-inline">
-        									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0"
-                          onChange={this.handleCompactnessChange}/>
-        									<label class="form-check-label" for="inlineRadio3">Not Compact</label>
-        								</div>
+                        <div class="btn-group">
+          								<div class="form-check form-check-inline">
+          									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="2"
+                            onChange={this.handleCompactnessChange}/>
+          									<label class="form-check-label" for="inlineRadio1">Very Compact</label>
+          								</div>
+          								<div class="form-check form-check-inline">
+          									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1"
+                            onChange={this.handleCompactnessChange}/>
+          									<label class="form-check-label" for="inlineRadio2">Somewhat Compact</label>
+          								</div>
+          								<div class="form-check form-check-inline">
+          									<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0"
+                            onChange={this.handleCompactnessChange}/>
+          									<label class="form-check-label" for="inlineRadio3">Not Compact</label>
+          								</div>
+                        </div>
 
         								<button type="button" class="btn btn-primary" data-toggle="modal" href="#generation-modal" onClick={this.handleSubmit}>
                         Generate Maps</button>
