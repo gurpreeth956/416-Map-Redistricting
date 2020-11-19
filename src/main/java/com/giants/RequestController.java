@@ -71,84 +71,84 @@ public class RequestController {
     @RequestMapping(value = "/initializeJob", method = RequestMethod.POST)
     public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam
             double populationDifferenceLimit, @RequestParam List<RaceEthnicity> ethnicities, @RequestParam int numberOfMaps) {
-            Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps);
-            jobs.put(job.getId(), job);
-            jobsToCheckStatus.add(job.getId());
+        Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps);
+        jobs.put(job.getId(), job);
+        jobsToCheckStatus.add(job.getId());
 
-            return job.getId();
-        }
+        return job.getId();
+    }
 
-        // This will cancel the specified job
-        @RequestMapping(value = "/cancelJob", method = RequestMethod.POST)
-        public boolean cancelJob ( @RequestParam int jobId){
-            boolean isCancelled = jobHandler.cancelJobData(jobId);
-            if (isCancelled) {
-                Job job = jobs.get(jobId);
-                job.setJobStatus(JobStatus.CANCELLED);
-                jobs.replace(jobId, job);
-                jobsToCheckStatus.remove(new Integer(jobId));
-            }
-            // Based on cancellation, a modal should popup with details
-            return isCancelled;
-        }
-
-        // This will ret
-        @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
-        public List<Job> getHistory () {
-            List<Job> jobList = new ArrayList<Job>();
-            for (Integer id : jobs.keySet()) {
-                jobList.add(jobs.get(id));
-            }
-            return jobList;
-        }
-
-        // This will delete the specified job
-        @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
-        public boolean deleteJob ( @RequestParam int jobId){
+    // This will cancel the specified job
+    @RequestMapping(value = "/cancelJob", method = RequestMethod.POST)
+    public boolean cancelJob(@RequestParam int jobId) {
+        boolean isCancelled = jobHandler.cancelJobData(jobId);
+        if (isCancelled) {
             Job job = jobs.get(jobId);
-            // If job is running/waiting cancel job
-            if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
-                boolean isCancelled = cancelJob(jobId);
-                if (!isCancelled) {
-                    System.out.println("Issue cancelling job");
-                }
-            }
-            boolean isDeleted = jobHandler.deleteJobData(jobId);
-            if (isDeleted) {
-                jobs.remove(jobId);
-            }
-            return isDeleted;
+            job.setJobStatus(JobStatus.CANCELLED);
+            jobs.replace(jobId, job);
+            jobsToCheckStatus.remove(new Integer(jobId));
         }
+        // Based on cancellation, a modal should popup with details
+        return isCancelled;
+    }
 
-        // Current scheduled for every 5 seconds
-        // fixedDelay is in milliseconds
-        // https://www.baeldung.com/spring-scheduled-tasks
-        @Scheduled(fixedDelay = 5000)
-        public void checkJobStatus () {
-            List<Job> jobsToCheck = new ArrayList<Job>();
-            for (int id : jobsToCheckStatus) {
-                jobsToCheck.add(jobs.get(id));
-            }
+    // This will ret
+    @RequestMapping(value = "/getJobHistory", method = RequestMethod.GET)
+    public List<Job> getHistory() {
+        List<Job> jobList = new ArrayList<Job>();
+        for (Integer id : jobs.keySet()) {
+            jobList.add(jobs.get(id));
+        }
+        return jobList;
+    }
 
-            List<Job> changedJobs = jobHandler.getJobStatusSeaWulf(jobsToCheck);
-            for (Job job : changedJobs) {
-                jobs.replace(job.getId(), job);
-                if (job.getJobStatus() == JobStatus.COMPLETED) {
-                    jobsToCheckStatus.remove(job.getId());
-                }
+    // This will delete the specified job
+    @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
+    public boolean deleteJob(@RequestParam int jobId) {
+        Job job = jobs.get(jobId);
+        // If job is running/waiting cancel job
+        if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
+            boolean isCancelled = cancelJob(jobId);
+            if (!isCancelled) {
+                System.out.println("Issue cancelling job");
             }
         }
+        boolean isDeleted = jobHandler.deleteJobData(jobId);
+        if (isDeleted) {
+            jobs.remove(jobId);
+        }
+        return isDeleted;
+    }
 
-        // Testing/working post method
-        @PostMapping("/hello")
-        public String hello (@RequestParam("id") String string){
-            System.out.println(string);
-            return "MMMM";
+    // Current scheduled for every 5 seconds
+    // fixedDelay is in milliseconds
+    // https://www.baeldung.com/spring-scheduled-tasks
+    @Scheduled(fixedDelay = 5000)
+    public void checkJobStatus() {
+        List<Job> jobsToCheck = new ArrayList<Job>();
+        for (int id : jobsToCheckStatus) {
+            jobsToCheck.add(jobs.get(id));
         }
 
-        // Testing/working post method
-        @GetMapping("/bye")
-        public void bye () {
-            System.out.println("bye");
+        List<Job> changedJobs = jobHandler.getJobStatusSeaWulf(jobsToCheck);
+        for (Job job : changedJobs) {
+            jobs.replace(job.getId(), job);
+            if (job.getJobStatus() == JobStatus.COMPLETED) {
+                jobsToCheckStatus.remove(job.getId());
+            }
         }
     }
+
+    // Testing/working post method
+    @PostMapping("/hello")
+    public String hello(@RequestParam("id") String string) {
+        System.out.println(string);
+        return "MMMM";
+    }
+
+    // Testing/working post method
+    @GetMapping("/bye")
+    public void bye() {
+        System.out.println("bye");
+    }
+}
