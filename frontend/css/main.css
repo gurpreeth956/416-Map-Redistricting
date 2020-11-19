@@ -1,5 +1,5 @@
 body {
-    height: 100%;
+  height: 100%;
 }
 
 .summary-section {
@@ -12,10 +12,10 @@ body {
 }
 
 .plot-section {
-    height: 500px;
-    width: 80%;
-	padding-right: 10%;
-	padding-left: 10%;
+  height: 500px;
+  width: 80%;
+  padding-right: 10%;
+  padding-left: 10%;
 }
 
 .sidebar {
@@ -26,63 +26,69 @@ body {
 
 .sidebar-list-expanded {
 	height: 100%;
-    position: fixed;
-    width: 250px;
-    padding-bottom: 5%;
+  position: fixed;
+  width: 400px;
+  padding-bottom: 5%;
 }
 
 .sidebar-list-collapsed {
 	height: 100%;
-    position: fixed;
-    width: 60px;
+  position: fixed;
+  width: 60px;
 }
 
 #body-row {
-    margin-left:0;
-    margin-right:0;
+  margin-left:0;
+  margin-right:0;
 }
 
 #sidebar-container {
-    min-height: 100vh;
-    background-color: white;
-    padding: 0;
+  min-height: 100vh;
+  background-color: white;
+  padding: 0;
 }
 
 /* Sidebar sizes when expanded and expanded */
 .sidebar-expanded {
-    width: 250px;
+  width: 400px;
 }
 .sidebar-collapsed {
-    width: 60px;
+  width: 60px;
 }
 
 /* Menu item*/
 #sidebar-container .list-group a {
-    height: 50px;
-    color: black;
+  height: 50px;
+  color: black;
 }
 
 /* Submenu item*/
 #sidebar-container .list-group .sidebar-submenu a {
-    height: 100%;
-    padding-left: 30px;
+  height: 100%;
+  padding-left: 30px;
 }
+
+#sidebar-container .list-group .sidebar-submenu .history-item {
+  height: 100%;
+  padding-left: 30px;
+}
+
 .sidebar-submenu {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 
 /* Separators */
 .sidebar-separator-title {
-    /*background-color: #333;*/
-    height: 35px;
+  /*background-color: #333;*/
+  height: 35px;
 }
 .sidebar-separator {
-    /*background-color: #333;*/
-    height: 25px;
+  /*background-color: #333;*/
+  height: 25px;
 }
 .logo-separator {
-    /*background-color: #333;    */
-    height: 60px;
+  /*background-color: #333;    */
+  height: 60px;
 }
 
 /* Closed submenu icon */
@@ -103,7 +109,7 @@ body {
 }
 
 #body-col {
-    background-color: #333;
+  background-color: #333;
 }
 
 .setting-button {
@@ -120,4 +126,11 @@ body {
 
 .history-item p {
 	margin-bottom: 0;
+}
+
+.history-item-button {
+  margin-right: 5%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  font-size:small;
 }
