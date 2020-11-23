@@ -1,6 +1,7 @@
 package com.giants.enums;
 
 public enum RaceEthnicity {
+    WHITE,
     BLACK_OR_AFRICAN_AMERICAN,
     AMERICAN_INDIAN,
     ASIAN,

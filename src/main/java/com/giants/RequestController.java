@@ -53,7 +53,7 @@ public class RequestController {
 
     // This will cancel the specified job
     @RequestMapping(value = "/cancelJob", method = RequestMethod.POST)
-    public boolean cancelJob(@RequestParam int jobId) {
+    public List<Job> cancelJob(@RequestParam int jobId) {
         // Based on cancellation, a modal should popup with details
         return jobHandler.cancelJobData(jobId);
     }
@@ -66,7 +66,7 @@ public class RequestController {
 
     // This will delete the specified job
     @RequestMapping(value = "/deleteJob", method = RequestMethod.POST)
-    public boolean deleteJob(@RequestParam int jobId)  {
+    public List<Job> deleteJob(@RequestParam int jobId)  {
         return jobHandler.deleteJobData(jobId);
     }
 

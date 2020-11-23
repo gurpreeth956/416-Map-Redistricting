@@ -57,96 +57,7 @@
 					</div>
 				</a>
 				<div id='filter-submenu' class="collapse sidebar-submenu card">
-					<article class="card-group-item">
-						<header class="card-header">
-							<h6 class="title">Map Data</h6>
-						</header>
-						<div class="map-filter-content">
-							<div class="card-body">
-								<form>
-									<label class="mr-sm-2" for="inlineFormCustomSelect">Maps</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="" checked>
-										<span class="form-check-label">
-											Current Map
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Average Map
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Extreme Map
-										</span>
-									</label>
-								</form>
-
-								<form>
-									<label class="mr-sm-2" for="inlineFormCustomSelect">Race/Ethnicity</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Black/African American
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Hispanic or Latino
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Asian
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											White
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											American Indian or Alaskan Native
-										</span>
-									</label>
-									<label class="form-check">
-										<input class="form-check-input" type="checkbox" value="">
-										<span class="form-check-label">
-											Native Hawaiian or Other Pacfic Islander
-										</span>
-									</label>
-								</form>
-
-							</div>
-						</div>
-						<div class="generated-map-filter-content">
-							<header class="card-header">
-								<h6 class="title">Boundary Filter</h6>
-							</header>
-							<div class="card-body">
-								<label class="form-check">
-									<input class="form-check-input" type="checkbox" value="">
-									<span class="form-check-label">
-										District Boundaries
-									</span>
-								</label>
-								<label class="form-check">
-									<input class="form-check-input" type="checkbox" value="">
-									<span class="form-check-label">
-										Precinct Boundaries
-									</span>
-								</label>
-							</div>
-						</div>
-					</article>
+					<div id="Filters"></div>
 				</div>
 				<a href="#history-submenu" data-toggle="collapse" aria-expanded="false" class="bg-light list-group-item list-group-item-action flex-column align-items-start" id="history-sidebar-button">
 					<div class="d-flex w-100 justify-content-start align-items-center">
@@ -304,50 +215,6 @@
                 	</div>
                 </div>
 
-                <!-- Modal For OG History -->
-                <div class="modal fade" id="old-history-modal" tabindex="-1" role="dialog" aria-labelledby="historyTitle" aria-hidden="true">
-                	<div class="modal-dialog" role="document">
-                		<div class="modal-content">
-                			<div class="modal-header">
-                				<h5 class="modal-title" id="historyTitle">Past Generated Maps</h5>
-                				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                					<span aria-hidden="true">&times;</span>
-                				</button>
-                			</div>
-                			<div class="modal-body">
-                				<div class="list-group">
-                					<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                						<div class="d-flex w-100 justify-content-between">
-                							<h5 class="mb-1">Example Generation Data</h5>
-                							<small>Example Date</small>
-                						</div>
-                						<p class="mb-1">Summary data about generated map</p>
-                					</a>
-                					<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                						<div class="d-flex w-100 justify-content-between">
-                							<h5 class="mb-1">Example Generation Data</h5>
-                							<small>Example Date</small>
-                						</div>
-                						<p class="mb-1">Summary data about generated map</p>
-                					</a>
-                					<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                						<div class="d-flex w-100 justify-content-between">
-                							<h5 class="mb-1">Example Generation Data</h5>
-                							<small>Example Date</small>
-                						</div>
-                						<p class="mb-1">Summary data about generated map</p>
-                					</a>
-                				</div>
-                			</div>
-                			<div class="modal-footer">
-                				<button type="button" class="btn btn-primary">Load Map</button>
-                				<button type="button" class="btn btn-secondary">Cancel Job</button>
-                				<button type="button" class="btn btn-danger">Delete Job</button>
-                			</div>
-                		</div>
-                	</div>
-                </div>
-
                 <!-- Modal For New History -->
                 <!-- <div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="historyTitle" aria-hidden="true">
                 	<div class="modal-dialog modal-lg" role="document">
@@ -468,6 +335,7 @@
 			<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 			<script type="text/babel" src="./js/GenerateMapForm.js"></script>
+			<script type="text/babel" src="./js/Filters.js"></script>
 			<script type="text/babel" src="./js/HistoryList.js"></script>
 	</body>
 	</html>
