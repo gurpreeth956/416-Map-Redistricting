@@ -70,13 +70,9 @@ class HistoryList extends React.Component {
 	      url:url,
 	      type:"POST",
 	      data: data,
-	      success: () => {
+	      success: (data) => {
 	      	this.setState({
-		      jobs: [
-		         ...this.state.jobs.slice(0,index),
-		         Object.assign({}, this.state.jobs[index], {jobStatus: "CANCELLED"}),
-		         ...this.state.jobs.slice(index+1)
-		      ]
+	      		jobs: data
 		    });
 	      }
 	    });
@@ -91,12 +87,9 @@ class HistoryList extends React.Component {
 	      url:url,
 	      type:"POST",
 	      data: data,
-	      success: () => {
+	      success: (data) => {
 	      	this.setState({
-	      		jobs:[
-			      ...this.state.jobs.slice(0, index),
-			      ...this.state.jobs.slice(index+1)
-			    ]
+	      		jobs: data
 		    });
 	      }
 	    });
@@ -108,24 +101,7 @@ class HistoryList extends React.Component {
 		return(
 			<div class="list-group" id="list-tab" role="tablist">
 				{jobs.map((job, index) => {
-					if(job.jobStatus === "WAITING" || job.jobStatus === "RUNNING") {
-						return(
-							<div key = {job.id} class="list-group-item history-item" role="tab">
-							<div class="d-flex h-100 justify-content-between">
-								<h6>ID# {job.id} </h6>
-								<small> {job.jobStatus} </small>
-							</div>
-							<p>State: {job.abbreviation}</p>
-							<p>Maps to Generate: {job.numberOfMaps}</p>
-							<p>Compactness: {job.userCompactness}</p>
-							<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
-							<div class= "btn-group">
-							<button type="button" class="btn btn-secondary history-item-button text-nowrap enabled" onClick={(e) => this.cancelJob(index)}>Cancel Job</button>
-							<button type="button" class="btn btn-danger history-item-button text-nowrap enabled" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
-							</div>
-							</div>
-							)
-					} else if(job.jobStatus === "COMPLETED") {
+					if(job.jobStatus === "COMPLETED") {
 						return(
 							<a key = {job.id} class="list-group-item list-group-item-action history-item" data-toggle="collapse" href={"#expand-item-"+job.id} role="tab">
 							<div class="d-flex h-100 justify-content-between">
@@ -159,9 +135,14 @@ class HistoryList extends React.Component {
 							<p>Maps to Generate: {job.numberOfMaps}</p>
 							<p>Compactness: {job.userCompactness}</p>
 							<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
-							<button type="button" class="btn btn-danger history-item-button text-nowrap" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
+							<div class= "btn-group">
+							{job.jobStatus === "WAITING" || job.jobStatus === "RUNNING" ? 
+								<button type="button" class="btn btn-secondary history-item-button text-nowrap enabled" onClick={(e) => this.cancelJob(index)}>Cancel Job</button> :
+								null
+							}
+							<button type="button" class="btn btn-danger history-item-button text-nowrap enabled" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
 							</div>
-
+							</div>
 							)
 					}
 					

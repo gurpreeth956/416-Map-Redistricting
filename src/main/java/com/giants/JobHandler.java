@@ -136,7 +136,7 @@ public class JobHandler {
      * @param jobId - Id of specified job
      * @return Boolean for success
      */
-    public boolean cancelJobData(int jobId) {
+    public List<Job> cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
 //        if (job == null || job.getOnSeaWulf() == -1) return false;
         String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
@@ -144,7 +144,11 @@ public class JobHandler {
         String processOutput = createScript(command);
         jobs.replace(jobId, job);
         jobsToCheckStatus.remove(new Integer(jobId));
-        return changeJobStatus(jobId, JobStatus.CANCELLED);
+        List<Job> jobList = new ArrayList<Job>();
+        for (Integer id : jobs.keySet()) {
+            jobList.add(jobs.get(id));
+        }
+        return jobList;
     }
 
     /**
@@ -155,15 +159,11 @@ public class JobHandler {
      * @param jobId - Id of specified job
      * @return Boolean for success
      */
-    public boolean deleteJobData(int jobId) {
+    public List<Job> deleteJobData(int jobId) {
         Job job = jobs.get(jobId);
         // If job is running/waiting cancel job
         if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
-            boolean isCancelled = cancelJobData(jobId);
-            if (!isCancelled) {
-                System.out.println("Issue cancelling job");
-                return false;
-            }
+            cancelJobData(jobId);
         }
         EntityManager em = JPAUtility.getEntityManager();
         try {
@@ -183,10 +183,13 @@ public class JobHandler {
             // Return some kind of error here
             System.out.println(e.getMessage());
             em.getTransaction().rollback();
-            return false;
         }
         jobs.remove(jobId);
-        return true;
+        List<Job> jobList = new ArrayList<Job>();
+        for (Integer id : jobs.keySet()) {
+            jobList.add(jobs.get(id));
+        }
+        return jobList;
     }
 
     /**
