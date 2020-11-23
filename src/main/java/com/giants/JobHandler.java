@@ -138,7 +138,9 @@ public class JobHandler {
      */
     public boolean cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
-//        if (job == null || job.getOnSeaWulf() == -1) return false;
+        System.out.println(job.getJobStatus());
+        // The below line is commented out for testing
+        // if (job.getOnSeaWulf() == -1 || job.getJobStatus() == JobStatus.COMPLETED || job.getJobStatus() == JobStatus.CANCELLED) return false;
         String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                 "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
         String processOutput = createScript(command);
@@ -266,6 +268,11 @@ public class JobHandler {
         return geoJson;
     }
 
+    /**
+     * This method gets all the jobs from the jobs table.
+     *
+     * @return The list of jobs
+     */
     public List<Job> getJobHistory() {
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
@@ -274,6 +281,13 @@ public class JobHandler {
         return jobList;
     }
 
+    /**
+     * This method checks the status of jobs currently pending or running on SeaWulf.
+     * If the job is no longer pending, it is switched from WAITING to RUNNING. If it
+     * is not longer running it is switched from RUNNING to COMPLETED. It calls the
+     * method calculateEndData() if the job has switched to completed and removes the
+     * completed jobs from jobsToCheckStatus.
+     */
     public void getJobStatusSeaWulf() {
         // For each job in jobs that is waiting or running check SeaWulf
         List<Job> jobsToCheck = new ArrayList<Job>();
@@ -302,6 +316,9 @@ public class JobHandler {
                 String processOutput = createScript(command);
                 if (processOutput != null) {
                     changeJobStatus(job.getId(), JobStatus.COMPLETED);
+
+
+                    // DO THIS IN A SEPARATE METHOD !!! (make sure to update db)
                     // Send slurm script to calculate data (avg, extreme, boxwhiskers
                     String filePath = job.retrieveSeaWulfData();
                     // Methods below here return boolean not sure if check is necessary
