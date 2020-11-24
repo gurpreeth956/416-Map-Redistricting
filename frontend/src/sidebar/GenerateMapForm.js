@@ -1,5 +1,6 @@
-'use strict';
-const e = React.createElement;
+import React from 'react';
+import $ from 'jquery';
+window.$ = $;
 
 class GenerateMapForm extends React.Component {
   constructor(props) {
@@ -93,6 +94,10 @@ class GenerateMapForm extends React.Component {
       url:url,
       type:"POST",
       data: data,
+      success: (job) => {
+        // addJob(job)
+        console.log("Job Created Id: " + job.jobId)
+      }
     });
 	}
 
@@ -192,5 +197,7 @@ class GenerateMapForm extends React.Component {
         						</div>  )};
 }
 
-const domContainer = document.querySelector('#GenerateMapForm');
-ReactDOM.render(e(GenerateMapForm), domContainer);
+export default GenerateMapForm;
+
+// const domContainer = document.querySelector('#GenerateMapForm');
+// ReactDOM.render(e(GenerateMapForm), domContainer);

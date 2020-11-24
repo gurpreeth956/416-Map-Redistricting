@@ -1,5 +1,6 @@
-'use strict';
-const e = React.createElement;
+import React from 'react';
+import $ from 'jquery';
+window.$ = $;
 
 class Filters extends React.Component {
 
@@ -131,5 +132,4 @@ class Filters extends React.Component {
 	}
 }
 
-const domContainer = document.querySelector('#Filters');
-ReactDOM.render(e(Filters), domContainer);
+export default Filters;

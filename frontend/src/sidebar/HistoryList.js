@@ -1,5 +1,6 @@
-'use strict';
-const e = React.createElement;
+import React from 'react';
+import $ from 'jquery';
+window.$ = $;
 
 class HistoryList extends React.Component {
 
@@ -7,6 +8,7 @@ class HistoryList extends React.Component {
 		super(props);
 		this.cancelJob = this.cancelJob.bind(this);
 		this.deleteJob = this.deleteJob.bind(this);
+		// addJob = addJob.bind(this)
 		this.state = {
 			jobs: []
 		};
@@ -95,6 +97,12 @@ class HistoryList extends React.Component {
 	    });
 	}
 
+	addJob(job) {
+		this.setState(prevState => ({
+			jobs: [...prevState.jobs, job]
+		  }));
+	}
+
 	render() {
 		const {jobs} = this.state;
 		console.log(this.state);
@@ -152,5 +160,4 @@ class HistoryList extends React.Component {
 	}
 }
 
-const domContainer = document.querySelector('#HistoryList');
-ReactDOM.render(e(HistoryList), domContainer);
+export default HistoryList;
