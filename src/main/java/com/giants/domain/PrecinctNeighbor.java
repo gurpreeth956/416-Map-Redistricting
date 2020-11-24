@@ -14,6 +14,10 @@ public class PrecinctNeighbor {
         private int id;
         private int precinctId;
 
+        public PrecinctNeighborKey() {
+
+        }
+
         public PrecinctNeighborKey(int id, int precinctId) {
             this.id = id;
             this.precinctId = precinctId;

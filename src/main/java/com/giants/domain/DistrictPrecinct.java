@@ -14,6 +14,10 @@ public class DistrictPrecinct {
         private int districtId;
         private int precinctId;
 
+        public DistrinctPrecinctKey() {
+
+        }
+
         public DistrinctPrecinctKey(int districtId, int precinctId) {
             this.districtId = districtId;
             this.precinctId = precinctId;

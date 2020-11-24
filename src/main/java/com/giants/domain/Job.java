@@ -19,8 +19,8 @@ public class Job {
     private double populationDifferenceLimit;
     private int numberOfMaps;
     private int onSeaWulf;
-    private int averageStateId;
-    private int extremeStateId;
+    private Integer averageStateId;
+    private Integer extremeStateId;
     private List<State> states;
     private List<Ethnicity> ethnicities;
     private List<BoxWhisker> boxWhiskers;
@@ -107,20 +107,20 @@ public class Job {
     }
 
     @Column(name = "averageStateId")
-    public int getAverageStateId() {
+    public Integer getAverageStateId() {
         return averageStateId;
     }
 
-    public void setAverageStateId(int averageStateId) {
+    public void setAverageStateId(Integer averageStateId) {
         this.averageStateId = averageStateId;
     }
 
     @Column(name = "extremeStateId")
-    public int getExtremeStateId() {
+    public Integer getExtremeStateId() {
         return extremeStateId;
     }
 
-    public void setExtremeStateId(int extremeStateId) {
+    public void setExtremeStateId(Integer extremeStateId) {
         this.extremeStateId = extremeStateId;
     }
 
