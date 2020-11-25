@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+  <script src="/js/leaflet-0.7.2/leaflet.ajax.min.js"></script>
+  <link href="./css/main.css" rel="stylesheet">
+  <link href="./css/map.css" rel="stylesheet">
+  <script src="./js/main.js"></script>
+</head>
+
+<body class="vsc-initialized">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <a class="navbar-brand" href="#">RTG Redistrictor</a>
+  </nav>
+  <div class=row id="body-row">
+    <div id=sidebar></div>
+    <div class="col bg-white" id="body-col">
+      <div id="mapid"></div>
+      <script src="./js/us-states.js"></script>
+      <script src="./js/districts.js"></script>
+      <script>
+        // creates map
+        var map = L.map('mapid').setView([42.0, -96], 5);
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+          attribution: '...',
+          maxZoom: 5,
+          minZoom: 5,
+          id: 'mapbox/light-v9',
+          tileSize: 512,
+          zoomOffset: -1,
+          accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
+        }).addTo(map);
+        setTimeout(function () { map.invalidateSize() }, 400);
+        map.dragging.disable(); //no map dragging
+
+        //Districts
+        function districtHighlight(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
+          layer.setStyle({
+            weight: 3,
+            color: '#1',
+            dashArray: '',
+            fillOpacity: 0.7
+          });
+          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+          }
+        }
+
+        function districtBorder(feature) {
+          return {
+            weight: 2,
+            color: 'black'
+          };
+        }
+        function resetDistrictHighlight(e) { // listener for when mouse stops hovering state
+          geojson.resetStyle(e.target);
+        }
+        function onEachDistrict(feature, layer) { //functions on states based on mouse actions
+          layer.on({
+            mouseover: highlightDistrict,
+            mouseout: resetDistrictHighlight
+          });
+        }
+        var districts;
+        districts = L.geoJson(allDistricts, { style: districtBorder }).addTo(map);
+
+        function getColor(d) { //Set color of our three states
+          if (d === "California" || d === "Louisiana" || d === "Pennsylvania") {
+            return '#E31A1C';
+          }
+        }
+        function style(feature) { //styles all of the US states
+          return {
+            fillColor: getColor(feature.properties.name),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+          };
+        }
+        function highlightFeature(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
+          if (e.target.feature.properties.name === "California" ||
+            e.target.feature.properties.name === "Louisiana" ||
+            e.target.feature.properties.name === "Pennsylvania") {
+            var layer = e.target;
+            layer.setStyle({
+              weight: 5,
+              color: '#666',
+              dashArray: '',
+              fillOpacity: 0.7
+            });
+            info.update(layer.feature.properties);
+
+          }
+          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+          }
+        }
+        function resetHighlight(e) { // listener for when mouse stops hovering state
+          info.update();
+          geojson.resetStyle(e.target);
+        }
+        function zoomToFeature(e) { //depending on state zooms in and changes zoom settings
+          if (e.target.feature.properties.name === "California") {
+            map.setMaxZoom(6.5);
+            map.setMinZoom(6.5);
+            map.flyToBounds(e.target.getBounds());
+          }
+          else if (e.target.feature.properties.name === "Louisiana" ||
+            e.target.feature.properties.name === "Pennsylvania") {
+            map.setMaxZoom(8);
+            map.setMinZoom(8);
+            map.flyToBounds(e.target.getBounds());
+          }
+          else { // if you click any of the other states than you are sent back to the starting position
+            map.setMaxZoom(5);
+            map.setMinZoom(5);
+            map.setView([42.0, -96], 5);
+          }
+        }
+        function onEachFeature(feature, layer) { //functions on states based on mouse actions
+          layer.on({
+            mouseover: highlightFeature,
+            mouseout: resetHighlight,
+            click: zoomToFeature
+          });
+        }
+        var info = L.control();
+        info.onAdd = function (map) {
+          this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+          this.update();
+          return this._div;
+        };
+        // method that we will use to update the control based on feature properties passed
+        info.update = function (props) {
+          this._div.innerHTML = '<h4>US Place Holder</h4>' + (props ?
+            '<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
+            : 'Hover over a state');
+        };
+        info.addTo(map);
+        var geojson;
+        geojson = L.geoJson(statesData, { style: style, onEachFeature: onEachFeature }).addTo(map); //loads geojson file with functions provided
+      </script>
+      <div id="cy">
+        <div id="summary"
+          class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="summary-section">
+            <h1 style="padding-bottom: 50px; padding-top: 20px;">Summary</h1>
+            <p class="summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+              qui officia deserunt mollit anim id est laborum.</p>
+            <p class="summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+              qui officia deserunt mollit anim id est laborum.</p>
+            <p class="summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+              qui officia deserunt mollit anim id est laborum.</p>
+            <p class="summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+              laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit
+              esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+              qui officia deserunt mollit anim id est laborum.</p>
+            <div class="plot-section" id="chartContainer1">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal For New History -->
+      <!-- <div class="modal fade" id="history-modal" tabindex="-1" role="dialog" aria-labelledby="historyTitle" aria-hidden="true">
+                	<div class="modal-dialog modal-lg" role="document">
+                		<div class="modal-content">
+                			<div class="modal-header">
+                				<h5 class="modal-title" id="historyTitle">Job ID# 1</h5>
+                				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                					<span aria-hidden="true">&times;</span>
+                				</button>
+                			</div>
+                			<div class="modal-body">
+                				<div class="summary-section">
+                					<h1 style = "padding-bottom: 50px; padding-top: 20px;">Summary</h1>
+                					<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                					<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                					<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                					<p class = "summary-paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                					<div class= "plot-section" id="chartContainer2">
+
+                					</div>
+                				</div>
+                			</div>
+                			<div class="modal-footer">
+                				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                			</div>
+                		</div>
+                	</div>
+
+                </div> -->
+      <!--
+                <div class="modal fade" id="generation-modal" tabindex="-1" role="dialog" aria-labelledby="generationTitle" aria-hidden="true">
+                	<div class="modal-dialog modal-sm" role="document">
+                		<div class="modal-content">
+                			<div class="modal-header">
+                				<h5 class="modal-title" id="generationTitle">Job Successfully Created</h5>
+                			</div>
+                			<div class="modal-body history-item">
+                				<h5>Job Info</h5>
+                				<hr>
+                				<p>Job ID#: 1</p>
+                				<p>State: Lousiana</p>
+                				<p>Maps to Generate: 5000</p>
+                				<p>Number of Districts: 6</p>
+                				<p>Ethnicities: Black/African American, Asian</p>
+                				<p>Compactness: Somewhat</p>
+                				<p>Population Limit Difference: 500</p>
+                			</div>
+                			<div class="modal-footer">
+                				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                			</div>
+                		</div>
+                	</div>
+
+                </div>-->
+    </div>
+  </div>
+  <script>
+    window.onload = function () {
+      // This function is for the box and whiskers plot
+      var chart1 = new CanvasJS.Chart("chartContainer1", {
+        animationEnabled: true, // Animation when page is loaded
+        title: { // Title of the plot
+          text: "BVAP"
+        },
+        axisY: { // Y axis details
+          title: "BVAP (in %)",
+          interval: 10
+        },
+        data: [{
+          type: "boxAndWhisker",
+          upperBoxColor: "#FFC28D",
+          lowerBoxColor: "#9ECCB8",
+          color: "black",
+          dataPoints: [ // This is the data (y: [Min, Lower Q, High Q, Max, Median])
+            { label: "District 1", y: [15, 20, 25, 30, 22.5] },
+            { label: "District 2", y: [20, 25, 50, 52.5, 37.5] },
+            { label: "District 3", y: [15, 20, 25, 30, 22.5] },
+            { label: "District 4", y: [55, 70, 85, 90, 82.5] },
+            { label: "District 5", y: [15, 30, 35, 50, 32.5] },
+            { label: "District 6", y: [15, 20, 25, 40, 22.5] }
+          ]
+        }]
+      });
+      // This function is for the box and whiskers plot
+      var chart2 = new CanvasJS.Chart("chartContainer2", {
+        animationEnabled: true, // Animation when page is loaded
+        title: { // Title of the plot
+          text: "BVAP"
+        },
+        axisY: { // Y axis details
+          title: "BVAP (in %)",
+          interval: 10
+        },
+        data: [{
+          type: "boxAndWhisker",
+          upperBoxColor: "#FFC28D",
+          lowerBoxColor: "#9ECCB8",
+          color: "black",
+          dataPoints: [ // This is the data (y: [Min, Lower Q, High Q, Max, Median])
+            { label: "District 1", y: [15, 20, 25, 30, 22.5] },
+            { label: "District 2", y: [20, 25, 50, 52.5, 37.5] },
+            { label: "District 3", y: [15, 20, 25, 30, 22.5] },
+            { label: "District 4", y: [55, 70, 85, 90, 82.5] },
+            { label: "District 5", y: [15, 30, 35, 50, 32.5] },
+            { label: "District 6", y: [15, 20, 25, 40, 22.5] }
+          ]
+        }]
+      });
+      chart1.render();
+      chart2.render();
+    }
+  </script>
+</body>
+
+</html>

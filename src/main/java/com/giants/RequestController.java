@@ -45,10 +45,10 @@ public class RequestController {
 
     // This will be called when a the user creates a job
     @RequestMapping(value = "/initializeJob", method = RequestMethod.POST)
-    public int submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam
+    public Job submitJob(@RequestParam StateAbbreviation stateName, @RequestParam int userCompactness, @RequestParam
             double populationDifferenceLimit, @RequestParam List<RaceEthnicity> ethnicities, @RequestParam int numberOfMaps) {
         Job job = jobHandler.createJob(stateName, userCompactness, populationDifferenceLimit, ethnicities, numberOfMaps);
-        return job.getId();
+        return job;
     }
 
     // This will cancel the specified job
