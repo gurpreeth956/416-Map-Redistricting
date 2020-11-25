@@ -1,26 +1,33 @@
-'use strict';
-const e = React.createElement;
+import React from 'react';
+import $ from 'jquery';
+window.$ = $;
 
 class Filters extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {
-			job_loaded: false,
-			white: true,
-			black: false,
-			asian: false,
-			hispanic: false,
-			native_american: false,
-			hawaiian: false
-		};
+	}
+
+	getEthnicities(job) {
+		var ethnicities = [];
+		var i = 0;
+		if(job === null) return;
+		while(i < job.ethnicities.length) {
+			ethnicities.push(job.ethnicities[i].primaryKey.ethnicity);
+			i++;
+		}
+		return ethnicities;
 	}
 
 	render() {
-		const {job_loaded, white, black, asian, hispanic, native_american, hawaiian} = this.state;
-
+		const loaded_job = this.props.loadedJob;
+		console.log(this.props.loadedJob);
+		var ethnicities = [];
 		var map_filters;
-		if(job_loaded) {
+
+		if(loaded_job !== null) {
+			ethnicities = this.getEthnicities(loaded_job);
+			console.log(ethnicities);
 			map_filters = 
 			<form>
 				<label class="mr-sm-2" for="inlineFormCustomSelect">Maps</label>
@@ -66,39 +73,39 @@ class Filters extends React.Component {
 						{map_filters}
 
 						<form>
-							{white || black || asian || hispanic || native_american || hawaiian ? 
+							{ethnicities.length !== 0 ? 
 							<label class="mr-sm-2" for="inlineFormCustomSelect">Race/Ethnicity</label> : null }
-							{white ? (<label class="form-check">
+							{ethnicities.includes("WHTIE") ? (<label class="form-check">
 									<input class="form-check-input" type="checkbox" value=""/>
 									<span class="form-check-label">
 										White
 									</span>
 								</label>) : null}
-							{black ? (<label class="form-check">
+							{ethnicities.includes("BLACK_OR_AFRICAN_AMERICAN") ? (<label class="form-check">
 									<input class="form-check-input" type="checkbox" value=""/>
 									<span class="form-check-label">
 										Black/African American
 									</span>
 								</label>) : null}
-							{asian ? (<label class="form-check">
+							{ethnicities.includes("ASIAN") ? (<label class="form-check">
 									<input class="form-check-input" type="checkbox" value=""/>
 									<span class="form-check-label">
 										Asian
 									</span>
 								</label>) : null}
-							{hispanic ? (<label class="form-check">
+							{ethnicities.includes("HISPANIC_OR_LATINO") ? (<label class="form-check">
 									<input class="form-check-input" type="checkbox" value=""/>
 									<span class="form-check-label">
 										Hispanic or Latino
 									</span>
 								</label>) : null}
-							{native_american ? (<label class="form-check">
+							{ethnicities.includes("AMERICAN_INDIAN") ? (<label class="form-check">
 									<input class="form-check-input" type="checkbox" value=""/>
 									<span class="form-check-label">
 										American Indian or Alaskan Native
 									</span>
 								</label>) : null}
-							{hawaiian ? (<label class="form-check">
+							{ethnicities.includes("NATIVE_HAWAIIAN_AND_OTHER_PACIFIC") ? (<label class="form-check">
 									<input class="form-check-input" type="checkbox" value=""/>
 									<span class="form-check-label">
 										Native Hawaiian or Other Pacfic Islander
@@ -131,5 +138,4 @@ class Filters extends React.Component {
 	}
 }
 
-const domContainer = document.querySelector('#Filters');
-ReactDOM.render(e(Filters), domContainer);
+export default Filters;

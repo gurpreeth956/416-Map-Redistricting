@@ -1,0 +1,8 @@
+{
+  "short_name": "RTG Redistricting",
+  "name": "Project for CSE 416",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
