@@ -1,4 +1,3 @@
-
 $('#body-row .collapse').collapse('hide'); 
 
 $('#collapse-icon').addClass('fa-angle-double-left'); 

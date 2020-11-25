@@ -6,109 +6,13 @@ class HistoryList extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.cancelJob = this.cancelJob.bind(this);
-		this.deleteJob = this.deleteJob.bind(this);
-		// addJob = addJob.bind(this)
-		this.state = {
-			jobs: []
-		};
-	}
-
-	componentDidMount() {
-		fetch("http://localhost:8080/getJobHistory", {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				"Access-Control-Allow-Origin": "*"
-			}
-		})
-		.then(response  => response.json())
-		.then(
-			(result) => {
-				this.setState({
-					jobs: result
-				});
-				
-			}
-		)
-	}
-
-	loadAverageMap(index) {
-		var job = this.state.jobs[index];
-		console.log(job);
-		const data = {stateId : job.averageStateId}
-		const url = 'http://localhost:8080/getDistricting'
-	    $.ajax({
-	      url:url,
-	      type:"POST",
-	      data: data,
-	      success: () => {
-	      	// Load in geojson
-	      }
-	    });
-	}
-
-	loadExtremeMap(index) {
-		var job = this.state.jobs[index];
-		console.log(job);
-		const data = {stateId : job.extremeStateId}
-		const url = 'http://localhost:8080/getDistricting'
-	    $.ajax({
-	      url:url,
-	      type:"POST",
-	      data: data,
-	      success: () => {
-	      	// Load in geojson
-	      }
-	    });
-	}
-
-	cancelJob(index) {
-		var job = this.state.jobs[index];
-		console.log(job);
-		const data = {jobId : job.id}
-		const url = 'http://localhost:8080/cancelJob'
-	    $.ajax({
-	      url:url,
-	      type:"POST",
-	      data: data,
-	      success: (data) => {
-	      	this.setState({
-	      		jobs: data
-		    });
-	      }
-	    });
-	}
-
-	deleteJob(index) {
-		var job = this.state.jobs[index];
-		console.log(job);
-		const data = {jobId : job.id}
-		const url = 'http://localhost:8080/deleteJob'
-	    $.ajax({
-	      url:url,
-	      type:"POST",
-	      data: data,
-	      success: (data) => {
-	      	this.setState({
-	      		jobs: data
-		    });
-	      }
-	    });
-	}
-
-	addJob(job) {
-		this.setState(prevState => ({
-			jobs: [...prevState.jobs, job]
-		  }));
 	}
 
 	render() {
-		const {jobs} = this.state;
-		console.log(this.state);
+		const jobs = this.props.jobs;
 		return(
 			<div class="list-group" id="list-tab" role="tablist">
-				{jobs.map((job, index) => {
+				{jobs && jobs.map((job, index) => {
 					if(job.jobStatus === "COMPLETED") {
 						return(
 							<a key = {job.id} class="list-group-item list-group-item-action history-item" data-toggle="collapse" href={"#expand-item-"+job.id} role="tab">
@@ -121,8 +25,8 @@ class HistoryList extends React.Component {
 							<p>Compactness: {job.userCompactness}</p>
 							<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
 							<div class= "btn-group">
-								<button type="button" class="btn btn-primary history-item-button text-nowrap" onClick={(e) => {e.stopPropagation(); this.loadAverageMap(index); this.loadExtremeMap(index); }}>Load Job</button>
-								<button type="button" class="btn btn-danger history-item-button text-nowrap" onClick={(e) => {e.stopPropagation(); this.deleteJob(index); }}>Delete Job</button>
+								<button type="button" class="btn btn-primary history-item-button text-nowrap" onClick={(e) => {e.stopPropagation(); this.props.loadJob(index); }}>Load Job</button>
+								<button type="button" class="btn btn-danger history-item-button text-nowrap" onClick={(e) => {e.stopPropagation(); this.props.deleteJob(index); }}>Delete Job</button>
 							</div>
 							<div class="collapse multi-collapse" id={"expand-item-"+job.id}>
 								<div class="card card-body">
@@ -144,11 +48,14 @@ class HistoryList extends React.Component {
 							<p>Compactness: {job.userCompactness}</p>
 							<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
 							<div class= "btn-group">
-							{job.jobStatus === "WAITING" || job.jobStatus === "RUNNING" ? 
-								<button type="button" class="btn btn-secondary history-item-button text-nowrap enabled" onClick={(e) => this.cancelJob(index)}>Cancel Job</button> :
+							{job.jobStatus === "WAITING" || job.jobStatus === "RUNNING" && job.onSeaWulf !== -1 ? 
+								<button type="button" class="btn btn-secondary history-item-button text-nowrap enabled" onClick={(e) => this.props.cancelJob(index)}>Cancel Job</button> :
 								null
 							}
-							<button type="button" class="btn btn-danger history-item-button text-nowrap enabled" onClick={(e) => this.deleteJob(index)}>Delete Job</button>
+							{job.jobStatus === "CANCELLED" || job.onSeaWulf !== -1 ?
+								<button type="button" class="btn btn-danger history-item-button text-nowrap enabled" onClick={(e) => this.props.deleteJob(index)}>Delete Job</button> :
+								null
+							}
 							</div>
 							</div>
 							)
