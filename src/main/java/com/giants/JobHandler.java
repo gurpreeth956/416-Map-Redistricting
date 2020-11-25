@@ -134,13 +134,16 @@ public class JobHandler {
      * and in the jobs table and in the jobsToCheckStatus list.
      *
      * @param jobId - Id of specified job
-     * @return Boolean for success
+     * @return List of jobs
      */
     public List<Job> cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
+//        // Make sure valid jobId (just in case)
+//        if (job == null || job.getOnSeaWulf() == -1 || job.getJobStatus() == JobStatus.COMPLETED ||
+//                job.getJobStatus() == JobStatus.CANCELLED) {
+//            return null;
+//        }
         System.out.println(job.getJobStatus());
-        // The below line is commented out for testing
-        // if (job.getOnSeaWulf() == -1 || job.getJobStatus() == JobStatus.COMPLETED || job.getJobStatus() == JobStatus.CANCELLED) return false;
         String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                 "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
         String processOutput = createScript(command);
@@ -159,7 +162,7 @@ public class JobHandler {
      * before deleting.
      *
      * @param jobId - Id of specified job
-     * @return Boolean for success
+     * @return List of jobs
      */
     public List<Job> deleteJobData(int jobId) {
         Job job = jobs.get(jobId);
@@ -247,6 +250,10 @@ public class JobHandler {
 
     public String loadPrecinctData(StateAbbreviation stateAbbreviation) {
         List<Precinct> precincts = new ArrayList<Precinct>();
+
+
+        // STORED IN RESOURCES FOLDER (no need for entity manager)
+
 
         // Get State from entityManager
 //        EntityManager em = JPAUtility.getEntityManager();

@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "Precincts")
 public class Precinct {
 
-    private int id;
+    private String id;
     private StateAbbreviation abbreviation;
     private int countyId;
     private GeoJSON geoJson;
@@ -21,7 +21,7 @@ public class Precinct {
 
     }
 
-    public Precinct(int id, StateAbbreviation abbreviation, int countyId) {
+    public Precinct(String id, StateAbbreviation abbreviation, int countyId) {
         this.id = id;
         this.abbreviation = abbreviation;
         this.countyId = countyId;
@@ -30,11 +30,11 @@ public class Precinct {
 
     @Id
     @Column(name = "id")
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -56,7 +56,7 @@ public class Precinct {
         this.countyId = countyId;
     }
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
     public GeoJSON getGeoJson() {
         return geoJson;
