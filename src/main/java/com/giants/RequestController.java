@@ -20,8 +20,6 @@ import java.util.*;
 public class RequestController {
 
     private JobHandler jobHandler;
-    // Switched to hashtable for synchronization issues
-
 
     // Everything we need to do when server starts up goes here
     // https://www.baeldung.com/spring-postconstruct-predestroy
@@ -33,7 +31,7 @@ public class RequestController {
 
     // This will return the specified state's precinct data
     @RequestMapping(value = "/getState", method = RequestMethod.POST)
-    public String getState(@RequestParam("id") StateAbbreviation stateAbbreviation) {
+    public String getState(@RequestParam StateAbbreviation stateAbbreviation) {
         return jobHandler.getStateData(stateAbbreviation);
     }
 
@@ -70,11 +68,11 @@ public class RequestController {
         return jobHandler.deleteJobData(jobId);
     }
 
-    // Current scheduled for every 5 seconds
-    // fixedDelay is in milliseconds
+    // Current scheduled for every 5 seconds (fixedDelay is in milliseconds)
     // https://www.baeldung.com/spring-scheduled-tasks
     @Scheduled(fixedDelay = 5000)
     public void checkJobStatus()  {
+        System.out.println("TIMER");
         jobHandler.getJobStatusSeaWulf();
     }
 
