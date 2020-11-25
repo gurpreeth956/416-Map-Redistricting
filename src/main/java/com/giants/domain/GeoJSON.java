@@ -11,41 +11,41 @@ public class GeoJSON {
 
     private int id;
     private StateAbbreviation abbreviation;
-    private double totalPop;
-    private double totalVap;
-    private double nativePop;
-    private double nativeVap;
-    private double asianPop;
-    private double asianVap;
-    private double blackPop;
-    private double blackVap;
-    private double hawaiianPop;
-    private double hawaiianVap;
-    private double whitePop;
-    private double whiteVap;
-    private double nativeWhitePop;
-    private double nativeWhiteVap;
-    private double asianWhitePop;
-    private double asianWhiteVap;
-    private double blackWhitePop;
-    private double blackWhiteVap;
-    private double nativeBlackPop;
-    private double nativeBlackVap;
-    private double hispanicPop;
-    private double hispanicVap;
-    private double otherPop;
-    private double otherVap;
+    private int totalPop;
+    private int totalVap;
+    private int nativePop;
+    private int nativeVap;
+    private int asianPop;
+    private int asianVap;
+    private int blackPop;
+    private int blackVap;
+    private int hawaiianPop;
+    private int hawaiianVap;
+    private int whitePop;
+    private int whiteVap;
+    private int nativeWhitePop;
+    private int nativeWhiteVap;
+    private int asianWhitePop;
+    private int asianWhiteVap;
+    private int blackWhitePop;
+    private int blackWhiteVap;
+    private int nativeBlackPop;
+    private int nativeBlackVap;
+    private int hispanicPop;
+    private int hispanicVap;
+    private int otherPop;
+    private int otherVap;
 //    private List<GeoCoord> geoCoords;
 
     public GeoJSON() {
 
     }
 
-    public GeoJSON(StateAbbreviation abbreviation, double totalPop, double totalVap, double nativePop, double nativeVap,
-                   double asianPop, double asianVap, double blackPop, double blackVap, double hawaiianPop, double hawaiianVap,
-                   double whitePop, double whiteVap, double nativeWhitePop, double nativeWhiteVap, double asianWhitePop,
-                   double asianWhiteVap, double blackWhitePop, double blackWhiteVap, double nativeBlackPop, double nativeBlackVap,
-                   double hispanicPop, double hispanicVap, double otherPop, double otherVap) {
+    public GeoJSON(StateAbbreviation abbreviation, int totalPop, int totalVap, int nativePop, int nativeVap,
+                   int asianPop, int asianVap, int blackPop, int blackVap, int hawaiianPop, int hawaiianVap,
+                   int whitePop, int whiteVap, int nativeWhitePop, int nativeWhiteVap, int asianWhitePop,
+                   int asianWhiteVap, int blackWhitePop, int blackWhiteVap, int nativeBlackPop, int nativeBlackVap,
+                   int hispanicPop, int hispanicVap, int otherPop, int otherVap) {
         this.abbreviation = abbreviation;
         this.totalPop = totalPop;
         this.totalVap = totalVap;
@@ -94,218 +94,218 @@ public class GeoJSON {
     }
 
     @Column(name = "totalPop")
-    public double getTotalPop() {
+    public int getTotalPop() {
         return totalPop;
     }
 
-    public void setTotalPop(double totalPop) {
+    public void setTotalPop(int totalPop) {
         this.totalPop = totalPop;
     }
 
     @Column(name = "totalVap")
-    public double getTotalVap() {
+    public int getTotalVap() {
         return totalVap;
     }
 
-    public void setTotalVap(double totalVap) {
+    public void setTotalVap(int totalVap) {
         this.totalVap = totalVap;
     }
 
     @Column(name = "nativePop")
-    public double getNativePop() {
+    public int getNativePop() {
         return nativePop;
     }
 
-    public void setNativePop(double nativePop) {
+    public void setNativePop(int nativePop) {
         this.nativePop = nativePop;
     }
 
     @Column(name = "nativeVap")
-    public double getNativeVap() {
+    public int getNativeVap() {
         return nativeVap;
     }
 
-    public void setNativeVap(double nativeVap) {
+    public void setNativeVap(int nativeVap) {
         this.nativeVap = nativeVap;
     }
 
     @Column(name = "asianPop")
-    public double getAsianPop() {
+    public int getAsianPop() {
         return asianPop;
     }
 
-    public void setAsianPop(double asianPop) {
+    public void setAsianPop(int asianPop) {
         this.asianPop = asianPop;
     }
 
     @Column(name = "asianVap")
-    public double getAsianVap() {
+    public int getAsianVap() {
         return asianVap;
     }
 
-    public void setAsianVap(double asianVap) {
+    public void setAsianVap(int asianVap) {
         this.asianVap = asianVap;
     }
 
     @Column(name = "blackPop")
-    public double getBlackPop() {
+    public int getBlackPop() {
         return blackPop;
     }
 
-    public void setBlackPop(double blackPop) {
+    public void setBlackPop(int blackPop) {
         this.blackPop = blackPop;
     }
 
     @Column(name = "blackVap")
-    public double getBlackVap() {
+    public int getBlackVap() {
         return blackVap;
     }
 
-    public void setBlackVap(double blackVap) {
+    public void setBlackVap(int blackVap) {
         this.blackVap = blackVap;
     }
 
     @Column(name = "hawaiianPop")
-    public double getHawaiianPop() {
+    public int getHawaiianPop() {
         return hawaiianPop;
     }
 
-    public void setHawaiianPop(double hawaiianPop) {
+    public void setHawaiianPop(int hawaiianPop) {
         this.hawaiianPop = hawaiianPop;
     }
 
     @Column(name = "hawaiianVap")
-    public double getHawaiianVap() {
+    public int getHawaiianVap() {
         return hawaiianVap;
     }
 
-    public void setHawaiianVap(double hawaiianVap) {
+    public void setHawaiianVap(int hawaiianVap) {
         this.hawaiianVap = hawaiianVap;
     }
 
     @Column(name = "whitePop")
-    public double getWhitePop() {
+    public int getWhitePop() {
         return whitePop;
     }
 
-    public void setWhitePop(double whitePop) {
+    public void setWhitePop(int whitePop) {
         this.whitePop = whitePop;
     }
 
     @Column(name = "whiteVap")
-    public double getWhiteVap() {
+    public int getWhiteVap() {
         return whiteVap;
     }
 
-    public void setWhiteVap(double whiteVap) {
+    public void setWhiteVap(int whiteVap) {
         this.whiteVap = whiteVap;
     }
 
     @Column(name = "nativeWhitePop")
-    public double getNativeWhitePop() {
+    public int getNativeWhitePop() {
         return nativeWhitePop;
     }
 
-    public void setNativeWhitePop(double nativeWhitePop) {
+    public void setNativeWhitePop(int nativeWhitePop) {
         this.nativeWhitePop = nativeWhitePop;
     }
 
     @Column(name = "nativeWhiteVap")
-    public double getNativeWhiteVap() {
+    public int getNativeWhiteVap() {
         return nativeWhiteVap;
     }
 
-    public void setNativeWhiteVap(double nativeWhiteVap) {
+    public void setNativeWhiteVap(int nativeWhiteVap) {
         this.nativeWhiteVap = nativeWhiteVap;
     }
 
     @Column(name = "asianWhitePop")
-    public double getAsianWhitePop() {
+    public int getAsianWhitePop() {
         return asianWhitePop;
     }
 
-    public void setAsianWhitePop(double asianWhitePop) {
+    public void setAsianWhitePop(int asianWhitePop) {
         this.asianWhitePop = asianWhitePop;
     }
 
     @Column(name = "asianWhiteVap")
-    public double getAsianWhiteVap() {
+    public int getAsianWhiteVap() {
         return asianWhiteVap;
     }
 
-    public void setAsianWhiteVap(double asianWhiteVap) {
+    public void setAsianWhiteVap(int asianWhiteVap) {
         this.asianWhiteVap = asianWhiteVap;
     }
 
     @Column(name = "blackWhitePop")
-    public double getBlackWhitePop() {
+    public int getBlackWhitePop() {
         return blackWhitePop;
     }
 
-    public void setBlackWhitePop(double blackWhitePop) {
+    public void setBlackWhitePop(int blackWhitePop) {
         this.blackWhitePop = blackWhitePop;
     }
 
     @Column(name = "blackWhiteVap")
-    public double getBlackWhiteVap() {
+    public int getBlackWhiteVap() {
         return blackWhiteVap;
     }
 
-    public void setBlackWhiteVap(double blackWhiteVap) {
+    public void setBlackWhiteVap(int blackWhiteVap) {
         this.blackWhiteVap = blackWhiteVap;
     }
 
     @Column(name = "nativeBlackPop")
-    public double getNativeBlackPop() {
+    public int getNativeBlackPop() {
         return nativeBlackPop;
     }
 
-    public void setNativeBlackPop(double nativeBlackPop) {
+    public void setNativeBlackPop(int nativeBlackPop) {
         this.nativeBlackPop = nativeBlackPop;
     }
 
     @Column(name = "nativeBlackVap")
-    public double getNativeBlackVap() {
+    public int getNativeBlackVap() {
         return nativeBlackVap;
     }
 
-    public void setNativeBlackVap(double nativeBlackVap) {
+    public void setNativeBlackVap(int nativeBlackVap) {
         this.nativeBlackVap = nativeBlackVap;
     }
 
     @Column(name = "hispanicPop")
-    public double getHispanicPop() {
+    public int getHispanicPop() {
         return hispanicPop;
     }
 
-    public void setHispanicPop(double hispanicPop) {
+    public void setHispanicPop(int hispanicPop) {
         this.hispanicPop = hispanicPop;
     }
 
     @Column(name = "hispanicVap")
-    public double getHispanicVap() {
+    public int getHispanicVap() {
         return hispanicVap;
     }
 
-    public void setHispanicVap(double hispanicVap) {
+    public void setHispanicVap(int hispanicVap) {
         this.hispanicVap = hispanicVap;
     }
 
     @Column(name = "otherPop")
-    public double getOtherPop() {
+    public int getOtherPop() {
         return otherPop;
     }
 
-    public void setOtherPop(double otherPop) {
+    public void setOtherPop(int otherPop) {
         this.otherPop = otherPop;
     }
 
     @Column(name = "otherVap")
-    public double getOtherVap() {
+    public int getOtherVap() {
         return otherVap;
     }
 
-    public void setOtherVap(double otherVap) {
+    public void setOtherVap(int otherVap) {
         this.otherVap = otherVap;
     }
 

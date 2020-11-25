@@ -11,33 +11,33 @@ public class PrecinctNeighbor {
     @Embeddable
     public static class PrecinctNeighborKey implements Serializable {
 
-        private int id;
-        private int precinctId;
+        private String id;
+        private String precinctId;
 
         public PrecinctNeighborKey() {
 
         }
 
-        public PrecinctNeighborKey(int id, int precinctId) {
+        public PrecinctNeighborKey(String id, String precinctId) {
             this.id = id;
             this.precinctId = precinctId;
         }
 
         @Column(name = "id")
-        public int getId() {
+        public String getId() {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(String id) {
             this.id = id;
         }
 
         @Column(name = "precinctId")
-        public int getPrecinctId() {
+        public String getPrecinctId() {
             return precinctId;
         }
 
-        public void setPrecinctId(int precinctId) {
+        public void setPrecinctId(String precinctId) {
             this.precinctId = precinctId;
         }
 
@@ -62,7 +62,7 @@ public class PrecinctNeighbor {
 
     }
 
-    public PrecinctNeighbor(int precinct1Id, int precinct2Id) {
+    public PrecinctNeighbor(String precinct1Id, String precinct2Id) {
         this.primaryKey = new PrecinctNeighborKey(precinct1Id, precinct2Id);
     }
 

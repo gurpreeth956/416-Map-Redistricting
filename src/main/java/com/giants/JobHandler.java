@@ -1,5 +1,6 @@
 package com.giants;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.giants.domain.*;
 import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
@@ -10,13 +11,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import org.json.simple.*;
+import org.json.simple.parser.*;
 
 public class JobHandler {
 
+    // Switched to hashtable for synchronization issues
     private Hashtable<Integer, Job> jobs;
     private List<Integer> jobsToCheckStatus;
     private String pennsylvaniaPrecinctData;
@@ -39,9 +43,13 @@ public class JobHandler {
         }
 
         // Need a to verify format for Precinct GeoJSON
+        System.out.println("1");
         pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+        System.out.println("2");
         louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+        System.out.println("3");
         californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
+        System.out.println("Completed");
     }
 
     /**
@@ -51,6 +59,7 @@ public class JobHandler {
      * @return Precinct data as a string
      */
     public String getStateData(StateAbbreviation stateAbbreviation) {
+        // NEED TO WAIT UNTIL PRECINCT DATA DONE LOADING FORM INITIALSETUP() (wait till Completed is printed)
         if (stateAbbreviation == StateAbbreviation.CA) {
             return californiaPrecinctData;
         } else if (stateAbbreviation == StateAbbreviation.PA) {
@@ -134,13 +143,16 @@ public class JobHandler {
      * and in the jobs table and in the jobsToCheckStatus list.
      *
      * @param jobId - Id of specified job
-     * @return Boolean for success
+     * @return List of jobs
      */
     public List<Job> cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
+//        // Make sure valid jobId (just in case)
+//        if (job == null || job.getOnSeaWulf() == -1 || job.getJobStatus() == JobStatus.COMPLETED ||
+//                job.getJobStatus() == JobStatus.CANCELLED) {
+//            return null;
+//        }
         System.out.println(job.getJobStatus());
-        // The below line is commented out for testing
-        // if (job.getOnSeaWulf() == -1 || job.getJobStatus() == JobStatus.COMPLETED || job.getJobStatus() == JobStatus.CANCELLED) return false;
         String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                 "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
         String processOutput = createScript(command);
@@ -159,7 +171,7 @@ public class JobHandler {
      * before deleting.
      *
      * @param jobId - Id of specified job
-     * @return Boolean for success
+     * @return List of jobs
      */
     public List<Job> deleteJobData(int jobId) {
         Job job = jobs.get(jobId);
@@ -182,7 +194,6 @@ public class JobHandler {
             em.getTransaction().commit();
             // make sure to remove all instances of job object from server
         } catch (Exception e) {
-            // Return some kind of error here
             System.out.println(e.getMessage());
             em.getTransaction().rollback();
         }
@@ -245,30 +256,30 @@ public class JobHandler {
         return geoJson;
     }
 
+    /**
+     * This method loads the json precinct data of a specific state.
+     *
+     * @param stateAbbreviation
+     * @return
+     */
     public String loadPrecinctData(StateAbbreviation stateAbbreviation) {
-        List<Precinct> precincts = new ArrayList<Precinct>();
-
-        // Get State from entityManager
-//        EntityManager em = JPAUtility.getEntityManager();
+        String filePath = null;
+        if (stateAbbreviation == StateAbbreviation.CA) {
+            filePath = "./src/main/resources/jsons/precincts/CaliforniaPrecincts.json";
+        } else if (stateAbbreviation == StateAbbreviation.LA) {
+            filePath = "./src/main/resources/jsons/precincts/LouisianaPrecincts.json";
+        } else if (stateAbbreviation == StateAbbreviation.PA) {
+            filePath = "./src/main/resources/jsons/precincts/PennsylvaniaPrecincts.json";
+        }
+        JSONParser parser = new JSONParser();
         try {
-            // Start of transaction
-//            em.getTransaction().begin();
-//            // Get all Precinct objects where StateAbbreviation == stateAbbreviation
-//            Query q = em.createQuery("SELECT p FROM Precincts p WHERE stateAbbreviation = :stateAbbreviation", Job.class)
-//                    .setParameter("stateAbbreviation", stateAbbreviation);
-//            em.getTransaction().commit();
-//            precincts = q.getResultList();
+            Object obj = parser.parse(new FileReader(filePath));
+            JSONObject jsonObject = (JSONObject)obj;
+            return jsonObject.toString();
         } catch (Exception e) {
-            // Return some kind of error here
-
-//            em.getTransaction().rollback();
-//            return null;
+            System.out.println(e.getMessage());
+            return null;
         }
-        String geoJson = "";
-        for (Precinct precinct : precincts) {
-            geoJson += precinct.getGeoJson();
-        }
-        return geoJson;
     }
 
     /**
@@ -277,6 +288,7 @@ public class JobHandler {
      * @return The list of jobs
      */
     public List<Job> getJobHistory() {
+//        System.out.println(System.getProperty("user.dir"));
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));

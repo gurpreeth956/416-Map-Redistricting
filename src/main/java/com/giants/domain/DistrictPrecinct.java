@@ -12,13 +12,13 @@ public class DistrictPrecinct {
     public static class DistrinctPrecinctKey implements Serializable {
 
         private int districtId;
-        private int precinctId;
+        private String precinctId;
 
         public DistrinctPrecinctKey() {
 
         }
 
-        public DistrinctPrecinctKey(int districtId, int precinctId) {
+        public DistrinctPrecinctKey(int districtId, String precinctId) {
             this.districtId = districtId;
             this.precinctId = precinctId;
         }
@@ -33,11 +33,11 @@ public class DistrictPrecinct {
         }
 
         @Column(name = "precinctId")
-        public int getPrecinctId() {
+        public String getPrecinctId() {
             return precinctId;
         }
 
-        public void setPrecinctId(int precinctId) {
+        public void setPrecinctId(String precinctId) {
             this.precinctId = precinctId;
         }
 
@@ -62,7 +62,7 @@ public class DistrictPrecinct {
 
     }
 
-    public DistrictPrecinct(int districtId, int precinctId) {
+    public DistrictPrecinct(int districtId, String precinctId) {
         this.primaryKey = new DistrinctPrecinctKey(districtId, precinctId);
     }
 
