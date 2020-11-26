@@ -43,13 +43,13 @@ public class JobHandler {
         }
 
         // Need a to verify format for Precinct GeoJSON
-        System.out.println("1");
-        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
-        System.out.println("2");
-        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
-        System.out.println("3");
-        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
-        System.out.println("Completed");
+//        System.out.println("1");
+//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+//        System.out.println("2");
+//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+//        System.out.println("3");
+//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
+//        System.out.println("Completed");
     }
 
     /**
@@ -147,17 +147,15 @@ public class JobHandler {
      */
     public List<Job> cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
-//        // Make sure valid jobId (just in case)
-//        if (job == null || job.getOnSeaWulf() == -1 || job.getJobStatus() == JobStatus.COMPLETED ||
-//                job.getJobStatus() == JobStatus.CANCELLED) {
-//            return null;
-//        }
-        System.out.println(job.getJobStatus());
-        String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
-        String processOutput = createScript(command);
-        jobs.replace(jobId, job);
-        jobsToCheckStatus.remove(new Integer(jobId));
+        // Make sure valid jobId (to be safe)
+        if (job != null && job.getOnSeaWulf() != -1 && job.getJobStatus() != JobStatus.COMPLETED &&
+                job.getJobStatus() != JobStatus.CANCELLED) {
+            String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
+                    "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
+            String processOutput = createScript(command);
+            jobs.replace(jobId, job);
+            jobsToCheckStatus.remove(new Integer(jobId));
+        }
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
@@ -175,29 +173,26 @@ public class JobHandler {
      */
     public List<Job> deleteJobData(int jobId) {
         Job job = jobs.get(jobId);
-        // If job is running/waiting cancel job
-        if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
-            cancelJobData(jobId);
+        // If local job then make sure it was cancelled or completed (to be safe)
+        if (job != null && (job.getOnSeaWulf() != -1 || (job.getOnSeaWulf() == -1 && job.getJobStatus() != JobStatus.RUNNING))) {
+            // If job is running or waiting cancel job first
+            if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
+                cancelJobData(jobId);
+            }
+            EntityManager em = JPAUtility.getEntityManager();
+            try {
+                em.getTransaction().begin();
+                Query q = em.createQuery("DELETE Job WHERE id = :id");
+                q.setParameter("id", jobId);
+                q.executeUpdate();
+                em.getTransaction().commit();
+                jobs.remove(jobId);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                em.getTransaction().rollback();
+            }
         }
-        EntityManager em = JPAUtility.getEntityManager();
-        try {
-            // Delete job tuple from database
-            em.getTransaction().begin();
-            Query q = em.createQuery("DELETE Job WHERE id = :id");
-            q.setParameter("id", jobId);
-//            Job job = em.find(Job.class, jobId);
-//            for (Ethnicity ethnicity : job.getEthnicities()) {
-//                em.remove(ethnicity);
-//            }
-//            em.remove(job);
-            q.executeUpdate();
-            em.getTransaction().commit();
-            // make sure to remove all instances of job object from server
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            em.getTransaction().rollback();
-        }
-        jobs.remove(jobId);
+
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
