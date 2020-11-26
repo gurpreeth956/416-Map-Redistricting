@@ -9,6 +9,7 @@ class GenerateMapForm extends React.Component {
     this.state = {
       state: '',
       numMaps: '',
+      white: false,
       black: false,
       hispanic: false,
       asian: false,
@@ -56,6 +57,7 @@ class GenerateMapForm extends React.Component {
 		alert(`
       ${this.state.state}
       ${this.state.numMaps}
+      White: ${this.state.white}
       Black/African American: ${this.state.black}
       Hispanic or Latino: ${this.state.hispanic}
       Asian: ${this.state.asian}
@@ -68,6 +70,9 @@ class GenerateMapForm extends React.Component {
     var ethnicity = []
     if(this.state.black){
       ethnicity.push("BLACK_OR_AFRICAN_AMERICAN")
+    }
+    if(this.state.white){
+      ethnicity.push("WHITE")
     }
     if(this.state.hispanic){
       ethnicity.push("HISPANIC_OR_LATINO")
@@ -130,6 +135,13 @@ class GenerateMapForm extends React.Component {
 
         								<form>
         									<label class="font-weight-bold">Race/Ethnicity</label>
+                          <label class="form-check">
+        										<input class="form-check-input" type="checkbox" value=""
+                            name="white" onChange={this.handleEthnicityChange}   checked={this.state.white}/>
+        										<span class="form-check-label">
+        											White
+        										</span>
+        									</label>
         									<label class="form-check">
         										<input class="form-check-input" type="checkbox" value=""
                             name="black" onChange={this.handleEthnicityChange}   checked={this.state.black}/>
@@ -200,5 +212,3 @@ class GenerateMapForm extends React.Component {
 
 export default GenerateMapForm;
 
-// const domContainer = document.querySelector('#GenerateMapForm');
-// ReactDOM.render(e(GenerateMapForm), domContainer);

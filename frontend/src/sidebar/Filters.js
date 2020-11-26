@@ -4,10 +4,6 @@ window.$ = $;
 
 class Filters extends React.Component {
 
-	constructor(props) {
-		super(props);
-	}
-
 	getEthnicities(job) {
 		var ethnicities = [];
 		var i = 0;
@@ -28,6 +24,7 @@ class Filters extends React.Component {
 		if(loaded_job !== null) {
 			ethnicities = this.getEthnicities(loaded_job);
 			console.log(ethnicities);
+			console.log(ethnicities.includes("WHITE"));
 			map_filters = 
 			<form>
 				<label class="mr-sm-2" for="inlineFormCustomSelect">Maps</label>
@@ -75,7 +72,7 @@ class Filters extends React.Component {
 						<form>
 							{ethnicities.length !== 0 ? 
 							<label class="mr-sm-2" for="inlineFormCustomSelect">Race/Ethnicity</label> : null }
-							{ethnicities.includes("WHTIE") ? (<label class="form-check">
+							{ethnicities.includes("WHITE") ? (<label class="form-check">
 									<input class="form-check-input" type="checkbox" value=""/>
 									<span class="form-check-label">
 										White
