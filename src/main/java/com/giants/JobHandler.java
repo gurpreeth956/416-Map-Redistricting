@@ -1,19 +1,13 @@
 package com.giants;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.giants.domain.*;
 import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
 import com.giants.enums.JobStatus;
-import org.hibernate.Transaction;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.transaction.Transactional;
 import java.io.*;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;

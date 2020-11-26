@@ -1,7 +1,7 @@
 import React from 'react';
-import Filters from "./sidebar/Filters.js"
-import HistoryList from "./sidebar/HistoryList.js"
-import GenerateMapForm from "./sidebar/GenerateMapForm.js"
+import Filters from "./Filters.js"
+import HistoryList from "./HistoryList.js"
+import GenerateMapForm from "./GenerateMapForm.js"
 import $ from 'jquery';
 window.$ = $;
 
@@ -9,8 +9,6 @@ class Sidebar extends React.Component {
   constructor(props) {
     super(props);
     this.loadJob = this.loadJob.bind(this);
-    this.loadAverageMap = this.loadAverageMap.bind(this);
-    this.loadExtremeMap = this.loadExtremeMap.bind(this);
     this.cancelJob = this.cancelJob.bind(this);
     this.deleteJob = this.deleteJob.bind(this);
     this.addJob = this.addJob.bind(this);
@@ -33,51 +31,25 @@ class Sidebar extends React.Component {
 			(result) => {
 				this.setState({
 					jobs: result
-				});
+        });
+        console.log(result);
 			}
 		)
   }
   
-  loadAverageMap(job) {
-		console.log(job);
-		const data = {stateId : job.averageStateId}
-		const url = 'http://localhost:8080/getDistricting'
-	    $.ajax({
-	      url:url,
-	      type:"POST",
-	      data: data,
-	      success: () => {
-	      	this.setState({
-	      		loadedJob: data
-		    });
-	      }
-	    });
-	}
-
-	loadExtremeMap(job) {
-		const data = {stateId : job.extremeStateId}
-		const url = 'http://localhost:8080/getDistricting'
-	    $.ajax({
-	      url:url,
-	      type:"POST",
-	      data: data,
-	      success: () => {
-	      	this.setState({
-	      		jobs: data
-		    });
-	      }
-	    });
-  }
-  
   loadJob(index) {
-    var job = this.state.jobs[index];
-    console.log(job);
-    this.setState({
-      loadedJob: job
-    });
-    console.log(this.state);
-    // this.loadAverageMap(job);
-    // this.loadExtremeMap(job);
+    if(index === -1) {
+      this.setState({
+        loadedJob: null
+      });
+    } else {
+      var job = this.state.jobs[index];
+      this.setState({
+        loadedJob: job
+      });
+    }
+    // this.props.loadAverageMap(job);
+    // this.props.loadExtremeMap(job);
   }
 
 	cancelJob(index) {
@@ -97,9 +69,6 @@ class Sidebar extends React.Component {
 	}
 
 	deleteJob(index) {
-    console.log(index);
-    console.log(this.state.jobs);
-    console.log(this.state.jobs[index]);
 		var job = this.state.jobs[index];
 		const data = {jobId : job.id}
 		const url = 'http://localhost:8080/deleteJob'
@@ -110,7 +79,10 @@ class Sidebar extends React.Component {
 	      success: (data) => {
 	      	this.setState({
 	      		jobs: data
-		    });
+          });
+          if(this.state.loadedJob != null && this.state.loadedJob != undefined && job.id === this.state.loadedJob.id) {
+            this.loadJob(-1);
+          }
 	      }
 	    });
   }
@@ -118,8 +90,8 @@ class Sidebar extends React.Component {
   addJob(job) {
     this.setState({
       jobs: [
-        ...this.state.jobs,
-        job
+        job,
+        ...this.state.jobs
       ]
     });
   }
@@ -178,7 +150,7 @@ class Sidebar extends React.Component {
         <div id='history-submenu' class="collapse sidebar-submenu card">
           <article class="card-group-item">
             <HistoryList loadJob={this.loadJob} cancelJob={this.cancelJob} 
-            deleteJob={this.deleteJob} jobs={this.state.jobs}></HistoryList>
+            deleteJob={this.deleteJob} jobs={this.state.jobs} loadedJob={this.state.loadedJob}></HistoryList>
           </article>
         </div>
       </ul>
