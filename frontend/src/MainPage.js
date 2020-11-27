@@ -1,6 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
 import Sidebar from './sidebar/Sidebar.js';
+import USMap from './map/USMap.js';
 window.$ = $;
 
 class MainPage extends React.Component {
@@ -11,7 +12,8 @@ class MainPage extends React.Component {
         this.loadExtremeMap = this.loadExtremeMap.bind(this);
         this.state = {
             averageMap: "",
-            extremeMap: ""
+			extremeMap: "",
+			boxWhisker: []
         };
     }
 
@@ -44,13 +46,22 @@ class MainPage extends React.Component {
 		    });
 	      }
 	    });
-    }
+	}
+	
+	loadBoxWhisker(job) {
+		this.state.boxWhisker = ({
+			boxWhisker: job.boxWhisker
+		})
+	}
 
     render() {
         return(
             <div>
+			<div class="row" id="body-row">
                 <Sidebar loadAverageMap={this.loadAverageMap}
                 loadExtremeMap={this.loadExtremeMap}></Sidebar>
+				<USMap averageMap={this.state.averageMap} extremeMap={this.state.extremeMap} boxWhisker={this.state.boxWhisker}/>
+			</div>
             </div>
         )
     }

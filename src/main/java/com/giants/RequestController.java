@@ -30,7 +30,7 @@ public class RequestController {
     }
 
     // This will return the specified state's precinct data
-    @RequestMapping(value = "/getState", method = RequestMethod.POST)
+    @RequestMapping(value = "/getState", method = RequestMethod.GET)
     public String getState(@RequestParam StateAbbreviation stateAbbreviation) {
         return jobHandler.getStateData(stateAbbreviation);
     }
