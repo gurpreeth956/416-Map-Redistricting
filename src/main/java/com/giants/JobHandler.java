@@ -95,9 +95,9 @@ public class JobHandler {
              */
             int one = 1;
             int two = 2;
-            String command = "cat src/main/resources/districting.slurm | ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                    "'source /etc/profile.d/modules.sh; module load slurm; module load anaconda/2; module load " +
-                    "mvapich2/gcc/64/2.2rc1; cd ~/Jobs; sbatch " + one + " " + two + "'";
+            String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
+                    "module load slurm; module load anaconda/2; module load mvapich2/gcc/64/2.2rc1; cd ~/Jobs; " +
+                    "sbatch ~/Jobs/districting.slurm CA 2 40 10'";
             String processOutput = createScript(command);
             System.out.println("HELLO");
             if (!processOutput.contains("Submitted batch job")) return null;
