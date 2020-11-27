@@ -6,11 +6,10 @@
 #SBATCH --nodes=2
 #SBATCH --time=00:05:00
 #SBATCH -p short-24core
-#SBATCH --mail-type=BEGIN,END
-#SBATCH --mail-user=gurpreeth.singh@stonybrook.edu
 
 echo I am using the following nodes: $SLURM_JOB_NODELIST
 echo My job ID is: $SLURM_JOB_ID
+echo pls: $1
 
 cat << EOF > py_mpi_ssh.py
 

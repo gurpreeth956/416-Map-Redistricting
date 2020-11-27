@@ -20,12 +20,20 @@ public class JobHandler {
     private String pennsylvaniaPrecinctData;
     private String louisianaPrecinctData;
     private String californiaPrecinctData;
+    private Properties properties;
 
     /**
      * This method is called when the server starts up. It is used for instantiating
      * the instance variables and getting jobs and precinct data from the database.
      */
     public void initialSetup() {
+        try {
+            InputStream input = new FileInputStream("./src/main/resources/config.properties");
+            properties = new Properties();
+            properties.load(input);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         jobs = new Hashtable<Integer, Job>();
         List<Job> jobList = loadAllJobData();
         jobsToCheckStatus = new ArrayList<Integer>();
@@ -78,19 +86,22 @@ public class JobHandler {
     public Job createJob(StateAbbreviation stateName, int userCompactness, double populationDifferenceLimit,
                          List<RaceEthnicity> userEthnicities, int numberOfMaps) {
         Job job = new Job(stateName, userCompactness, populationDifferenceLimit, numberOfMaps);
-
-        // GET RID OF MAGIC NUMBERRRRRRRR
-        if (numberOfMaps > 100) {
+        int seaWulfThreshold = Integer.parseInt(properties.getProperty("seaWulfThreshold"));
+        if (numberOfMaps > seaWulfThreshold) {
 
             /*
              Temporary command for testing seawulf (slurm runs the multiproc file which
              is also stores in SeaWulf at ~/testing
              */
-            String command = "cat src/main/resources/seawulf.slurm | ssh gurpreetsing@login.seawulf.stonybrook.edu " +
+            int one = 1;
+            int two = 2;
+            String command = "cat src/main/resources/districting.slurm | ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                     "'source /etc/profile.d/modules.sh; module load slurm; module load anaconda/2; module load " +
-                    "mvapich2/gcc/64/2.2rc1; cd ~/testing; sbatch'";
+                    "mvapich2/gcc/64/2.2rc1; cd ~/Jobs; sbatch " + one + " " + two + "'";
             String processOutput = createScript(command);
+            System.out.println("HELLO");
             if (!processOutput.contains("Submitted batch job")) return null;
+            System.out.println("HELLO2");
             job.setOnSeaWulf(Integer.parseInt(processOutput.split("\\s+")[3]));
             job.setJobStatus(JobStatus.WAITING);
             System.out.println(job.getOnSeaWulf());
