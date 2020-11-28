@@ -97,7 +97,7 @@ public class Job {
         this.numberOfMaps = numberOfMaps;
     }
 
-    @Column(name = "onSeaWulf")
+    @Column(name = "seaWulfId")
     public int getOnSeaWulf() {
         return onSeaWulf;
     }
