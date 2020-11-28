@@ -40,7 +40,7 @@ def nodeInitialization(graph):
     global RequestedNoOfDistrict
 
     if State == "LA":
-        RequestedNoOfDistrict = 6
+        RequestedNoOfDistrict = 20
         with open('PrecinctData/LouisianaNeighbors.json') as f:
             data = json.load(f)
     elif State == "PA":
@@ -135,9 +135,8 @@ if __name__ == "__main__":
     ourGraph.toString()
     initializeSummaryJson()
     for i in range(0, NoOfMaps):
-        # sending a deep copy of our initial graph to rebalance every time
-        graph = copy.deepcopy(ourGraph)
-        Rebalance.rebalance(graph)
+        # need to send a deep copy of our initial graph to rebalance every time
+        Rebalance.rebalance(ourGraph)
         print("Final is: ")
         ourGraph.toString()
 

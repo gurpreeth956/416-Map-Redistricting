@@ -248,21 +248,28 @@ def determineIdealPopulationRange():
 
 def writeToJson(graph):
     global RebalanceCounter
-    Districts = list()
+    districts = list()
+    totalCompactness = 0
+    maxPopulation = list(graph.clusters)[0].population
+    minPopulation = list(graph.clusters)[0].population
     for i in graph.clusters:
-        Districts.append({
+        totalCompactness = totalCompactness + i.compactness
+        if i.population > maxPopulation:
+            maxPopulation = i.population
+        elif i.population < minPopulation:
+            minPopulation = i.population
+        districts.append({
             'id': i.id,
             'population': i.population,
             'precincts': list(map(lambda j: j.id, i.nodes))
         })
-
     with open('data.json') as f:
         data = json.load(f)
         data['Districtings'].append({
             'DistrictingId': RebalanceCounter,
-            'Overall Compactness': RebalanceCounter,
-            'Max Pop Difference': RebalanceCounter,
-            'Districts': Districts,
+            'Overall Compactness': totalCompactness/len(graph.clusters),
+            'Max Pop Difference': maxPopulation - minPopulation,
+            'Districts': districts,
         })
     with open('data.json', 'w') as outfile:
         json.dump(data, outfile)
