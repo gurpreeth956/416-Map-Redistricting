@@ -178,16 +178,14 @@ public class Job {
         String processOutput = script.createScript(command);
         if (!processOutput.contains("Submitted batch job")) return false;
         this.setSeaWulfId(Integer.parseInt(processOutput.split("\\s+")[3]));
-        this.setJobStatus(JobStatus.WAITING);
         return true;
     }
 
     public boolean executeLocalJob() {
         Script script = new Script();
-        this.setSeaWulfId(-1);
-        this.setJobStatus(JobStatus.RUNNING);
         try {
             String filePath = "./src/main/resources/Algorithm/Results/" + this.id + ".json";
+            System.out.println("STARTING...");
             File outputFile = new File(filePath);
             outputFile.createNewFile();
             ProcessBuilder pb = new ProcessBuilder("python3", "./src/main/resources/Algorithm/SeedDistricting.py",

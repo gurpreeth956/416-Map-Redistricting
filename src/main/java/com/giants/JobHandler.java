@@ -93,6 +93,7 @@ public class JobHandler {
         boolean runLocally = false;
         if (numberOfMaps > seaWulfThreshold) {
             if (!job.executeSeaWulfJob()) return null;
+            job.setJobStatus(JobStatus.WAITING);
         } else {
             runLocally = true;
         }
@@ -110,6 +111,8 @@ public class JobHandler {
             em.getTransaction().begin();
             em.persist(job);
             if (runLocally) {
+                job.setSeaWulfId(-1);
+                job.setJobStatus(JobStatus.RUNNING);
                 Runnable r = new RunLocalJob(job);
                 new Thread(r).start();
             }
