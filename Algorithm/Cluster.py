@@ -15,4 +15,4 @@ class Cluster:
         self.neighbors = neighbors
 
     def toString(self):
-        print("cluster:", self.id, " population is:", self.population, " compactness:", self.compactness,  " and neighbors:", [i.id for i in self.neighbors], " nodes are:", [i.id for i in self.nodes])
+        print("cluster:", self.id, " population is:", self.population, " compactness:", self.compactness, "and neighbors:", [i.id for i in self.neighbors], " no of nodes:", len(self.nodes))

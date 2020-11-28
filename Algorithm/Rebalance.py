@@ -3,13 +3,63 @@ from Node import Node
 from Cluster import Cluster
 from Graph import Graph
 import SeedDistricting as SeedDistricting
+import sys
+import json
 
-terminationCondition = 2
-populationThreshold = 0.03
+terminationCondition = 3
+populationThreshold = int(sys.argv[4])
 idealPopulation = 755501
+compactnessThreshold = int(sys.argv[3])
+RebalanceCounter = 0
 
 
-# compactness is ration of totalEdges to outgoing edges
+def rebalance(graph):
+    counter = 0  # counter for the no of times we are rebalancing
+    range = determineIdealPopulationRange()
+    print("Range of the population is ", range[0], range[1])
+    while counter < terminationCondition:
+        index = randint(0, len(graph.clusters) - 1)
+        cluster1 = graph.clusters[index]
+        if len(cluster1.neighbors) > 1:
+            index2 = randint(0, len(cluster1.neighbors) - 1)
+            cluster2 = list(cluster1.neighbors)[index2]
+        else:
+            cluster2 = list(cluster1.neighbors)[0]
+
+        tree = createSpanningTree(graph, cluster1, cluster2)
+        print('Returned from spanning tree, and the tree is: ')
+        tree.toString()
+        counter2 = 0  # no of times we are trying to find a feasible edge
+
+        # might change this to go through all edge and pick a random one.
+        while counter2 < len(tree.edges):
+            [new1, new2] = cutRandomEdge(graph, tree)
+            improved = populationImproved(range, cluster1, cluster2, new1, new2) and compactnessImproved(cluster1, cluster2, new1, new2)
+            if improved:
+                print("Improved!")
+                updateClusterNeighborFromTree(tree, new1)
+                updateClusterNeighborFromTree(tree, new2)
+                addClusterToGraph(graph, new1)
+                addClusterToGraph(graph, new2)
+                removeClusterFromGraph(graph, cluster1)
+                removeClusterFromGraph(graph, cluster2)
+
+                graph.toString()
+                break
+            else:
+                print("not improved!")
+            counter2 = counter2 + 1
+        counter = counter + 1
+
+    writeToJson(graph)
+
+    return graph
+
+'''
+Compactness is ratio of totalEdges of the graph to outgoing edges of the cluster.
+So, no outgoing edge means = compactness is perfect
+more outgoing edges -> lower compactness
+'''
 def updateClusterCompactness(graph, cluster):
     outwardEdge = 0
     for i in cluster.nodes:
@@ -17,11 +67,8 @@ def updateClusterCompactness(graph, cluster):
             if j not in cluster.nodes:
                 outwardEdge = outwardEdge + 1
 
-    if outwardEdge == 0:
-        cluster.compactness = 100       # --------- perfect compactness
-    else:
-        totalEdge = len(graph.edges)
-        cluster.compactness = round(totalEdge/outwardEdge, 3)
+    totalEdge = len(graph.edges)
+    cluster.compactness = round((totalEdge-outwardEdge)/totalEdge, 6) * 100
 
 
 def updateClusterPopulation(cluster):
@@ -67,19 +114,12 @@ def createSpanningTree(graph, cluster1, cluster2):
     while index < len(done):
         current = done[index]
         tree.nodes.add(current)
-        #joint.nodes.remove(current)
         for i in current.neighbors:
             if i not in tree.nodes and i in joint.nodes:
                 tree.nodes.add(i)
-                #joint.nodes.remove(i)
                 done.append(i)
                 addInternalEdge(tree, i, current)
         index = index + 1
-
-    # not necessary --------------
-    # don't call update internal edges
-    updateClusterPopulation(tree)
-    updateClusterCompactness(graph, tree)
 
     for i in cluster1.neighbors:
         tree.neighbors.add(i)
@@ -110,7 +150,6 @@ def cutRandomEdge(graph, cluster):
     index = randint(0, len(cluster.edges) - 1)
     edge = cluster.edges[index]
     print("cutting edges: ", edge[0].id, edge[1].id)
-    #cluster.edges.remove(edge)
     done1 = [edge[0]]
     index1 = 0
     edges = list()
@@ -148,22 +187,6 @@ def cutRandomEdge(graph, cluster):
                 edges.remove([current, i])
         index2 = index2 + 1
 
-    '''for i in cluster1.nodes:
-        for j in i.neighbors:
-            if j not in cluster1.nodes:
-                for k in cluster.neighbors:
-                    if j in k.nodes:
-                        cluster1.neighbors.add(k)
-                        break
-
-    for i in cluster2.nodes:
-        for j in i.neighbors:
-            if j not in cluster2.nodes:
-                for k in cluster.neighbors:
-                    if j in k.nodes:
-                        cluster2.neighbors.add(k)
-                        break'''
-
     cluster1.neighbors.add(cluster2)
     cluster2.neighbors.add(cluster1)
 
@@ -187,48 +210,67 @@ def updateClusterNeighborFromTree(tree, cluster):
                         cluster.neighbors.add(k)
                         break
 
-def rebalance(graph):
-    counter = 0  # counter for the no of times we are rebalancing
-    while counter <= terminationCondition:
-        index = randint(0, len(graph.clusters) - 1)
-        cluster1 = graph.clusters[index]
-        if len(cluster1.neighbors) > 1:
-            index2 = randint(0, len(cluster1.neighbors) - 1)
-            cluster2 = list(cluster1.neighbors)[index2]
-        else:
-            cluster2 = list(cluster1.neighbors)[0]
 
-        tree = createSpanningTree(graph, cluster1, cluster2)
-        print('Returned from spanning tree, and the tree is: ')
-        tree.toString()
-        counter2 = 0  # no of times we are trying to find a feasible edge
-
-        # might change this to go through all edge and pick a random one.
-        while counter2 < len(tree.edges):
-            [new1, new2] = cutRandomEdge(graph, tree)
-            improved = hasImproved(cluster1, cluster2, new1, new2)
-            if improved:
-                print("Improved!")
-                updateClusterNeighborFromTree(tree, new1)
-                updateClusterNeighborFromTree(tree, new2)
-                addClusterToGraph(graph, new1)
-                addClusterToGraph(graph, new2)
-                removeClusterFromGraph(graph, cluster1)
-                removeClusterFromGraph(graph, cluster2)
-
-                graph.toString()
-                break
-            else:
-                print("not improved!")
-            counter2 = counter2 + 1
-        counter = counter + 1
-
-    return graph
-
-
-def hasImproved(old1, old2, new1, new2):
-    if (max(new1.compactness, new2.compactness) - max(old1.compactness, old2.compactness)) >= (min(new1.compactness, new2.compactness) - min(old1.compactness, old2.compactness)):
-        if (abs(idealPopulation - new1.population) + abs(idealPopulation - new2.population)) <= (abs(idealPopulation - old1.population) + abs(idealPopulation - old2.population)):
-            return True
+def isPopulationAcceptable(cluster, range):
+    if range[0] < cluster.population < range[1]:
+        return True
     return False
 
+
+def populationImproved(range, old1, old2, new1, new2):
+    if isPopulationAcceptable(new1, range) and isPopulationAcceptable(new2, range):
+        return True
+    elif isPopulationAcceptable(old1, range) and isPopulationAcceptable(old2, range):
+        return False
+
+    # if both pairs are not acceptable, will choose the better pair of the two
+    if (abs(idealPopulation - new1.population) + abs(idealPopulation - new2.population)) <= (abs(idealPopulation - old1.population) + abs(idealPopulation - old2.population)):
+        return True
+    return False
+
+
+def compactnessImproved(old1, old2, new1, new2):
+    if new1.compactness >= compactnessThreshold and new2.compactness >= compactnessThreshold:
+        return True
+    elif old1.compactness >= compactnessThreshold and old2.compactness >= compactnessThreshold:
+        return False
+
+    # if both the pairs are not acceptable, will choose the better of the pair of the two
+    if (compactnessThreshold - new1.compactness) + (compactnessThreshold - new2.compactness) <= (compactnessThreshold - old1.compactness) + (compactnessThreshold - old2.compactness):
+        return True
+    return False
+
+
+def determineIdealPopulationRange():
+    variation = ((populationThreshold / 2) / 100) * idealPopulation
+    return [idealPopulation-variation, idealPopulation+variation]
+
+
+def writeToJson(graph):
+    global RebalanceCounter
+    districts = list()
+    totalCompactness = 0
+    maxPopulation = list(graph.clusters)[0].population
+    minPopulation = list(graph.clusters)[0].population
+    for i in graph.clusters:
+        totalCompactness = totalCompactness + i.compactness
+        if i.population > maxPopulation:
+            maxPopulation = i.population
+        elif i.population < minPopulation:
+            minPopulation = i.population
+        districts.append({
+            'id': i.id,
+            'population': i.population,
+            'precincts': list(map(lambda j: j.id, i.nodes))
+        })
+    with open('data.json') as f:
+        data = json.load(f)
+        data['Districtings'].append({
+            'DistrictingId': RebalanceCounter,
+            'Overall Compactness': totalCompactness/len(graph.clusters),
+            'Max Pop Difference': maxPopulation - minPopulation,
+            'Districts': districts,
+        })
+    with open('data.json', 'w') as outfile:
+        json.dump(data, outfile)
+    RebalanceCounter = RebalanceCounter + 1
