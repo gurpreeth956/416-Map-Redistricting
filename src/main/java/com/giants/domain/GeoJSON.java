@@ -309,6 +309,10 @@ public class GeoJSON {
         this.otherVap = otherVap;
     }
 
+    public void addPrecinctsPopsAndVaps(Precinct precinct) {
+
+    }
+
     //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
 //    public List<GeoCoord> getGeoCoords() {

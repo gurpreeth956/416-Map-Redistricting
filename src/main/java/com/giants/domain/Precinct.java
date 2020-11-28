@@ -1,5 +1,6 @@
 package com.giants.domain;
 
+import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
 
 import javax.persistence.*;
@@ -74,5 +75,59 @@ public class Precinct {
 
     public void setPrecinctNeighbors(List<PrecinctNeighbor> precinctNeighbors) {
         this.precinctNeighbors = precinctNeighbors;
+    }
+
+    public int getSpecificPop(List<Ethnicity> ethnicities) {
+        int total = 0;
+        for (Ethnicity ethnicity : ethnicities) {
+            switch (ethnicity.getPrimaryKey().getEthnicity()) {
+                case HISPANIC_OR_LATINO:
+                    total += this.geoJson.getHispanicPop();
+                    break;
+                case AMERICAN_INDIAN:
+                    total += this.geoJson.getNativePop();
+                    break;
+                case ASIAN:
+                    total += this.geoJson.getAsianPop();
+                    break;
+                case BLACK_OR_AFRICAN_AMERICAN:
+                    total += this.geoJson.getBlackPop();
+                    break;
+                case NATIVE_HAWAIIAN_AND_OTHER_PACIFIC:
+                    total += this.geoJson.getHawaiianPop();
+                    break;
+                case WHITE:
+                    total += this.geoJson.getWhitePop();
+                    break;
+            }
+        }
+        return total;
+    }
+
+    public int getSpecificVap(List<Ethnicity> ethnicities) {
+        int total = 0;
+        for (Ethnicity ethnicity : ethnicities) {
+            switch (ethnicity.getPrimaryKey().getEthnicity()) {
+                case HISPANIC_OR_LATINO:
+                    total += this.geoJson.getHispanicVap();
+                    break;
+                case AMERICAN_INDIAN:
+                    total += this.geoJson.getNativeVap();
+                    break;
+                case ASIAN:
+                    total += this.geoJson.getAsianVap();
+                    break;
+                case BLACK_OR_AFRICAN_AMERICAN:
+                    total += this.geoJson.getBlackVap();
+                    break;
+                case NATIVE_HAWAIIAN_AND_OTHER_PACIFIC:
+                    total += this.geoJson.getHawaiianVap();
+                    break;
+                case WHITE:
+                    total += this.geoJson.getWhiteVap();
+                    break;
+            }
+        }
+        return total;
     }
 }

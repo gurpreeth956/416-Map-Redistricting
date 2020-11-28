@@ -72,7 +72,7 @@ public class RequestController {
     // https://www.baeldung.com/spring-scheduled-tasks
     @Scheduled(fixedDelay = 5000)
     public void checkJobStatus()  {
-        jobHandler.getJobStatusSeaWulf();
+        jobHandler.checkJobStatus();
     }
 
     // Testing/working post method

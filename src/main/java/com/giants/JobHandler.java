@@ -7,8 +7,11 @@ import com.giants.enums.JobStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.swing.*;
 import java.io.*;
 import java.util.*;
+
+import com.giants.threads.RunLocalJob;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 
@@ -36,10 +39,10 @@ public class JobHandler {
         }
         jobs = new Hashtable<Integer, Job>();
         List<Job> jobList = loadAllJobData();
-        jobsToCheckStatus = new ArrayList<Integer>();
+        jobsToCheckStatus = new ArrayList<>();
         for (Job job : jobList) {
             jobs.put(job.getId(), job);
-            if (job.getJobStatus() != JobStatus.COMPLETED && job.getJobStatus() != JobStatus.CANCELLED) {
+            if (job.getJobStatus() != JobStatus.COMPLETED && job.getJobStatus() != JobStatus.CANCELLED && job.getSeaWulfId() != -1) {
                 jobsToCheckStatus.add(job.getId());
             }
         }
@@ -85,30 +88,13 @@ public class JobHandler {
      */
     public Job createJob(StateAbbreviation stateName, int userCompactness, double populationDifferenceLimit,
                          List<RaceEthnicity> userEthnicities, int numberOfMaps) {
-        Job job = new Job(stateName, userCompactness, populationDifferenceLimit, numberOfMaps);
+        Job job = new Job(stateName, userEthnicities, userCompactness, populationDifferenceLimit, numberOfMaps);
         int seaWulfThreshold = Integer.parseInt(properties.getProperty("seaWulfThreshold"));
         if (numberOfMaps > seaWulfThreshold) {
-
-            /*
-             Temporary command for testing seawulf (slurm runs the multiproc file which
-             is also stores in SeaWulf at ~/testing
-             */
-            int one = 1;
-            int two = 2;
-            String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
-                    "module load slurm; module load anaconda/2; module load mvapich2/gcc/64/2.2rc1; cd ~/Jobs; " +
-                    "sbatch ~/Jobs/districting.slurm CA 2 40 10'";
-            String processOutput = createScript(command);
-            System.out.println("HELLO");
-            if (!processOutput.contains("Submitted batch job")) return null;
-            System.out.println("HELLO2");
-            job.setOnSeaWulf(Integer.parseInt(processOutput.split("\\s+")[3]));
-            job.setJobStatus(JobStatus.WAITING);
-            System.out.println(job.getOnSeaWulf());
+            if (!job.executeSeaWulfJob()) return null;
         } else {
-            job.setOnSeaWulf(-1);
-            job.setJobStatus(JobStatus.RUNNING);
-            job.executeLocalJob();
+            Runnable r = new RunLocalJob(job);
+            new Thread(r).start();
         }
 
         EntityManager em = JPAUtility.getEntityManager();
@@ -124,7 +110,6 @@ public class JobHandler {
             // Add new job to the db
             em.getTransaction().begin();
             em.persist(job);
-            System.out.println(job.getId());
             // Create and add all the ethnicities
             List<Ethnicity> jobEthnicities = new ArrayList<>();
             for (RaceEthnicity userEthnicity : userEthnicities) {
@@ -139,7 +124,7 @@ public class JobHandler {
             return null;
         }
         jobs.put(job.getId(), job);
-        if (job.getOnSeaWulf() != -1) jobsToCheckStatus.add(job.getId());
+        jobsToCheckStatus.add(job.getId());
         return job;
     }
 
@@ -153,15 +138,16 @@ public class JobHandler {
     public List<Job> cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
         // Make sure valid jobId (to be safe)
-        if (job != null && job.getOnSeaWulf() != -1 && job.getJobStatus() != JobStatus.COMPLETED &&
+        if (job != null && job.getSeaWulfId() != -1 && job.getJobStatus() != JobStatus.COMPLETED &&
                 job.getJobStatus() != JobStatus.CANCELLED) {
+            Script script = new Script();
             String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                    "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
-            String processOutput = createScript(command);
+                    "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getSeaWulfId());
+            String processOutput = script.createScript(command);
             jobs.replace(jobId, job);
             jobsToCheckStatus.remove(new Integer(jobId));
         }
-        List<Job> jobList = new ArrayList<Job>();
+        List<Job> jobList = new ArrayList<>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
         }
@@ -179,7 +165,7 @@ public class JobHandler {
     public List<Job> deleteJobData(int jobId) {
         Job job = jobs.get(jobId);
         // If local job then make sure it was cancelled or completed (to be safe)
-        if (job != null && (job.getOnSeaWulf() != -1 || (job.getOnSeaWulf() == -1 && job.getJobStatus() != JobStatus.RUNNING))) {
+        if (job != null && (job.getSeaWulfId() != -1 || (job.getSeaWulfId() == -1 && job.getJobStatus() != JobStatus.RUNNING))) {
             // If job is running or waiting cancel job first
             if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
                 cancelJobData(jobId);
@@ -198,7 +184,7 @@ public class JobHandler {
             }
         }
 
-        List<Job> jobList = new ArrayList<Job>();
+        List<Job> jobList = new ArrayList<>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
         }
@@ -212,7 +198,7 @@ public class JobHandler {
      * @return List of all the jobs
      */
     public List<Job> loadAllJobData() {
-        List<Job> jobs = new ArrayList<Job>();
+        List<Job> jobs = new ArrayList<>();
 
         // Get jobs from entityManager
         EntityManager em = JPAUtility.getEntityManager();
@@ -231,7 +217,7 @@ public class JobHandler {
     }
 
     public String loadDistrictingData(int stateId) {
-        List<District> districts = new ArrayList<District>();
+        List<District> districts = new ArrayList<>();
 
         // Get State from entityManager
         EntityManager em = JPAUtility.getEntityManager();
@@ -288,8 +274,7 @@ public class JobHandler {
      * @return The list of jobs
      */
     public List<Job> getJobHistory() {
-//        System.out.println(System.getProperty("user.dir"));
-        List<Job> jobList = new ArrayList<Job>();
+        List<Job> jobList = new ArrayList<>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
         }
@@ -297,15 +282,14 @@ public class JobHandler {
     }
 
     /**
-     * This method checks the status of jobs currently pending or running on SeaWulf.
-     * If the job is no longer pending, it is switched from WAITING to RUNNING. If it
-     * is not longer running it is switched from RUNNING to COMPLETED. It calls the
-     * method calculateEndData() if the job has switched to completed and removes the
-     * completed jobs from jobsToCheckStatus.
+     * This method checks the status of jobs currently pending or running on SeaWulf and locally.
+     * If the job is no longer pending, it is switched from WAITING to RUNNING. If it is not longer
+     * running it is switched from RUNNING to COMPLETED. It calls the method calculateEndData() if
+     * the job has switched to completed and removes the completed jobs from jobsToCheckStatus.
      */
-    public void getJobStatusSeaWulf() {
+    public void checkJobStatus() {
         // For each job in jobs that is waiting or running check SeaWulf
-        List<Job> jobsToCheck = new ArrayList<Job>();
+        List<Job> jobsToCheck = new ArrayList<>();
         for (int id : jobsToCheckStatus) {
             jobsToCheck.add(jobs.get(id));
         }
@@ -313,13 +297,25 @@ public class JobHandler {
         // Iterator to handle sync issues
         Iterator<Job> jobIterator = jobsToCheck.iterator();
         while (jobIterator.hasNext()) {
+            Script script = new Script();
             Job job = jobIterator.next();
-            System.out.println(job.getId());
+
+            if (job.getSeaWulfId() == -1) {
+                // PROCESSING for local job means it has finished running
+                if (job.getJobStatus() == JobStatus.PROCESSING) {
+                    System.out.println("1111");
+                    parseLocalDistrictingJson(job);
+                    System.out.println("2222");
+                    changeJobStatus(job.getId(), JobStatus.COMPLETED);
+                }
+                continue;
+            }
+//            System.out.println(job.getId());
             if (job.getJobStatus() == JobStatus.WAITING) {
                 // Check if status changed from waiting
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                        "'source /etc/profile.d/modules.sh; module load slurm; squeue -j %d'", job.getOnSeaWulf());
-                String processOutput = createScript(command);
+                        "'source /etc/profile.d/modules.sh; module load slurm; squeue -j %d'", job.getSeaWulfId());
+                String processOutput = script.createScript(command);
                 if (!processOutput.contains("PD")) {
                     changeJobStatus(job.getId(), JobStatus.RUNNING);
                 }
@@ -327,20 +323,21 @@ public class JobHandler {
             if (job.getJobStatus() == JobStatus.RUNNING) {
                 // Check if status change from running
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                        "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getOnSeaWulf());
-                String processOutput = createScript(command);
+                        "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getSeaWulfId());
+                String processOutput = script.createScript(command);
                 if (processOutput != null) {
-                    changeJobStatus(job.getId(), JobStatus.COMPLETED);
-
 
                     // DO THIS IN A SEPARATE METHOD !!! (make sure to update db)
                     // Send slurm script to calculate data (avg, extreme, boxwhiskers
+
+                    changeJobStatus(job.getId(), JobStatus.PROCESSING);
                     String filePath = job.retrieveSeaWulfData();
                     // Methods below here return boolean not sure if check is necessary
                     job.countCounties(filePath);
                     job.generateJsonFile(filePath);
                     job.generateAvgExtDistrictingPlan(filePath);
                     job.generateBoxWhiskers(filePath);
+
 
                     // Update the database
 //                    EntityManager em = JPAUtility.getEntityManager();
@@ -363,8 +360,6 @@ public class JobHandler {
 //                        em.getTransaction().rollback();
 //                        return null;
 //                    }
-                    // Remove job from jobs to check since it is completed
-                    jobIterator.remove();
                 }
             }
         }
@@ -394,57 +389,135 @@ public class JobHandler {
             // make sure to remove all instances of job object from server
         } catch (Exception e) {
             // Return some kind of error here
-            em.getTransaction().rollback();
             System.out.println(e.getMessage());
+            em.getTransaction().rollback();
             return false;
         }
         return true;
     }
 
     /**
-     * This method creates a script in a temporary file and runs the script in a process
+     * This method is called after a local job is completed. It calculates the number of
+     * counties, the average plan, the extreme plan, orders the districts by user requested
+     * VAPs and the box and whiskers data
      *
-     * @param cmd - String of the command
-     * @return The process output
+     * @param job
+     * @return
      */
-    private String createScript(String cmd) {
-        String processOutput = null;
+    private boolean parseLocalDistrictingJson(Job job) {
+        EntityManager em = JPAUtility.getEntityManager();
         try {
-            File tempScript = File.createTempFile("script", null, new File("./src/main/resources/scripts"));
-            FileWriter fw = new FileWriter(tempScript);
-            fw.write(cmd);
-            fw.close();
-            ProcessBuilder pb = new ProcessBuilder("bash", tempScript.toString());
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
-            processOutput = getProcessOutput(process);
-            tempScript.delete();
+            em.getTransaction().begin();
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/test.json"));
+            JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
+            List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job);
+            List<State> states = job.getStates();
+            // Iterate through districtings array
+            for (int i = 0; i < districtingsJson.size(); i++) {
+                JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
+                State state = new State(job.getId(), ((Long) districtingJson.get("Max Pop Difference")).intValue(),
+                        ((Long) districtingJson.get("Overall Compactness")).doubleValue());
+                em.persist(state);
+                states.add(state);
+                List<District> districts = state.getDistricts();
+                JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
+                // Iterate through districts array
+                for (int j = 0; j < districtsJson.size(); j++) {
+                    JSONObject districtJson = (JSONObject) districtsJson.get(j);
+//                    System.out.println(districtJson.get("population"));
+
+                    District district = new District();
+                    district.setStateId(state.getId());
+                    GeoJSON geoJson = new GeoJSON();
+                    geoJson.setAbbreviation(job.getAbbreviation());
+                    district.setGeoJson(geoJson);
+                    district.setDistrictPrecincts(new ArrayList<>());
+
+                    // NEED TO ADD ALL PRECINCTS VAPS AND POPS TO DISTRICT GEOJSON
+
+                    em.persist(geoJson);
+                    em.persist(district);
+                    districts.add(district);
+                    List<DistrictPrecinct> districtPrecincts = district.getDistrictPrecincts();
+                    Set<Integer> counties = new HashSet<>();
+                    JSONArray precinctsJson = (JSONArray) districtJson.get("precincts");
+                    // Iterate through precincts array
+                    for (int k = 0; k < precinctsJson.size(); k++) {
+                        Precinct precinct = em.find(Precinct.class, precinctsJson.get(k));
+                        System.out.println(precinct.getId() + " " + precinct.getAbbreviation());
+
+                        DistrictPrecinct districtPrecinct = new DistrictPrecinct(district.getId(), precinct.getId());
+                        em.persist(districtPrecinct);
+                        districtPrecincts.add(districtPrecinct);
+                        counties.add(precinct.getCountyId());
+                        // Get pop and vap of the user entered ethnicities
+                        district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinct.getSpecificVap(job.getEthnicities()));
+                    }
+                    district.setDistrictPrecincts(districtPrecincts);
+                    district.setNumberOfCounties(counties.size());
+                }
+                Collections.sort(districts);
+                for (int j = 0; j < districts.size(); j++) {
+                    districts.get(j).setDistrictNumber(j+1);
+                    boxWhiskersData.get(j+1).add(districts.get(j).getTotalUserRequestedVap());
+                }
+                state.setDistricts(districts);
+            }
+            // Calculate average and extreme states
+            Collections.sort(states);
+            int averageStateId = (states.get((int)(states.size() / 2))).getId();
+            int extremeStateId = (states.get((int)(states.size() - 1))).getId();
+            job.setStates(states);
+            job.setAverageStateId(averageStateId);
+            job.setExtremeStateId(extremeStateId);
+            List<BoxWhisker> boxWhiskers = job.getBoxWhiskers();
+            //Calculate box and whiskers plot
+            for (int i = 1; i < boxWhiskersData.size(); i++) {
+                List<Integer> boxWhiskerData = boxWhiskersData.get(i);
+                BoxWhisker boxWhisker = new BoxWhisker(job.getId(), i);
+                Collections.sort(boxWhiskerData);
+                boxWhisker.setMinimum(boxWhiskerData.get(0));
+                boxWhisker.setQuartile1(boxWhiskerData.get((int)(boxWhiskerData.size()/4)));
+                boxWhisker.setMedian(boxWhiskerData.get((int)(boxWhiskerData.size()/2)));
+                boxWhisker.setQuartile3(boxWhiskerData.get((int)(boxWhiskerData.size()/2+boxWhiskerData.size()/4)));
+                boxWhisker.setMaximum(boxWhiskerData.get(boxWhiskerData.size()-1));
+                boxWhiskers.add(boxWhisker);
+                em.persist(boxWhisker);
+            }
+            job.setBoxWhiskers(boxWhiskers);
+            em.getTransaction().commit();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
+            em.getTransaction().rollback();
+            return false;
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            em.getTransaction().rollback();
+            return false;
         }
-        return processOutput;
+        return true;
     }
 
-    /**
-     * This method redirects the processes output from SeaWulf and stores in a variables
-     *
-     * @param process - The process
-     * @return String with the process output
-     */
-    private String getProcessOutput(Process process) {
-        String result = null;
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder builder = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-                builder.append(System.getProperty("line.separator")); // Returns OS dependent line separator
-            }
-            result = builder.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public List<List<Integer>> createBoxWhiskerArray(Job job) {
+        int districts = 0;
+        switch (job.getAbbreviation()) {
+            case CA:
+                districts = Integer.parseInt(properties.getProperty("caNumOfDistricts"));
+                break;
+            case LA:
+                districts = Integer.parseInt(properties.getProperty("laNumOfDistricts"));
+                break;
+            case PA:
+                districts = Integer.parseInt(properties.getProperty("paNumOfDistricts"));
+                break;
         }
-        return result;
+
+        List<List<Integer>> boxWhiskersData = new ArrayList<>();
+        for (int i = 0; i < districts + 1; i++) {
+            boxWhiskersData.add(i, new ArrayList<>());
+        }
+        return  boxWhiskersData;
     }
 }
+
