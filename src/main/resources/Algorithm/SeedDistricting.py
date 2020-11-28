@@ -4,9 +4,14 @@ from Cluster import Cluster
 from Graph import Graph
 import Rebalance as Rebalance
 import json
-# ------- read these from a file
-RequestedNoOfDistrict = 6
-state = "LA"
+import sys
+import copy
+# the value is updated depending on the state
+
+RequestedNoOfDistrict = 0
+JobId = sys.argv[1]
+State = sys.argv[2]
+NoOfMaps = int(sys.argv[5])
 
 
 def seedDistricting():
@@ -24,35 +29,38 @@ def seedDistricting():
             cluster2 = list(cluster1.neighbors)[0]
         combineClusters(graph, cluster1, cluster2)
 
+    # updating the compactness of each cluster before sending for rebalance
+    for i in graph.clusters:
+        Rebalance.updateClusterCompactness(graph, i)
+
     return graph
 
 
 def nodeInitialization(graph):
     # checking the state value and loading precinct data from appropriate json file
-    if state == "LA":
+    global RequestedNoOfDistrict
+
+    if State == "LA":
+        RequestedNoOfDistrict = 6
         with open('./src/main/resources/Algorithm/PrecinctData/LouisianaNeighbors.json') as f:
             data = json.load(f)
-    elif state == "PA":
+    elif State == "PA":
+        RequestedNoOfDistrict = 18
         with open('./src/main/resources/Algorithm/PrecinctData/PennsylvaniaNeighbors.json') as f:
             data = json.load(f)
-    elif state == "CA":
+    elif State == "CA":
+        RequestedNoOfDistrict = 53
         with open('./src/main/resources/Algorithm/PrecinctData/CaliforniaNeighbors.json') as f:
             data = json.load(f)
-    # if state == "LA":
-    #     with open('PrecinctData/LouisianaNeighbors.json') as f:
-    #         data = json.load(f)
-    # elif state == "PA":
-    #     with open('PrecinctData/PennsylvaniaNeighbors.json') as f:
-    #         data = json.load(f)
-    # elif state == "CA":
-    #     with open('PrecinctData/CaliforniaNeighbors.json') as f:
-    #         data = json.load(f)
     else:
         print("Choose the correct state")
         exit(0)
+
+    # adding all the nodes to the graph and updating the graph population
     for i in data:
         node = Node(i["unique_id"], population=i["total_pop"])
         graph.nodes.append(node)
+        graph.population = graph.population + node.population
 
     # updating the precinct neighbors
     for i, j in zip(graph.nodes, data):
@@ -66,14 +74,8 @@ def nodeInitialization(graph):
     for i in graph.nodes:
         for j in i.neighbors:
             addGraphEdge(graph, i, j)
-    population = 0
 
-    # updating the total population of the graph.
-    for i in graph.nodes:
-        population = population + i.population
-    graph.population = population
-
-    print("Graph is: ", graph.id, "population is", graph.population, "and nodes are: ", [i.id for i in graph.nodes])
+    print("Graph is: ", graph.id, "population is", graph.population)
 
 
 def addGraphEdge(graph, node1, node2):
@@ -102,9 +104,6 @@ def graphInitialization(graph):
                         i.neighbors.add(k)
                         k.neighbors.add(i)
 
-    for i in graph.clusters:
-        Rebalance.updateClusterCompactness(graph, i)
-
 
 def combineClusters(graph, cluster1, cluster2):
 
@@ -125,26 +124,9 @@ def combineClusters(graph, cluster1, cluster2):
     graph.clusters.remove(cluster2)
 
 
-def writeToJson(graph):
-    Districts = list()
-    for i in graph.clusters:
-        Districts.append({
-            'id': i.id,
-            'population': i.population,
-            'precincts': list(map(lambda j: j.id, i.nodes))
-        })
-
+def initializeSummaryJson():
     data = {'Districtings': []}
-    data['Districtings'].append({
-        'DistrictingId': 1,
-        'Overall Compactness': 1,
-        'Max Pop Difference': 1,
-        'Districts': Districts,
-    })
-
-
-    # with open('./Results/data.json', 'w') as outfile:
-    with open('./src/main/resources/Algorithm//Results/data.json', 'w') as outfile:
+    with open('./src/main/resources/Algorithm/Results/{}.json'.format(JobId), 'w+') as outfile:
         json.dump(data, outfile)
 
 
@@ -152,9 +134,11 @@ if __name__ == "__main__":
     ourGraph = seedDistricting()
     print("our graph is ")
     ourGraph.toString()
-    # Rebalance.rebalance(ourGraph)
-    print("Final is: ")
-    ourGraph.toString()
-    writeToJson(ourGraph)
+    initializeSummaryJson()
+    for i in range(0, NoOfMaps):
+        # need to send a deep copy of our initial graph to rebalance every time
+        Rebalance.rebalance(ourGraph)
+        print("Final is: ")
+        ourGraph.toString()
 
 

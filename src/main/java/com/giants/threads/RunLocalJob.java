@@ -11,8 +11,8 @@ public class RunLocalJob implements Runnable {
     }
 
     public void run() {
-//        boolean jobExecuted = job.executeLocalJob();
-        boolean jobExecuted = true;
+        boolean jobExecuted = job.executeLocalJob();
+//        boolean jobExecuted = true;
         if (jobExecuted) {
             job.generateJobData();
         }

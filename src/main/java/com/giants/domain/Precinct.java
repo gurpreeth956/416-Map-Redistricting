@@ -15,7 +15,7 @@ public class Precinct {
     private String id;
     private StateAbbreviation abbreviation;
     private int countyId;
-    private GeoJSON geoJson;
+    private PopAndVap popAndVap;
     private List<PrecinctNeighbor> precinctNeighbors;
 
     public Precinct() {
@@ -58,13 +58,13 @@ public class Precinct {
     }
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
-    public GeoJSON getGeoJson() {
-        return geoJson;
+    @JoinColumn(name = "popAndVapId", referencedColumnName = "id")
+    public PopAndVap getPopAndVap() {
+        return popAndVap;
     }
 
-    public void setGeoJson(GeoJSON geoJson) {
-        this.geoJson = geoJson;
+    public void setPopAndVap(PopAndVap popAndVap) {
+        this.popAndVap = popAndVap;
     }
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -82,22 +82,22 @@ public class Precinct {
         for (Ethnicity ethnicity : ethnicities) {
             switch (ethnicity.getPrimaryKey().getEthnicity()) {
                 case HISPANIC_OR_LATINO:
-                    total += this.geoJson.getHispanicPop();
+                    total += this.popAndVap.getHispanicPop();
                     break;
                 case AMERICAN_INDIAN:
-                    total += this.geoJson.getNativePop();
+                    total += this.popAndVap.getNativePop();
                     break;
                 case ASIAN:
-                    total += this.geoJson.getAsianPop();
+                    total += this.popAndVap.getAsianPop();
                     break;
                 case BLACK_OR_AFRICAN_AMERICAN:
-                    total += this.geoJson.getBlackPop();
+                    total += this.popAndVap.getBlackPop();
                     break;
                 case NATIVE_HAWAIIAN_AND_OTHER_PACIFIC:
-                    total += this.geoJson.getHawaiianPop();
+                    total += this.popAndVap.getHawaiianPop();
                     break;
                 case WHITE:
-                    total += this.geoJson.getWhitePop();
+                    total += this.popAndVap.getWhitePop();
                     break;
             }
         }
@@ -109,22 +109,22 @@ public class Precinct {
         for (Ethnicity ethnicity : ethnicities) {
             switch (ethnicity.getPrimaryKey().getEthnicity()) {
                 case HISPANIC_OR_LATINO:
-                    total += this.geoJson.getHispanicVap();
+                    total += this.popAndVap.getHispanicVap();
                     break;
                 case AMERICAN_INDIAN:
-                    total += this.geoJson.getNativeVap();
+                    total += this.popAndVap.getNativeVap();
                     break;
                 case ASIAN:
-                    total += this.geoJson.getAsianVap();
+                    total += this.popAndVap.getAsianVap();
                     break;
                 case BLACK_OR_AFRICAN_AMERICAN:
-                    total += this.geoJson.getBlackVap();
+                    total += this.popAndVap.getBlackVap();
                     break;
                 case NATIVE_HAWAIIAN_AND_OTHER_PACIFIC:
-                    total += this.geoJson.getHawaiianVap();
+                    total += this.popAndVap.getHawaiianVap();
                     break;
                 case WHITE:
-                    total += this.geoJson.getWhiteVap();
+                    total += this.popAndVap.getWhiteVap();
                     break;
             }
         }

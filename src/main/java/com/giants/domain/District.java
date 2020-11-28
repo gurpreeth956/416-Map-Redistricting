@@ -15,7 +15,7 @@ public class District implements Comparable<District> {
     private int numberOfCounties;
     private int totalUserRequestedPop;
     private int totalUserRequestedVap;
-    private GeoJSON geoJson;
+    private PopAndVap popAndVap;
     private List<DistrictPrecinct> districtPrecincts;
 
     public District() {
@@ -27,7 +27,7 @@ public class District implements Comparable<District> {
         this.districtNumber = districtNumber;
         this.compactness = compactness;
         this.numberOfCounties = numberOfCounties;
-        this.geoJson = new GeoJSON();
+        this.popAndVap = new PopAndVap();
         this.districtPrecincts = new ArrayList<>();
         this.totalUserRequestedPop = 0;
         this.totalUserRequestedVap = 0;
@@ -99,13 +99,13 @@ public class District implements Comparable<District> {
     }
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
-    public GeoJSON getGeoJson() {
-        return geoJson;
+    @JoinColumn(name = "popAndVapId", referencedColumnName = "id")
+    public PopAndVap getPopAndVap() {
+        return popAndVap;
     }
 
-    public void setGeoJson(GeoJSON geoJson) {
-        this.geoJson = geoJson;
+    public void setPopAndVap(PopAndVap popAndVap) {
+        this.popAndVap = popAndVap;
     }
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

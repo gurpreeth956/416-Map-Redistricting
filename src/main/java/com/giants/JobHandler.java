@@ -90,11 +90,11 @@ public class JobHandler {
                          List<RaceEthnicity> userEthnicities, int numberOfMaps) {
         Job job = new Job(stateName, userEthnicities, userCompactness, populationDifferenceLimit, numberOfMaps);
         int seaWulfThreshold = Integer.parseInt(properties.getProperty("seaWulfThreshold"));
+        boolean runLocally = false;
         if (numberOfMaps > seaWulfThreshold) {
             if (!job.executeSeaWulfJob()) return null;
         } else {
-            Runnable r = new RunLocalJob(job);
-            new Thread(r).start();
+            runLocally = true;
         }
 
         EntityManager em = JPAUtility.getEntityManager();
@@ -107,9 +107,12 @@ public class JobHandler {
 //            }
 //        }
         try {
-            // Add new job to the db
             em.getTransaction().begin();
             em.persist(job);
+            if (runLocally) {
+                Runnable r = new RunLocalJob(job);
+                new Thread(r).start();
+            }
             // Create and add all the ethnicities
             List<Ethnicity> jobEthnicities = new ArrayList<>();
             for (RaceEthnicity userEthnicity : userEthnicities) {
@@ -237,7 +240,7 @@ public class JobHandler {
         // Return
         String geoJson = "";
         for (District district : districts) {
-            geoJson += district.getGeoJson();
+            geoJson += district.getPopAndVap();
         }
         return geoJson;
     }
@@ -409,15 +412,16 @@ public class JobHandler {
         try {
             em.getTransaction().begin();
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/test.json"));
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/"
+                    + job.getId() + ".json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
             List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job);
             List<State> states = job.getStates();
             // Iterate through districtings array
             for (int i = 0; i < districtingsJson.size(); i++) {
                 JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
-                State state = new State(job.getId(), ((Long) districtingJson.get("Max Pop Difference")).intValue(),
-                        ((Long) districtingJson.get("Overall Compactness")).doubleValue());
+                State state = new State(job.getId(), (int) (long) districtingJson.get("Max Pop Difference"),
+                        ((double) districtingJson.get("Overall Compactness")));
                 em.persist(state);
                 states.add(state);
                 List<District> districts = state.getDistricts();
@@ -425,18 +429,16 @@ public class JobHandler {
                 // Iterate through districts array
                 for (int j = 0; j < districtsJson.size(); j++) {
                     JSONObject districtJson = (JSONObject) districtsJson.get(j);
-//                    System.out.println(districtJson.get("population"));
-
                     District district = new District();
                     district.setStateId(state.getId());
-                    GeoJSON geoJson = new GeoJSON();
-                    geoJson.setAbbreviation(job.getAbbreviation());
-                    district.setGeoJson(geoJson);
+                    PopAndVap popAndVap = new PopAndVap();
+                    popAndVap.setAbbreviation(job.getAbbreviation());
+                    district.setPopAndVap(popAndVap);
                     district.setDistrictPrecincts(new ArrayList<>());
 
                     // NEED TO ADD ALL PRECINCTS VAPS AND POPS TO DISTRICT GEOJSON
 
-                    em.persist(geoJson);
+                    em.persist(popAndVap);
                     em.persist(district);
                     districts.add(district);
                     List<DistrictPrecinct> districtPrecincts = district.getDistrictPrecincts();
@@ -466,8 +468,8 @@ public class JobHandler {
             }
             // Calculate average and extreme states
             Collections.sort(states);
-            int averageStateId = (states.get((int)(states.size() / 2))).getId();
-            int extremeStateId = (states.get((int)(states.size() - 1))).getId();
+            int averageStateId = (states.get((int)(states.size()/2))).getId();
+            int extremeStateId = (states.get((int)(states.size()-1))).getId();
             job.setStates(states);
             job.setAverageStateId(averageStateId);
             job.setExtremeStateId(extremeStateId);

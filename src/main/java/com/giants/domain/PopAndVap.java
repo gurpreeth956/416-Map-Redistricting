@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "GeoJsons")
-public class GeoJSON {
+@Table(name = "PopAndVaps")
+public class PopAndVap {
 
     private int id;
     private StateAbbreviation abbreviation;
@@ -37,11 +37,11 @@ public class GeoJSON {
     private int otherVap;
 //    private List<GeoCoord> geoCoords;
 
-    public GeoJSON() {
+    public PopAndVap() {
 
     }
 
-    public GeoJSON(StateAbbreviation abbreviation, int totalPop, int totalVap, int nativePop, int nativeVap,
+    public PopAndVap(StateAbbreviation abbreviation, int totalPop, int totalVap, int nativePop, int nativeVap,
                    int asianPop, int asianVap, int blackPop, int blackVap, int hawaiianPop, int hawaiianVap,
                    int whitePop, int whiteVap, int nativeWhitePop, int nativeWhiteVap, int asianWhitePop,
                    int asianWhiteVap, int blackWhitePop, int blackWhiteVap, int nativeBlackPop, int nativeBlackVap,

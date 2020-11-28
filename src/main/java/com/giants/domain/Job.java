@@ -7,6 +7,7 @@ import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
 
 import javax.persistence.*;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -186,7 +187,12 @@ public class Job {
         this.setSeaWulfId(-1);
         this.setJobStatus(JobStatus.RUNNING);
         try {
-            ProcessBuilder pb = new ProcessBuilder("python3", "./src/main/resources/Algorithm/SeedDistricting.py");
+            String filePath = "./src/main/resources/Algorithm/Results/" + this.id + ".json";
+            File outputFile = new File(filePath);
+            outputFile.createNewFile();
+            ProcessBuilder pb = new ProcessBuilder("python3", "./src/main/resources/Algorithm/SeedDistricting.py",
+                    this.id + "", this.abbreviation + "", this.userCompactness + "", this.populationDifferenceLimit + "",
+                    this.numberOfMaps + "");
             pb.redirectErrorStream(true);
             Process process = pb.start();
             String test = script.getProcessOutput(process);
@@ -207,7 +213,6 @@ public class Job {
 
         // Calculate stuff and store in db
         // Get ethnicicty data for vap graph
-        this.setJobStatus(JobStatus.PROCESSING);
         return true;
 
     }
