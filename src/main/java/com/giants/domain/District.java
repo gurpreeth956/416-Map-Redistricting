@@ -6,14 +6,16 @@ import java.util.List;
 
 @Entity
 @Table(name = "Districts")
-public class District {
+public class District implements Comparable<District> {
 
     private int id;
     private int stateId;
     private int districtNumber;
     private double compactness;
     private int numberOfCounties;
-    private GeoJSON geoJson;
+    private int totalUserRequestedPop;
+    private int totalUserRequestedVap;
+    private PopAndVap popAndVap;
     private List<DistrictPrecinct> districtPrecincts;
 
     public District() {
@@ -25,8 +27,10 @@ public class District {
         this.districtNumber = districtNumber;
         this.compactness = compactness;
         this.numberOfCounties = numberOfCounties;
-        this.geoJson = new GeoJSON();
+        this.popAndVap = new PopAndVap();
         this.districtPrecincts = new ArrayList<>();
+        this.totalUserRequestedPop = 0;
+        this.totalUserRequestedVap = 0;
     }
 
     @Id
@@ -76,14 +80,32 @@ public class District {
         this.numberOfCounties = numberOfCounties;
     }
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
-    public GeoJSON getGeoJson() {
-        return geoJson;
+    @Column(name = "totalUserRequestedPop")
+    public int getTotalUserRequestedPop() {
+        return totalUserRequestedPop;
     }
 
-    public void setGeoJson(GeoJSON geoJson) {
-        this.geoJson = geoJson;
+    public void setTotalUserRequestedPop(int totalUserRequestedPop) {
+        this.totalUserRequestedPop = totalUserRequestedPop;
+    }
+
+    @Column(name = "totalUserRequestedVap")
+    public int getTotalUserRequestedVap() {
+        return totalUserRequestedVap;
+    }
+
+    public void setTotalUserRequestedVap(int totalUserRequestedVap) {
+        this.totalUserRequestedVap = totalUserRequestedVap;
+    }
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "popAndVapId", referencedColumnName = "id")
+    public PopAndVap getPopAndVap() {
+        return popAndVap;
+    }
+
+    public void setPopAndVap(PopAndVap popAndVap) {
+        this.popAndVap = popAndVap;
     }
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -94,6 +116,15 @@ public class District {
 
     public void setDistrictPrecincts(List<DistrictPrecinct> districtPrecincts) {
         this.districtPrecincts = districtPrecincts;
+    }
+
+    public void addPopAndVap(int pop, int vap) {
+        this.totalUserRequestedPop += pop;
+        this.totalUserRequestedVap += vap;
+    }
+
+    public int compareTo(District district) {
+        return this.getTotalUserRequestedVap() - district.getTotalUserRequestedVap();
     }
 
 }

@@ -1,9 +1,14 @@
 package com.giants.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.giants.Script;
 import com.giants.enums.JobStatus;
+import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
 
 import javax.persistence.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +23,10 @@ public class Job {
     private int userCompactness;
     private double populationDifferenceLimit;
     private int numberOfMaps;
-    private int onSeaWulf;
+    private int seaWulfId;
     private Integer averageStateId;
     private Integer extremeStateId;
+//    private List<RaceEthnicity> raceEthnicities;
     private List<State> states;
     private List<Ethnicity> ethnicities;
     private List<BoxWhisker> boxWhiskers;
@@ -29,12 +35,13 @@ public class Job {
 
     }
 
-    public Job(StateAbbreviation abbreviation, int userCompactness, double populationDifferenceLimit, int numberOfMaps) {
+    public Job(StateAbbreviation abbreviation, List<RaceEthnicity> raceEthnicities, int userCompactness,
+               double populationDifferenceLimit, int numberOfMaps) {
         this.abbreviation = abbreviation;
         this.userCompactness = userCompactness;
         this.populationDifferenceLimit = populationDifferenceLimit;
         this.jobStatus = JobStatus.WAITING;
-        this.onSeaWulf = -1;
+        this.seaWulfId = -1;
         this.numberOfMaps = numberOfMaps;
         this.states = new ArrayList<>();
         this.ethnicities = new ArrayList<>();
@@ -97,13 +104,13 @@ public class Job {
         this.numberOfMaps = numberOfMaps;
     }
 
-    @Column(name = "onSeaWulf")
-    public int getOnSeaWulf() {
-        return onSeaWulf;
+    @Column(name = "seaWulfId")
+    public int getSeaWulfId() {
+        return seaWulfId;
     }
 
-    public void setOnSeaWulf(int onSeaWulf) {
-        this.onSeaWulf = onSeaWulf;
+    public void setSeaWulfId(int seaWulfId) {
+        this.seaWulfId = seaWulfId;
     }
 
     @Column(name = "averageStateId")
@@ -144,6 +151,7 @@ public class Job {
         this.boxWhiskers = boxWhiskers;
     }
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "jobId", referencedColumnName = "id")
     public List<State> getStates() {
@@ -154,11 +162,56 @@ public class Job {
         this.states = states;
     }
 
-    public int executeSeaWulfJob() {
-        return 1;
+//    public List<RaceEthnicity> getRaceEthnicities() {
+//        return raceEthnicities;
+//    }
+//
+//    public void setRaceEthnicities(List<RaceEthnicity> raceEthnicities) {
+//        this.raceEthnicities = raceEthnicities;
+//    }
+
+    public boolean executeSeaWulfJob() {
+        Script script = new Script();
+        String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
+                "module load slurm; module load anaconda/2; module load mvapich2/gcc/64/2.2rc1; cd ~/Jobs; " +
+                "sbatch ~/Jobs/districting.slurm CA 5 40 115'";
+        String processOutput = script.createScript(command);
+        if (!processOutput.contains("Submitted batch job")) return false;
+        this.setSeaWulfId(Integer.parseInt(processOutput.split("\\s+")[3]));
+        return true;
     }
 
-    public void executeLocalJob() {
+    public boolean executeLocalJob() {
+        Script script = new Script();
+        try {
+            String filePath = "./src/main/resources/Algorithm/Results/" + this.id + ".json";
+            System.out.println("STARTING...");
+            File outputFile = new File(filePath);
+            outputFile.createNewFile();
+            ProcessBuilder pb = new ProcessBuilder("python3", "./src/main/resources/Algorithm/SeedDistricting.py",
+                    this.id + "", this.abbreviation + "", this.userCompactness + "", this.populationDifferenceLimit + "",
+                    this.numberOfMaps + "");
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+            String test = script.getProcessOutput(process);
+            System.out.println(test);
+            this.setJobStatus(JobStatus.PROCESSING);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean generateJobData() {
+        // Read json file and store data
+
+        // Make all the objects
+        // state is districting
+
+        // Calculate stuff and store in db
+        // Get ethnicicty data for vap graph
+        return true;
 
     }
 
@@ -181,5 +234,4 @@ public class Job {
     public boolean generateAvgExtDistrictingPlan(String filePath) {
         return true;
     }
-
 }
