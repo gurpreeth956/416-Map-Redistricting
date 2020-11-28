@@ -20,12 +20,20 @@ public class JobHandler {
     private String pennsylvaniaPrecinctData;
     private String louisianaPrecinctData;
     private String californiaPrecinctData;
+    private Properties properties;
 
     /**
      * This method is called when the server starts up. It is used for instantiating
      * the instance variables and getting jobs and precinct data from the database.
      */
     public void initialSetup() {
+        try {
+            InputStream input = new FileInputStream("./src/main/resources/config.properties");
+            properties = new Properties();
+            properties.load(input);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         jobs = new Hashtable<Integer, Job>();
         List<Job> jobList = loadAllJobData();
         jobsToCheckStatus = new ArrayList<Integer>();
@@ -37,13 +45,13 @@ public class JobHandler {
         }
 
         // Need a to verify format for Precinct GeoJSON
-        System.out.println("1");
-        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
-        System.out.println("2");
-        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
-        System.out.println("3");
-        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
-        System.out.println("Completed");
+//        System.out.println("1");
+//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+//        System.out.println("2");
+//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+//        System.out.println("3");
+//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
+//        System.out.println("Completed");
     }
 
     /**
@@ -78,19 +86,22 @@ public class JobHandler {
     public Job createJob(StateAbbreviation stateName, int userCompactness, double populationDifferenceLimit,
                          List<RaceEthnicity> userEthnicities, int numberOfMaps) {
         Job job = new Job(stateName, userCompactness, populationDifferenceLimit, numberOfMaps);
-
-        // GET RID OF MAGIC NUMBERRRRRRRR
-        if (numberOfMaps > 100) {
+        int seaWulfThreshold = Integer.parseInt(properties.getProperty("seaWulfThreshold"));
+        if (numberOfMaps > seaWulfThreshold) {
 
             /*
              Temporary command for testing seawulf (slurm runs the multiproc file which
              is also stores in SeaWulf at ~/testing
              */
-            String command = "cat src/main/resources/seawulf.slurm | ssh gurpreetsing@login.seawulf.stonybrook.edu " +
+            int one = 1;
+            int two = 2;
+            String command = "cat src/main/resources/districting.slurm | ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                     "'source /etc/profile.d/modules.sh; module load slurm; module load anaconda/2; module load " +
-                    "mvapich2/gcc/64/2.2rc1; cd ~/testing; sbatch'";
+                    "mvapich2/gcc/64/2.2rc1; cd ~/Jobs; sbatch " + one + " " + two + "'";
             String processOutput = createScript(command);
+            System.out.println("HELLO");
             if (!processOutput.contains("Submitted batch job")) return null;
+            System.out.println("HELLO2");
             job.setOnSeaWulf(Integer.parseInt(processOutput.split("\\s+")[3]));
             job.setJobStatus(JobStatus.WAITING);
             System.out.println(job.getOnSeaWulf());
@@ -141,17 +152,15 @@ public class JobHandler {
      */
     public List<Job> cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
-//        // Make sure valid jobId (just in case)
-//        if (job == null || job.getOnSeaWulf() == -1 || job.getJobStatus() == JobStatus.COMPLETED ||
-//                job.getJobStatus() == JobStatus.CANCELLED) {
-//            return null;
-//        }
-        System.out.println(job.getJobStatus());
-        String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
-        String processOutput = createScript(command);
-        jobs.replace(jobId, job);
-        jobsToCheckStatus.remove(new Integer(jobId));
+        // Make sure valid jobId (to be safe)
+        if (job != null && job.getOnSeaWulf() != -1 && job.getJobStatus() != JobStatus.COMPLETED &&
+                job.getJobStatus() != JobStatus.CANCELLED) {
+            String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
+                    "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getOnSeaWulf());
+            String processOutput = createScript(command);
+            jobs.replace(jobId, job);
+            jobsToCheckStatus.remove(new Integer(jobId));
+        }
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
@@ -169,29 +178,26 @@ public class JobHandler {
      */
     public List<Job> deleteJobData(int jobId) {
         Job job = jobs.get(jobId);
-        // If job is running/waiting cancel job
-        if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
-            cancelJobData(jobId);
+        // If local job then make sure it was cancelled or completed (to be safe)
+        if (job != null && (job.getOnSeaWulf() != -1 || (job.getOnSeaWulf() == -1 && job.getJobStatus() != JobStatus.RUNNING))) {
+            // If job is running or waiting cancel job first
+            if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
+                cancelJobData(jobId);
+            }
+            EntityManager em = JPAUtility.getEntityManager();
+            try {
+                em.getTransaction().begin();
+                Query q = em.createQuery("DELETE Job WHERE id = :id");
+                q.setParameter("id", jobId);
+                q.executeUpdate();
+                em.getTransaction().commit();
+                jobs.remove(jobId);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                em.getTransaction().rollback();
+            }
         }
-        EntityManager em = JPAUtility.getEntityManager();
-        try {
-            // Delete job tuple from database
-            em.getTransaction().begin();
-            Query q = em.createQuery("DELETE Job WHERE id = :id");
-            q.setParameter("id", jobId);
-//            Job job = em.find(Job.class, jobId);
-//            for (Ethnicity ethnicity : job.getEthnicities()) {
-//                em.remove(ethnicity);
-//            }
-//            em.remove(job);
-            q.executeUpdate();
-            em.getTransaction().commit();
-            // make sure to remove all instances of job object from server
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            em.getTransaction().rollback();
-        }
-        jobs.remove(jobId);
+
         List<Job> jobList = new ArrayList<Job>();
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
