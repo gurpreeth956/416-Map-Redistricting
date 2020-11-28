@@ -6,22 +6,22 @@ import java.util.List;
 
 @Entity
 @Table(name = "States")
-public class State {
+public class State implements Comparable<State> {
 
     private int id;
     private int jobId;
-    private int population;
-    private double compactness;
+    private int maxPopulationDifference;
+    private double overallCompactness;
     private List<District> districts;
 
     public State() {
 
     }
 
-    public State(int jobId, int population, double compactness) {
+    public State(int jobId, int maxPopulationDifference, double overallCompactness) {
         this.jobId = jobId;
-        this.population = population;
-        this.compactness = compactness;
+        this.maxPopulationDifference = maxPopulationDifference;
+        this.overallCompactness = overallCompactness;
         this.districts = new ArrayList<>();
     }
 
@@ -45,22 +45,22 @@ public class State {
         this.jobId = jobId;
     }
 
-    @Column(name = "population")
-    public int getPopulation() {
-        return population;
+    @Column(name = "maxPopulationDifference")
+    public int getMaxPopulationDifference() {
+        return maxPopulationDifference;
     }
 
-    public void setPopulation(int population) {
-        this.population = population;
+    public void setMaxPopulationDifference(int maxPopulationDifference) {
+        this.maxPopulationDifference = maxPopulationDifference;
     }
 
-    @Column(name = "compactness")
-    public double getCompactness() {
-        return compactness;
+    @Column(name = "overallCompactness")
+    public double getOverallCompactness() {
+        return overallCompactness;
     }
 
-    public void setCompactness(double compactness) {
-        this.compactness = compactness;
+    public void setOverallCompactness(double overallCompactness) {
+        this.overallCompactness = overallCompactness;
     }
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -72,4 +72,10 @@ public class State {
     public void setDistricts(List<District> districts) {
         this.districts = districts;
     }
+
+    public int compareTo(State state) {
+        return (int)((this.getMaxPopulationDifference() + this.getOverallCompactness()) -
+                (state.getMaxPopulationDifference() + state.getOverallCompactness()));
+    }
+
 }
