@@ -54,6 +54,11 @@ public class JobHandler {
         louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
         System.out.println("3");
         californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
+//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+//        System.out.println("2");
+//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+//        System.out.println("3");
+//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
         System.out.println("Completed");
     }
 
@@ -204,7 +209,7 @@ public class JobHandler {
      * @return List of all the jobs
      */
     public List<Job> loadAllJobData() {
-        List<Job> jobs = new ArrayList<>();
+        List<Job> jobs;
         EntityManager em = JPAUtility.getEntityManager();
         try {
             jobs = em.createNamedQuery("Jobs.getJobs", Job.class).getResultList();
@@ -217,7 +222,21 @@ public class JobHandler {
     }
 
     public String loadDistrictingData(int stateId) {
-        List<District> districts = new ArrayList<>();
+        // Return format
+//        data = {
+//            districtPos: ,
+//            pop (for each):
+//            vap (for each):
+//            boxWhiskers : [
+//                    ]
+//            irlBoxWhiskers: [
+//                    ]
+//            geoJson: [
+//                    ]
+//        }
+
+
+        List<District> districts;
         EntityManager em = JPAUtility.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -443,10 +462,6 @@ public class JobHandler {
             return false;
         }
         return true;
-    }
-
-    private void parseDistrictingsArrayJson() {
-
     }
 
     private List<List<Integer>> createBoxWhiskerArray(Job job) {
