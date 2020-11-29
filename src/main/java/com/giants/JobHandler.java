@@ -47,9 +47,9 @@ public class JobHandler {
         }
 
         // Load state's precinct data
-//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
-//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
-//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
+        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
         System.out.println("Completed Setup");
     }
 
