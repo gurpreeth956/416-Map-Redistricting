@@ -6,23 +6,20 @@ class BoxWhisker extends React.Component {
 
     constructor(props){
         super(props);
-        this.state = {
-            dataPoints: []
-        };
     }
 
-    componentDidMount() {
+    loadData() {
         var boxes = [];
         for(var i = 0; i<this.props.plot.length; i++) {
-            var box = {label: "District " + i, y: [this.props.plot[i].minimum, this.props.plot[i].quartile1, this.props.plot[i].quartile3, this.props.plot[i].maximum, this.props.plot[i].median]};
+            var box = {label: "District " + (i+1), y: [this.props.plot[i].minimum, this.props.plot[i].quartile1, this.props.plot[i].quartile3, this.props.plot[i].maximum, this.props.plot[i].median]};
             boxes.push(box);
         }
-        this.setState({
-            dataPoints:boxes
-        }); 
+        return boxes;
     }
 
     render() {
+        var boxes = this.loadData();
+        console.log(boxes);
         const options = {
             animationEnabled: true,
             title: { // Title of the plot
@@ -30,7 +27,7 @@ class BoxWhisker extends React.Component {
             },
             axisY: { // Y axis details
             title: "BVAP (in %)",
-            interval: 50000
+            interval: 10
             },
             data: [{
             type: "boxAndWhisker",
@@ -39,19 +36,19 @@ class BoxWhisker extends React.Component {
             upperBoxColor: "#FFC28D",
             lowerBoxColor: "#9ECCB8",
             color: "black",
-            dataPoints: this.state.dataPoints
+            dataPoints: boxes
             },
             { //Dummy Data for now will have to replace with dynamic vap data
                 type: "scatter",
                 name: "Real Life Median VAP",
                 showInLegend: true,
                 dataPoints: [
-                    {label: "District 1", y: 100000 },
-                    {label: "District 2", y: 100000 },
-                    {label: "District 3", y: 100000 },
-                    {label: "District 4", y: 100000 },
-                    {label: "District 5", y: 100000 },
-                    {label: "District 6", y: 100000 }
+                    {label: "District 1", y: 50 },
+                    {label: "District 2", y: 50 },
+                    {label: "District 3", y: 50 },
+                    {label: "District 4", y: 50 },
+                    {label: "District 5", y: 50 },
+                    {label: "District 6", y: 50 }
                 ]
             }]
         }
