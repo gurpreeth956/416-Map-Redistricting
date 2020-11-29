@@ -19,8 +19,7 @@ class MainPage extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.loadAverageMap = this.loadAverageMap.bind(this);
-		this.loadExtremeMap = this.loadExtremeMap.bind(this);
+		this.loadMaps = this.loadMaps.bind(this);
 		this.loadBoxWhisker = this.loadBoxWhisker.bind(this);
 		this.setDefaultFilters = this.setDefaultFilters.bind(this);
 		this.updateFilters = this.updateFilters.bind(this);
@@ -73,52 +72,49 @@ class MainPage extends React.Component {
 		this.forceUpdate();
 	}
 
-	loadAverageMap(job) {
+	loadMaps(job) {
 		console.log(job);
-		const data = { stateId: job.averageStateId }
-		const url = 'http://localhost:8080/getDistricting'
-		$.ajax({
-			url: url,
-			type: "POST",
-			data: data,
-			success: (data) => {
-				this.setState({
-					averageMap: data
-				});
-				console.log(data);
-			}
-		});
-	}
-
-	loadExtremeMap(job) {
-		console.log(job);
-		const data = { stateId: job.extremeStateId }
-		const url = 'http://localhost:8080/getDistricting'
-		$.ajax({
-			url: url,
-			type: "POST",
-			data: data,
-			success: (data) => {
-				this.setState({
-					extremeMap: data
-				});
-				console.log(data);
-			}
-		});
+		if (job == null) {
+			this.setState({
+				averageMap: "",
+				extremeMap: "",
+			});
+		} else{
+			const data = { jobId: job.averageStateId }
+			const url = 'http://localhost:8080/getDistricting'
+			$.ajax({
+				url: url,
+				type: "POST",
+				data: data,
+				success: (data) => {
+					this.setState({
+						averageMap: data[0],
+						extremeMap: data[1]
+					});
+					console.log(data);
+				}
+			});
+		}
 	}
 
 	loadBoxWhisker(job) {
 		console.log(job);
-		this.setState({
-			boxWhisker: job.boxWhiskers
-		});
+		if(job == null) {
+			this.setState({
+				boxWhisker: []
+			});
+		} else{
+			this.setState({
+				boxWhisker: job.boxWhiskers
+			});
+		}
 	}
 
 	render() {
 		return (
 			<div>
 				<div class="row" id="body-row">
-					<Sidebar loadAverageMap={this.loadAverageMap} loadExtremeMap={this.loadExtremeMap} loadBoxWhisker={this.loadBoxWhisker}
+					<Sidebar loadMaps={this.loadMaps} loadBoxWhisker={this.loadBoxWhisker}
 						updateFilters={this.updateFilters} setDefaultFilters={this.setDefaultFilters}></Sidebar>
 					<USMap averageMap={this.state.averageMap} extremeMap={this.state.extremeMap} boxWhisker={this.state.boxWhisker}
 						currentIsSet={currentMapChecked} averageIsSet={averageMapChecked}

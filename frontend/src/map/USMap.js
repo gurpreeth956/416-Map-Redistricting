@@ -153,9 +153,9 @@ class USMap extends React.Component {
     onStateClick(e) {
         if (e.target.feature.properties.name === "California") {
             console.log(e);
-            this.map.current.leafletElement.setMaxZoom(6.5);
-            this.map.current.leafletElement.setMaxZoom(6.5);
-            this.map.current.leafletElement.setView([36.0, -119], 6.5);
+            this.map.current.leafletElement.setMaxZoom(6.35);
+            this.map.current.leafletElement.setMaxZoom(6.35);
+            this.map.current.leafletElement.setView([37.0, -119], 6.35);
             if(this.state.CA !== "") {
                 this.loadCAPrecincts();
                 this.setState({
@@ -194,6 +194,7 @@ class USMap extends React.Component {
     }
 
     render() {
+        console.log(this.props.boxWhisker);
         var mapClass;
         var precinctClass;
         if(this.state.zoomedOut == true) {
@@ -206,7 +207,6 @@ class USMap extends React.Component {
 
         return(
             <div class="col bg-white" id="body-col">
-                <div id = "test"></div>
             <Map ref = {this.map} center={[40.0, -98]} zoom={5} scrollWheelZoom={false} minZoom={5} maxZoom={5} dragging={false} doubleClickZoom={false}>
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -243,7 +243,7 @@ class USMap extends React.Component {
 					null
 				}
             </Map>
-            {this.props.extremeMap !== "" && this.averageMap !== "" ? <SummaryData boxWhisker={this.props.boxWhisker}/> : null}
+            {this.props.boxWhisker.length !== 0 ? <SummaryData boxWhisker={this.props.boxWhisker}/> : null}
             </div>
         );
     }
