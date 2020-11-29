@@ -175,7 +175,8 @@ public class Job {
         Script script = new Script();
         String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
                 "module load slurm; module load anaconda/2; module load mvapich2/gcc/64/2.2rc1; cd ~/Jobs; " +
-                "sbatch ~/Jobs/districting.slurm CA 5 40 115'";
+                "sbatch ~/Jobs/districting.slurm " + this.abbreviation + " " + this.userCompactness + " " +
+                this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
         String processOutput = script.createScript(command);
         if (!processOutput.contains("Submitted batch job")) return false;
         this.setSeaWulfId(Integer.parseInt(processOutput.split("\\s+")[3]));
@@ -212,17 +213,22 @@ public class Job {
         return true;
     }
 
-    public List<BoxWhisker> generateBoxWhiskers(List<List<Integer>> boxWhiskersData) {
+    public List<BoxWhisker> generateBoxWhiskers(List<List<Integer>> boxWhiskersData, double totalSpecifiedStateVap) {
         List<BoxWhisker> boxWhiskers = this.getBoxWhiskers();
         for (int i = 1; i < boxWhiskersData.size(); i++) {
             List<Integer> boxWhiskerData = boxWhiskersData.get(i);
             BoxWhisker boxWhisker = new BoxWhisker(this.getId(), i);
             Collections.sort(boxWhiskerData);
-            boxWhisker.setMinimum(boxWhiskerData.get(0));
-            boxWhisker.setQuartile1(boxWhiskerData.get((int) (boxWhiskerData.size() / 4)));
-            boxWhisker.setMedian(boxWhiskerData.get((int) (boxWhiskerData.size() / 2)));
-            boxWhisker.setQuartile3(boxWhiskerData.get((int) (boxWhiskerData.size() / 2 + boxWhiskerData.size() / 4)));
-            boxWhisker.setMaximum(boxWhiskerData.get(boxWhiskerData.size() - 1));
+            double min = (boxWhiskerData.get(0)/totalSpecifiedStateVap)*100;
+            double quart1 = (boxWhiskerData.get((int)(boxWhiskerData.size()/4))/totalSpecifiedStateVap)*100;
+            double median = (boxWhiskerData.get((int)(boxWhiskerData.size()/2))/totalSpecifiedStateVap)*100;
+            double quart3 = (boxWhiskerData.get((int)(boxWhiskerData.size()/2+boxWhiskerData.size()/4))/totalSpecifiedStateVap)*100;
+            double max = (boxWhiskerData.get(boxWhiskerData.size()-1)/totalSpecifiedStateVap)*100;
+            boxWhisker.setMinimum(min);
+            boxWhisker.setQuartile1(quart1);
+            boxWhisker.setMedian(median);
+            boxWhisker.setQuartile3(quart3);
+            boxWhisker.setMaximum(max);
             boxWhiskers.add(boxWhisker);
         }
         this.setBoxWhiskers(boxWhiskers);

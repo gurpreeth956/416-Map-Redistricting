@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import com.giants.threads.RunLocalJob;
 import org.json.simple.*;
@@ -48,12 +49,12 @@ public class JobHandler {
         }
 
         // Need a to verify format for Precinct GeoJSON
-        System.out.println("1");
-        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA).toString();
-        System.out.println("2");
-        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
-        System.out.println("3");
-        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
+//        System.out.println("1");
+//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA).toString();
+//        System.out.println("2");
+//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
+//        System.out.println("3");
+//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
 //        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
 //        System.out.println("2");
 //        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
@@ -227,10 +228,6 @@ public class JobHandler {
 //            districtPos: ,
 //            pop (for each):
 //            vap (for each):
-//            boxWhiskers : [
-//                    ]
-//            irlBoxWhiskers: [
-//                    ]
 //            geoJson: [
 //                    ]
 //        }
@@ -343,8 +340,13 @@ public class JobHandler {
                     // DO THIS IN A SEPARATE METHOD !!! (make sure to update db)
                     // Send slurm script to calculate data (avg, extreme, boxwhiskers
 
-                    changeJobStatus(job.getId(), JobStatus.PROCESSING);
-                    String filePath = job.retrieveSeaWulfData();
+                    try {
+                        TimeUnit.SECONDS.sleep(10);
+                    } catch (Exception e) {
+                        System.out.println("OOF");
+                    }
+                    changeJobStatus(job.getId(), JobStatus.COMPLETED);
+//                    String filePath = job.retrieveSeaWulfData();
                     // Methods below here return boolean not sure if check is necessary
 //                    job.countCounties(filePath);
 //                    job.generateJsonFile(filePath);
@@ -398,10 +400,10 @@ public class JobHandler {
             em.getTransaction().begin();
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
-//            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/110.json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
             List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job);
             List<State> states = job.getStates();
+            int totalSpecifiedStateVap = 0;
             // Iterate through districtings array
             for (int i = 0; i < districtingsJson.size(); i++) {
                 JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
@@ -409,6 +411,7 @@ public class JobHandler {
                         ((double) districtingJson.get("Overall Compactness")));
                 em.persist(state);
                 states.add(state);
+                totalSpecifiedStateVap = 0;
                 List<District> districts = state.getDistricts();
                 JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
                 // Iterate through districts array
@@ -437,7 +440,9 @@ public class JobHandler {
                         districtPrecincts.add(districtPrecinct);
                         counties.add(precinct.getCountyId());
                         // Get pop and vap of the user entered ethnicities
-                        district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinct.getSpecificVap(job.getEthnicities()));
+                        int precinctSpecifiedVap = precinct.getSpecificVap(job.getEthnicities());
+                        district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinctSpecifiedVap);
+                        totalSpecifiedStateVap += precinctSpecifiedVap;
                     }
                     district.setDistrictPrecincts(districtPrecincts);
                     district.setNumberOfCounties(counties.size());
@@ -447,7 +452,7 @@ public class JobHandler {
             }
             // Calculate average and extreme states and box and whiskers
             job.calculateAvgExtDistrictingPlan(states);
-            List<BoxWhisker> boxWhiskers = job.generateBoxWhiskers(boxWhiskersData);
+            List<BoxWhisker> boxWhiskers = job.generateBoxWhiskers(boxWhiskersData, totalSpecifiedStateVap);
             for (BoxWhisker boxWhisker : boxWhiskers) {
                 em.persist(boxWhisker);
             }
