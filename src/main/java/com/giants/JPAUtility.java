@@ -8,17 +8,12 @@ public class JPAUtility {
 
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.giants");
     private static EntityManager em = emf.createEntityManager();
-    private static EntityManager em2 = emf.createEntityManager();
 
     public static EntityManager getEntityManager() {
         return em;
     }
 
-//    public static EntityManager getEntityManager2() {
-//        return em2;
-//    }
-//
-//    public static void close() {
-//        emf.close();
-//    }
+    public static void close() {
+        emf.close();
+    }
 }

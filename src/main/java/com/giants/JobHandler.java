@@ -48,13 +48,13 @@ public class JobHandler {
             }
         }
 
-        // Need a to verify format for Precinct GeoJSON
-//        System.out.println("1");
-//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA).toString();
-//        System.out.println("2");
-//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
-//        System.out.println("3");
-//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
+//         Need a to verify format for Precinct GeoJSON
+        System.out.println("1");
+        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA).toString();
+        System.out.println("2");
+        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
+        System.out.println("3");
+        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
 //        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
 //        System.out.println("2");
 //        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
