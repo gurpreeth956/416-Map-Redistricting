@@ -12,21 +12,55 @@ class USMap extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            PA: '',
-            CA: '',
-            LA: '',
+            paPrecinct: '',
+            caPrecinct: '',
+            laPrecinct: '',
+            paDistrict: '',
+            caDistrict: '',
+            laDistrict: '',
             zoomedOut: true
         }
         this.map = React.createRef();
+        this.stateGeoJson = React.createRef();
     }
 
     componentDidMount() {
         //Load in districting geojson here
-        console.log(this.state);
+        // var data = {stateId: 0};
+        // const url = 'http://localhost:8080/getDistricting'
+        // $.ajax({
+        //     url:url,
+        //     type:"GET",
+        //     data: data,
+        //     success: (data) => {
+        //         this.setState({caDistrict: JSON.parse(data)});
+        //     }
+        // });
+
+        // data = {stateId: 1};
+        // const url = 'http://localhost:8080/getDistricting'
+        // $.ajax({
+        //     url:url,
+        //     type:"GET",
+        //     data: data,
+        //     success: (data) => {
+        //         this.setState({paDistrict: JSON.parse(data)});
+        //     }
+        // });
+
+        // data = {stateId: 2};
+        // const url = 'http://localhost:8080/getDistricting'
+        // $.ajax({
+        //     url:url,
+        //     type:"GET",
+        //     data: data,
+        //     success: (data) => {
+        //         this.setState({laDistrict: JSON.parse(data)});
+        //     }
+        // });
     }
 
     loadCAPrecincts() {
-        console.log("ca");
         var data = {stateAbbreviation: 'CA'};
         const url = 'http://localhost:8080/getState'
         $.ajax({
@@ -34,7 +68,7 @@ class USMap extends React.Component {
             type:"GET",
             data: data,
             success: (data) => {
-                this.setState({CA: data});
+                this.setState({caPrecinct: JSON.parse(data)});
             }
         });
     }
@@ -47,12 +81,13 @@ class USMap extends React.Component {
             type:"GET",
             data: data,
             success: (data) => {
-                this.setState({PA: data});
+                this.setState({paPrecinct: JSON.parse(data)});
             }
         });
     }
 
     loadLAPrecincts() {
+        console.log("loading lA")
         var data = {stateAbbreviation: 'LA'};
         const url = 'http://localhost:8080/getState'
         $.ajax({
@@ -60,9 +95,10 @@ class USMap extends React.Component {
             type:"GET",
             data: data,
             success: (data) => {
-                this.setState({LA: data});
+                this.setState({laPrecinct: JSON.parse(data)});
             }
         });
+        console.log("finished loading La");
     }
 
     onEachFeature = (feature, layer, e) => {
@@ -89,11 +125,11 @@ class USMap extends React.Component {
     }
 
     resetHighlight(e) { // listener for when mouse stops hovering state
-        // geojson.resetStyle(e.target);
+        // console.log(this.stateGeoJson);
+        // this.stateGeoJson.leafletElement.resetStyle(e.target);
     }
 
     onStateClick(e) {
-        var precinctLayer;
         if (e.target.feature.properties.name === "California") {
             console.log(e);
             this.map.current.leafletElement.setMaxZoom(6.5);
@@ -105,9 +141,6 @@ class USMap extends React.Component {
                     zoomedOut:false
                 });
             }
-            
-            // precinctLayer = L.geoJSON().addTo(this.map.current.leafletElement);
-            // precinctLayer.addData(JSON.parse(this.state.CA));
           }
           else if (e.target.feature.properties.name === "Pennsylvania") {
             this.map.current.leafletElement.setMaxZoom(8);
@@ -119,12 +152,11 @@ class USMap extends React.Component {
                     zoomedOut:false
                 });
             }
-            // precinctLayer = L.geoJSON().addTo(this.map.current.leafletElement);
-            // precinctLayer.addData(JSON.parse(this.state.PA));
           } else if(e.target.feature.properties.name === "Louisiana") {
             this.map.current.leafletElement.setMaxZoom(7.5);
             this.map.current.leafletElement.setMinZoom(7.5);
             this.map.current.leafletElement.flyToBounds(e.target.getBounds());
+            console.log(this.state);
             if(this.state.LA !== "") {
                 this.loadLAPrecincts();
                 this.setState({
@@ -132,13 +164,7 @@ class USMap extends React.Component {
                 });
             }
             this.loadLAPrecincts();
-            // precinctLayer = L.geoJSON().addTo(this.map.current.leafletElement);
-            // precinctLayer.addData(JSON.parse(this.state.LA));
           } else { // if you click any of the other states than you are sent back to the starting position
-            if(this.map.current.leafletElement.hasLayer(precinctLayer)) {
-                console.log("detected");
-                this.map.current.leafletElement.removeLayer(precinctLayer);
-            }
             this.map.current.leafletElement.setMaxZoom(5);
             this.map.current.leafletElement.setMinZoom(5);
             this.map.current.leafletElement.setView([40.0, -98], 5);
@@ -149,6 +175,7 @@ class USMap extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         return(
             <div class="col bg-white" id="body-col">
                 <div id = "test"></div>
@@ -157,17 +184,29 @@ class USMap extends React.Component {
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg"
                 />
-                <GeoJSON data={stateGeoJson} onMouseOver={this.onMouseOver} onEachFeature={this.onEachFeature}></GeoJSON>
-                {this.state.CA !== "" && !this.state.zoomedOut ? 
-					<GeoJSON data={this.state.CA}></GeoJSON> :
+                <GeoJSON ref = {this.stateGeoJson} data={stateGeoJson} onMouseOver={this.onMouseOver} onEachFeature={this.onEachFeature}></GeoJSON>
+                {this.state.caPrecinct !== "" && !this.state.zoomedOut && this.props.precinctsIsSet ? 
+					<GeoJSON data={this.state.caPrecinct}></GeoJSON> :
 					null
 				}
-                {this.state.LA !== "" && !this.state.zoomedOut ? 
-					<GeoJSON data={this.state.LA}></GeoJSON> :
+                {this.state.laPrecinct !== "" && !this.state.zoomedOut && this.props.precinctsIsSet ? 
+					<GeoJSON data={this.state.laPrecinct}></GeoJSON> :
+                    null
+                }
+                {this.state.paPrecinct !== "" && !this.state.zoomedOut && this.props.precinctsIsSet ? 
+					<GeoJSON data={this.state.paPrecinct}></GeoJSON> :
 					null
 				}
-                {this.state.PA !== "" && !this.state.zoomedOut ? 
-					<GeoJSON data={this.state.PA}></GeoJSON> :
+                {this.state.caDistrict !== "" && this.props.districtsIsSet ? 
+					<GeoJSON data={this.state.caDistrict}></GeoJSON> :
+					null
+				}
+                {this.state.laDistrict !== "" && this.props.districtsIsSet ? 
+					<GeoJSON data={this.state.laDistrict}></GeoJSON> :
+                    null
+                }
+                {this.state.paDistrict !== "" && this.props.districtsIsSet ? 
+					<GeoJSON data={this.state.paDistrict}></GeoJSON> :
 					null
 				}
             </Map>
