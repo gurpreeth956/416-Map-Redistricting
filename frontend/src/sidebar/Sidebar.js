@@ -56,9 +56,9 @@ class Sidebar extends React.Component {
     }
     this.filters.current.setDefaultCheckboxes();
     this.props.setDefaultFilters();
-    // this.props.loadAverageMap(job);
-    // this.props.loadExtremeMap(job);
-    // this.props.loadBoxWhisker();
+    this.props.loadAverageMap(job);
+    this.props.loadExtremeMap(job);
+    this.props.loadBoxWhisker(job);
   }
 
 	cancelJob(index) {

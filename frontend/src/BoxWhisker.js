@@ -1,9 +1,27 @@
 import CanvasJSReact from './resources/canvasjs.react';
 import React from 'react';
-var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class BoxWhisker extends React.Component {
+
+    constructor(props){
+        super(props);
+        this.state = {
+            dataPoints: []
+        };
+    }
+
+    componentDidMount() {
+        var boxes = [];
+        for(var i = 0; i<this.props.plot.length; i++) {
+            var box = {label: "District " + i, y: [this.props.plot[i].minimum, this.props.plot[i].quartile1, this.props.plot[i].quartile3, this.props.plot[i].maximum, this.props.plot[i].median]};
+            boxes.push(box);
+        }
+        this.setState({
+            dataPoints:boxes
+        }); 
+    }
+
     render() {
         const options = {
             animationEnabled: true,
@@ -12,21 +30,29 @@ class BoxWhisker extends React.Component {
             },
             axisY: { // Y axis details
             title: "BVAP (in %)",
-            interval: 10
+            interval: 50000
             },
             data: [{
             type: "boxAndWhisker",
+            name: "Calculated VAP for Redistricting",
+            showInLegend:true,
             upperBoxColor: "#FFC28D",
             lowerBoxColor: "#9ECCB8",
             color: "black",
-            dataPoints: [ // This is the data (y: [Min, Lower Q, High Q, Max, Median])
-                { label: "District 1", y: [15, 20, 25, 30, 22.5] },
-                { label: "District 2", y: [20, 25, 50, 52.5, 37.5] },
-                { label: "District 3", y: [15, 20, 25, 30, 22.5] },
-                { label: "District 4", y: [55, 70, 85, 90, 82.5] },
-                { label: "District 5", y: [15, 30, 35, 50, 32.5] },
-                { label: "District 6", y: [15, 20, 25, 40, 22.5] }
-            ]
+            dataPoints: this.state.dataPoints
+            },
+            { //Dummy Data for now will have to replace with dynamic vap data
+                type: "scatter",
+                name: "Real Life Median VAP",
+                showInLegend: true,
+                dataPoints: [
+                    {label: "District 1", y: 100000 },
+                    {label: "District 2", y: 100000 },
+                    {label: "District 3", y: 100000 },
+                    {label: "District 4", y: 100000 },
+                    {label: "District 5", y: 100000 },
+                    {label: "District 6", y: 100000 }
+                ]
             }]
         }
         setTimeout(1000);

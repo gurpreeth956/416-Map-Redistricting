@@ -85,11 +85,13 @@ class MainPage extends React.Component {
 				this.setState({
 					averageMap: data
 				});
+				console.log(data);
 			}
 		});
 	}
 
 	loadExtremeMap(job) {
+		console.log(job);
 		const data = { stateId: job.extremeStateId }
 		const url = 'http://localhost:8080/getDistricting'
 		$.ajax({
@@ -100,13 +102,15 @@ class MainPage extends React.Component {
 				this.setState({
 					extremeMap: data
 				});
+				console.log(data);
 			}
 		});
 	}
 
 	loadBoxWhisker(job) {
+		console.log(job);
 		this.setState({
-			boxWhisker: job.boxWhisker
+			boxWhisker: job.boxWhiskers
 		});
 	}
 
@@ -114,7 +118,7 @@ class MainPage extends React.Component {
 		return (
 			<div>
 				<div class="row" id="body-row">
-					<Sidebar loadAverageMap={this.loadAverageMap} loadExtremeMap={this.loadExtremeMap}
+					<Sidebar loadAverageMap={this.loadAverageMap} loadExtremeMap={this.loadExtremeMap} loadBoxWhisker={this.loadBoxWhisker}
 						updateFilters={this.updateFilters} setDefaultFilters={this.setDefaultFilters}></Sidebar>
 					<USMap averageMap={this.state.averageMap} extremeMap={this.state.extremeMap} boxWhisker={this.state.boxWhisker}
 						currentIsSet={currentMapChecked} averageIsSet={averageMapChecked}
