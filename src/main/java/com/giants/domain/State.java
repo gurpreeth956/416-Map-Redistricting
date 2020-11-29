@@ -2,6 +2,7 @@ package com.giants.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -73,9 +74,18 @@ public class State implements Comparable<State> {
         this.districts = districts;
     }
 
+    public void sortDistricts(List<List<Integer>> boxWhiskersData, List<District> districts) {
+        Collections.sort(districts);
+        for (int j = 0; j < districts.size(); j++) {
+            districts.get(j).setDistrictNumber(j+1);
+            boxWhiskersData.get(j+1).add(districts.get(j).getTotalUserRequestedVap());
+        }
+        this.setDistricts(districts);
+    }
+
     public int compareTo(State state) {
-        return (int)((this.getMaxPopulationDifference() + this.getOverallCompactness()) -
-                (state.getMaxPopulationDifference() + state.getOverallCompactness()));
+        return (int)((this.getMaxPopulationDifference() / this.getOverallCompactness()) -
+                (state.getMaxPopulationDifference() / state.getOverallCompactness()));
     }
 
 }

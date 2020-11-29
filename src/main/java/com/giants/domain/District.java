@@ -22,6 +22,12 @@ public class District implements Comparable<District> {
 
     }
 
+    public District(int stateId, PopAndVap popAndVap) {
+        this.stateId = stateId;
+        this.popAndVap = popAndVap;
+        this.districtPrecincts = new ArrayList<>();
+    }
+
     public District(int stateId, int districtNumber, double compactness, int numberOfCounties) {
         this.stateId = stateId;
         this.districtNumber = districtNumber;
