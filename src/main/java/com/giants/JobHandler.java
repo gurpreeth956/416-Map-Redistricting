@@ -10,6 +10,7 @@ import javax.persistence.Query;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import com.giants.threads.RunLocalJob;
 import org.json.simple.*;
@@ -47,13 +48,18 @@ public class JobHandler {
             }
         }
 
-        // Need a to verify format for Precinct GeoJSON
+//         Need a to verify format for Precinct GeoJSON
         System.out.println("1");
-        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA).toString();
         System.out.println("2");
-        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
         System.out.println("3");
-        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
+        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
+//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+//        System.out.println("2");
+//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+//        System.out.println("3");
+//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
         System.out.println("Completed");
     }
 
@@ -204,46 +210,55 @@ public class JobHandler {
      * @return List of all the jobs
      */
     public List<Job> loadAllJobData() {
-        List<Job> jobs = new ArrayList<>();
-
-        // Get jobs from entityManager
+        List<Job> jobs;
         EntityManager em = JPAUtility.getEntityManager();
         try {
-            // Get the list of all tuples in job table
-//            Query q = em.createQuery("SELECT j FROM Jobs j", Job.class);
-//            jobs = q.getResultList();
             jobs = em.createNamedQuery("Jobs.getJobs", Job.class).getResultList();
         } catch (Exception e) {
-            // Return some kind of error here
             System.out.println(e.getMessage());
-            em.getTransaction().rollback();
             return null;
         }
         return jobs;
     }
 
     public String loadDistrictingData(int stateId) {
-        List<District> districts = new ArrayList<>();
+        System.out.println("AAAAA");
+        // Return format
+//        data = {
+//            districtPos: ,
+//            pop (for each):
+//            vap (for each):
+//            geoJson: [
+//                    ]
+//        }
 
-        // Get State from entityManager
+        List<District> districts;
         EntityManager em = JPAUtility.getEntityManager();
         try {
-            // Start of transaction
-            em.getTransaction().begin();
             // Get all District objects where stateId == stateId
-            Query q = em.createQuery("SELECT d FROM Districts d WHERE stateId = :stateId", Job.class)
-                    .setParameter("stateId", stateId);
-            em.getTransaction().commit();
-            districts = q.getResultList();
+//            Query q = em.createQuery("SELECT d FROM Districts d WHERE stateId = :stateId", Job.class)
+//                    .setParameter("stateId", stateId);
+//            em.getTransaction().commit();
+//            districts = q.getResultList();
+//            Query q = em.createQuery("SELECT Districts WHERE stateId = :stateId");
+//            q.setParameter("stateId", stateId);
+//            q.executeUpdate();
+//            districts = q.getResultList();
+            State state = em.find(State.class, stateId);
+            System.out.println(stateId + " " + state.getId());
+            districts = state.getDistricts();
+            for (District d : districts) {
+                System.out.println("HEHE" + d.getId());
+            }
         } catch (Exception e) {
-            // Return some kind of error here
-            em.getTransaction().rollback();
+            System.out.println(e.getMessage());
             return null;
         }
         // Return
         String geoJson = "";
         for (District district : districts) {
-            geoJson += district.getPopAndVap();
+//            geoJson += district.getPopAndVap();
+//            System.out.println(geoJson);
         }
         return geoJson;
     }
@@ -254,7 +269,7 @@ public class JobHandler {
      * @param stateAbbreviation
      * @return
      */
-    public String loadPrecinctData(StateAbbreviation stateAbbreviation) {
+    public JSONObject loadPrecinctData(StateAbbreviation stateAbbreviation) {
         String filePath = null;
         if (stateAbbreviation == StateAbbreviation.CA) {
             filePath = "./src/main/resources/jsons/precincts/CaliforniaPrecincts.json";
@@ -266,8 +281,7 @@ public class JobHandler {
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(new FileReader(filePath));
-            JSONObject jsonObject = (JSONObject)obj;
-            return jsonObject.toString();
+            return (JSONObject) obj;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
@@ -299,7 +313,6 @@ public class JobHandler {
         for (int id : jobsToCheckStatus) {
             jobsToCheck.add(jobs.get(id));
         }
-        // Pretend status is returned from SeaWulf
         // Iterator to handle sync issues
         Iterator<Job> jobIterator = jobsToCheck.iterator();
         while (jobIterator.hasNext()) {
@@ -309,14 +322,13 @@ public class JobHandler {
             if (job.getSeaWulfId() == -1) {
                 // PROCESSING for local job means it has finished running
                 if (job.getJobStatus() == JobStatus.PROCESSING) {
-                    System.out.println("1111");
+                    System.out.println("Starting Processing...");
                     parseLocalDistrictingJson(job);
-                    System.out.println("2222");
+                    System.out.println("Finishing Processing...");
                     changeJobStatus(job.getId(), JobStatus.COMPLETED);
                 }
                 continue;
             }
-//            System.out.println(job.getId());
             if (job.getJobStatus() == JobStatus.WAITING) {
                 // Check if status changed from waiting
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
@@ -336,36 +348,14 @@ public class JobHandler {
                     // DO THIS IN A SEPARATE METHOD !!! (make sure to update db)
                     // Send slurm script to calculate data (avg, extreme, boxwhiskers
 
-                    changeJobStatus(job.getId(), JobStatus.PROCESSING);
-                    String filePath = job.retrieveSeaWulfData();
+                    changeJobStatus(job.getId(), JobStatus.COMPLETED);
+//                    String filePath = job.retrieveSeaWulfData();
                     // Methods below here return boolean not sure if check is necessary
-                    job.countCounties(filePath);
-                    job.generateJsonFile(filePath);
-                    job.generateAvgExtDistrictingPlan(filePath);
-                    job.generateBoxWhiskers(filePath);
+//                    job.countCounties(filePath);
+//                    job.generateJsonFile(filePath);
+//                    job.generateAvgExtDistrictingPlan(filePath);
+//                    job.generateBoxWhiskers(filePath);
 
-
-                    // Update the database
-//                    EntityManager em = JPAUtility.getEntityManager();
-//                    try {
-//                        // Change database job status to completed
-//                        em.getTransaction().begin();
-//                        Query q = em.createQuery("UPDATE Jobs SET status = :status, averageStateId = :averageStateId," +
-//                                "extremeStateId = :extremeStateId WHERE id = :id");
-//                        q.setParameter("id", job.getId());
-//                        q.setParameter("averageStateId", job.getAverageStateId());
-//                        q.setParameter("extremeStateId", job.getExtremeStateId());
-//                        q.setParameter("jobStatus", job.getJobStatus());
-//                        q.executeUpdate();
-//
-//                        // UPDATE BOX WHISKER TABLE HEREEE
-//
-//                        em.getTransaction().commit();
-//                    } catch (Exception e) {
-//                        // Return some kind of error here
-//                        em.getTransaction().rollback();
-//                        return null;
-//                    }
                 }
             }
         }
@@ -388,13 +378,10 @@ public class JobHandler {
         Job job = jobs.get(jobId);
         EntityManager em = JPAUtility.getEntityManager();
         try {
-            // Change job status
             em.getTransaction().begin();
             job.setJobStatus(jobStatus);
             em.getTransaction().commit();
-            // make sure to remove all instances of job object from server
         } catch (Exception e) {
-            // Return some kind of error here
             System.out.println(e.getMessage());
             em.getTransaction().rollback();
             return false;
@@ -405,21 +392,21 @@ public class JobHandler {
     /**
      * This method is called after a local job is completed. It calculates the number of
      * counties, the average plan, the extreme plan, orders the districts by user requested
-     * VAPs and the box and whiskers data
+     * VAPs and the box and whiskers data.
      *
-     * @param job
-     * @return
+     * @param job - The job to parse
+     * @return Boolean for success
      */
     private boolean parseLocalDistrictingJson(Job job) {
         EntityManager em = JPAUtility.getEntityManager();
         try {
             em.getTransaction().begin();
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/"
-                    + job.getId() + ".json"));
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
             List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job);
             List<State> states = job.getStates();
+            int totalSpecifiedStateVap = 0;
             // Iterate through districtings array
             for (int i = 0; i < districtingsJson.size(); i++) {
                 JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
@@ -427,17 +414,15 @@ public class JobHandler {
                         ((double) districtingJson.get("Overall Compactness")));
                 em.persist(state);
                 states.add(state);
+                totalSpecifiedStateVap = 0;
                 List<District> districts = state.getDistricts();
                 JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
                 // Iterate through districts array
                 for (int j = 0; j < districtsJson.size(); j++) {
                     JSONObject districtJson = (JSONObject) districtsJson.get(j);
-                    District district = new District();
-                    district.setStateId(state.getId());
                     PopAndVap popAndVap = new PopAndVap();
                     popAndVap.setAbbreviation(job.getAbbreviation());
-                    district.setPopAndVap(popAndVap);
-                    district.setDistrictPrecincts(new ArrayList<>());
+                    District district = new District(state.getId(), popAndVap);
 
                     // NEED TO ADD ALL PRECINCTS VAPS AND POPS TO DISTRICT GEOJSON
 
@@ -445,6 +430,7 @@ public class JobHandler {
                     em.persist(district);
                     districts.add(district);
                     List<DistrictPrecinct> districtPrecincts = district.getDistrictPrecincts();
+                    // For counting counties as you iterate through the precincts in each district
                     Set<Integer> counties = new HashSet<>();
                     JSONArray precinctsJson = (JSONArray) districtJson.get("precincts");
                     // Iterate through precincts array
@@ -457,40 +443,22 @@ public class JobHandler {
                         districtPrecincts.add(districtPrecinct);
                         counties.add(precinct.getCountyId());
                         // Get pop and vap of the user entered ethnicities
-                        district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinct.getSpecificVap(job.getEthnicities()));
+                        int precinctSpecifiedVap = precinct.getSpecificVap(job.getEthnicities());
+                        district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinctSpecifiedVap);
+                        totalSpecifiedStateVap += precinctSpecifiedVap;
                     }
                     district.setDistrictPrecincts(districtPrecincts);
                     district.setNumberOfCounties(counties.size());
                 }
-                Collections.sort(districts);
-                for (int j = 0; j < districts.size(); j++) {
-                    districts.get(j).setDistrictNumber(j+1);
-                    boxWhiskersData.get(j+1).add(districts.get(j).getTotalUserRequestedVap());
-                }
-                state.setDistricts(districts);
+                // Sort districts and set box whiskers position number for each state
+                state.sortDistricts(boxWhiskersData, districts);
             }
-            // Calculate average and extreme states
-            Collections.sort(states);
-            int averageStateId = (states.get((int)(states.size()/2))).getId();
-            int extremeStateId = (states.get((int)(states.size()-1))).getId();
-            job.setStates(states);
-            job.setAverageStateId(averageStateId);
-            job.setExtremeStateId(extremeStateId);
-            List<BoxWhisker> boxWhiskers = job.getBoxWhiskers();
-            //Calculate box and whiskers plot
-            for (int i = 1; i < boxWhiskersData.size(); i++) {
-                List<Integer> boxWhiskerData = boxWhiskersData.get(i);
-                BoxWhisker boxWhisker = new BoxWhisker(job.getId(), i);
-                Collections.sort(boxWhiskerData);
-                boxWhisker.setMinimum(boxWhiskerData.get(0));
-                boxWhisker.setQuartile1(boxWhiskerData.get((int)(boxWhiskerData.size()/4)));
-                boxWhisker.setMedian(boxWhiskerData.get((int)(boxWhiskerData.size()/2)));
-                boxWhisker.setQuartile3(boxWhiskerData.get((int)(boxWhiskerData.size()/2+boxWhiskerData.size()/4)));
-                boxWhisker.setMaximum(boxWhiskerData.get(boxWhiskerData.size()-1));
-                boxWhiskers.add(boxWhisker);
+            // Calculate average and extreme states and box and whiskers
+            job.calculateAvgExtDistrictingPlan(states);
+            List<BoxWhisker> boxWhiskers = job.generateBoxWhiskers(boxWhiskersData, totalSpecifiedStateVap);
+            for (BoxWhisker boxWhisker : boxWhiskers) {
                 em.persist(boxWhisker);
             }
-            job.setBoxWhiskers(boxWhiskers);
             em.getTransaction().commit();
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -504,7 +472,7 @@ public class JobHandler {
         return true;
     }
 
-    public List<List<Integer>> createBoxWhiskerArray(Job job) {
+    private List<List<Integer>> createBoxWhiskerArray(Job job) {
         int districts = 0;
         switch (job.getAbbreviation()) {
             case CA:

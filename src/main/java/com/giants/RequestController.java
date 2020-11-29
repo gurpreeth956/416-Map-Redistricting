@@ -1,8 +1,11 @@
 package com.giants;
 
 import com.giants.domain.State;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.bind.annotation.*;
 
 import com.giants.domain.Job;
@@ -75,16 +78,4 @@ public class RequestController {
         jobHandler.checkJobStatus();
     }
 
-    // Testing/working post method
-    @PostMapping("/hello")
-    public String hello(@RequestParam("id") String string) {
-        System.out.println(string);
-        return "MMMM";
-    }
-
-    // Testing/working post method
-    @GetMapping("/bye")
-    public void bye() {
-        System.out.println("bye");
-    }
 }

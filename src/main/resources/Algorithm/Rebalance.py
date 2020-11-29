@@ -6,7 +6,7 @@ import SeedDistricting as SeedDistricting
 import sys
 import json
 
-terminationCondition = 3
+terminationCondition = 10
 JobId = sys.argv[1]
 populationThreshold = float(sys.argv[4])
 idealPopulation = 755501
@@ -33,23 +33,23 @@ def rebalance(graph):
         counter2 = 0  # no of times we are trying to find a feasible edge
 
         # might change this to go through all edge and pick a random one.
-        while counter2 < len(tree.edges):
-            [new1, new2] = cutRandomEdge(graph, tree)
-            improved = populationImproved(range, cluster1, cluster2, new1, new2) and compactnessImproved(cluster1, cluster2, new1, new2)
-            if improved:
-                print("Improved!")
-                updateClusterNeighborFromTree(tree, new1)
-                updateClusterNeighborFromTree(tree, new2)
-                addClusterToGraph(graph, new1)
-                addClusterToGraph(graph, new2)
-                removeClusterFromGraph(graph, cluster1)
-                removeClusterFromGraph(graph, cluster2)
+#         while counter2 < len(tree.edges):
+        [new1, new2] = cutRandomEdge(graph, tree)
+        improved = populationImproved(range, cluster1, cluster2, new1, new2) and compactnessImproved(cluster1, cluster2, new1, new2)
+#             if improved:
+        print("Improved!")
+        updateClusterNeighborFromTree(tree, new1)
+        updateClusterNeighborFromTree(tree, new2)
+        addClusterToGraph(graph, new1)
+        addClusterToGraph(graph, new2)
+        removeClusterFromGraph(graph, cluster1)
+        removeClusterFromGraph(graph, cluster2)
 
-                graph.toString()
-                break
-            else:
-                print("not improved!")
-            counter2 = counter2 + 1
+        graph.toString()
+#                 break
+#             else:
+#                 print("not improved!")
+#             counter2 = counter2 + 1
         counter = counter + 1
 
     writeToJson(graph)
