@@ -12,10 +12,12 @@ class Sidebar extends React.Component {
     this.cancelJob = this.cancelJob.bind(this);
     this.deleteJob = this.deleteJob.bind(this);
     this.addJob = this.addJob.bind(this);
+    this.updateCheckboxes = this.updateCheckboxes.bind(this);
     this.state = {
       jobs:[],
       loadedJob:null
     };
+    this.filters = React.createRef();
   }
 
   componentDidMount() {
@@ -36,6 +38,10 @@ class Sidebar extends React.Component {
 			}
 		)
   }
+
+  updateCheckboxes(box) {
+    this.props.updateFilters(box);
+  }
   
   loadJob(index) {
     if(index === -1) {
@@ -48,8 +54,11 @@ class Sidebar extends React.Component {
         loadedJob: job
       });
     }
+    this.filters.current.setDefaultCheckboxes();
+    this.props.setDefaultFilters();
     // this.props.loadAverageMap(job);
     // this.props.loadExtremeMap(job);
+    // this.props.loadBoxWhisker();
   }
 
 	cancelJob(index) {
@@ -136,7 +145,7 @@ class Sidebar extends React.Component {
           </div>
         </a>
         <div id='filter-submenu' class="collapse sidebar-submenu card">
-          <Filters loadedJob={this.state.loadedJob}></Filters>
+          <Filters ref={this.filters} loadedJob={this.state.loadedJob} updateCheckboxes={this.updateCheckboxes}></Filters>
         </div>
         <a href="#history-submenu" data-toggle="collapse" aria-expanded="false"
           class="bg-light list-group-item list-group-item-action flex-column align-items-start"
