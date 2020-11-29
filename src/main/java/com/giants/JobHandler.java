@@ -216,13 +216,13 @@ public class JobHandler {
             jobs = em.createNamedQuery("Jobs.getJobs", Job.class).getResultList();
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            em.getTransaction().rollback();
             return null;
         }
         return jobs;
     }
 
     public String loadDistrictingData(int stateId) {
+        System.out.println("AAAAA");
         // Return format
 //        data = {
 //            districtPos: ,
@@ -232,25 +232,33 @@ public class JobHandler {
 //                    ]
 //        }
 
-
         List<District> districts;
         EntityManager em = JPAUtility.getEntityManager();
         try {
-            em.getTransaction().begin();
             // Get all District objects where stateId == stateId
-            Query q = em.createQuery("SELECT d FROM Districts d WHERE stateId = :stateId", Job.class)
-                    .setParameter("stateId", stateId);
-            em.getTransaction().commit();
-            districts = q.getResultList();
+//            Query q = em.createQuery("SELECT d FROM Districts d WHERE stateId = :stateId", Job.class)
+//                    .setParameter("stateId", stateId);
+//            em.getTransaction().commit();
+//            districts = q.getResultList();
+//            Query q = em.createQuery("SELECT Districts WHERE stateId = :stateId");
+//            q.setParameter("stateId", stateId);
+//            q.executeUpdate();
+//            districts = q.getResultList();
+            State state = em.find(State.class, stateId);
+            System.out.println(stateId + " " + state.getId());
+            districts = state.getDistricts();
+            for (District d : districts) {
+                System.out.println("HEHE" + d.getId());
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            em.getTransaction().rollback();
             return null;
         }
         // Return
         String geoJson = "";
         for (District district : districts) {
-            geoJson += district.getPopAndVap();
+//            geoJson += district.getPopAndVap();
+//            System.out.println(geoJson);
         }
         return geoJson;
     }
@@ -340,11 +348,6 @@ public class JobHandler {
                     // DO THIS IN A SEPARATE METHOD !!! (make sure to update db)
                     // Send slurm script to calculate data (avg, extreme, boxwhiskers
 
-                    try {
-                        TimeUnit.SECONDS.sleep(10);
-                    } catch (Exception e) {
-                        System.out.println("OOF");
-                    }
                     changeJobStatus(job.getId(), JobStatus.COMPLETED);
 //                    String filePath = job.retrieveSeaWulfData();
                     // Methods below here return boolean not sure if check is necessary
