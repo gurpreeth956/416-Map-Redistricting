@@ -173,6 +173,9 @@ public class Job {
 
     public boolean executeSeaWulfJob() {
         Script script = new Script();
+
+        // DECIDE HOW TO SPLIT UP SEAWULF JOB
+
         String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
                 "module load slurm; module load anaconda/2; module load mvapich2/gcc/64/2.2rc1; cd ~/Jobs; " +
                 "sbatch ~/Jobs/districting.slurm " + this.abbreviation + " " + this.userCompactness + " " +

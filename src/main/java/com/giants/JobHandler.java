@@ -49,12 +49,12 @@ public class JobHandler {
         }
 
 //         Need a to verify format for Precinct GeoJSON
-        System.out.println("1");
-        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA).toString();
-        System.out.println("2");
-        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
-        System.out.println("3");
-        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
+//        System.out.println("1");
+//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+//        System.out.println("2");
+//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+//        System.out.println("3");
+//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
 //        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
 //        System.out.println("2");
 //        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
@@ -72,11 +72,11 @@ public class JobHandler {
     public String getStateData(StateAbbreviation stateAbbreviation) {
         // NEED TO WAIT UNTIL PRECINCT DATA DONE LOADING FORM INITIALSETUP() (wait till Completed is printed)
         if (stateAbbreviation == StateAbbreviation.CA) {
-            return californiaPrecinctData;
+            return californiaPrecinctData.toString();
         } else if (stateAbbreviation == StateAbbreviation.PA) {
-            return pennsylvaniaPrecinctData;
+            return pennsylvaniaPrecinctData.toString();
         } else {
-            return louisianaPrecinctData;
+            return louisianaPrecinctData.toString();
         }
     }
 
@@ -221,7 +221,7 @@ public class JobHandler {
         return jobs;
     }
 
-    public String loadDistrictingData(int stateId) {
+    public String loadDistrictingData(int jobId) {
         System.out.println("AAAAA");
         // Return format
 //        data = {
@@ -231,36 +231,51 @@ public class JobHandler {
 //            geoJson: [
 //                    ]
 //        }
-
-        List<District> districts;
         EntityManager em = JPAUtility.getEntityManager();
         try {
-            // Get all District objects where stateId == stateId
-//            Query q = em.createQuery("SELECT d FROM Districts d WHERE stateId = :stateId", Job.class)
-//                    .setParameter("stateId", stateId);
-//            em.getTransaction().commit();
-//            districts = q.getResultList();
-//            Query q = em.createQuery("SELECT Districts WHERE stateId = :stateId");
-//            q.setParameter("stateId", stateId);
-//            q.executeUpdate();
-//            districts = q.getResultList();
-            State state = em.find(State.class, stateId);
-            System.out.println(stateId + " " + state.getId());
-            districts = state.getDistricts();
-            for (District d : districts) {
-                System.out.println("HEHE" + d.getId());
-            }
-        } catch (Exception e) {
+            Job job = jobs.get(jobId);
+            // CALL METHOD TO GET JOB DISTRICTING JSON
+            System.out.println(precincts);
+        } catch (IOException e) {
             System.out.println(e.getMessage());
-            return null;
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
         }
-        // Return
-        String geoJson = "";
-        for (District district : districts) {
-//            geoJson += district.getPopAndVap();
-//            System.out.println(geoJson);
-        }
-        return geoJson;
+
+//        JSONObject precinctData = getStateDataJson(job.getAbbreviation());
+//        System.out.println(precinctData);
+        //
+
+//        List<District> districts;
+//        EntityManager em = JPAUtility.getEntityManager();
+//        try {
+//            // Get all District objects where stateId == stateId
+////            Query q = em.createQuery("SELECT d FROM Districts d WHERE stateId = :stateId", Job.class)
+////                    .setParameter("stateId", stateId);
+////            em.getTransaction().commit();
+////            districts = q.getResultList();
+////            Query q = em.createQuery("SELECT Districts WHERE stateId = :stateId");
+////            q.setParameter("stateId", stateId);
+////            q.executeUpdate();
+////            districts = q.getResultList();
+//            State state = em.find(State.class, stateId);
+//            System.out.println(stateId + " " + state.getId());
+//            districts = state.getDistricts();
+//            for (District d : districts) {
+//                System.out.println("HEHE" + d.getId());
+//            }
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//            return null;
+//        }
+//        // Return
+//        String geoJson = "";
+//        for (District district : districts) {
+////            geoJson += district.getPopAndVap();
+////            System.out.println(geoJson);
+//        }
+//        return geoJson;
+        return null;
     }
 
     /**
@@ -269,7 +284,19 @@ public class JobHandler {
      * @param stateAbbreviation
      * @return
      */
-    public JSONObject loadPrecinctData(StateAbbreviation stateAbbreviation) {
+    public String loadPrecinctData(StateAbbreviation stateAbbreviation) {
+        String filePath = getPrecinctsFile(stateAbbreviation);
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader(filePath));
+            return obj.toString();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public String getPrecinctsFile(StateAbbreviation stateAbbreviation) {
         String filePath = null;
         if (stateAbbreviation == StateAbbreviation.CA) {
             filePath = "./src/main/resources/jsons/precincts/CaliforniaPrecincts.json";
@@ -278,14 +305,7 @@ public class JobHandler {
         } else if (stateAbbreviation == StateAbbreviation.PA) {
             filePath = "./src/main/resources/jsons/precincts/PennsylvaniaPrecincts.json";
         }
-        JSONParser parser = new JSONParser();
-        try {
-            Object obj = parser.parse(new FileReader(filePath));
-            return (JSONObject) obj;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return filePath;
     }
 
     /**
@@ -493,4 +513,12 @@ public class JobHandler {
         return  boxWhiskersData;
     }
 }
+
+
+//    State avgState = em.find(State.class, job.getAverageStateId());
+//    State extState = em.find(State.class, job.getExtremeStateId());
+//    String filePath = getPrecinctsFile(job.getAbbreviation());
+//    JSONParser jsonParser = new JSONParser();
+//    JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader(filePath));
+//    JSONArray precincts = (JSONArray) jsonObject.get("features");
 
