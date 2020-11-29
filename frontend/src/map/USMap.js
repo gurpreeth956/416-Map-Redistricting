@@ -1,7 +1,8 @@
 import React from 'react';
 import $ from 'jquery';
-import L from 'leaflet';
+import districtGeoJson from './districts-geojson.json';
 import stateGeoJson from './states-geojson.json';
+import L from 'leaflet';
 import SummaryData from './SummaryData.js';
 import { Map, TileLayer, GeoJSON } from 'react-leaflet';
 
@@ -22,9 +23,12 @@ class USMap extends React.Component {
         }
         this.map = React.createRef();
         this.stateGeoJson = React.createRef();
+        this.realDistricts = React.createRef();
     }
 
     componentDidMount() {
+        var districts = L.geoJson(stateGeoJson);
+        console.log(districts);
         //Load in districting geojson here
         // var data = {stateId: 0};
         // const url = 'http://localhost:8080/getDistricting'
@@ -101,6 +105,22 @@ class USMap extends React.Component {
         console.log("finished loading La");
     }
 
+    getColor(d) { //Set color of our three states
+        if (d === "California" || d === "Louisiana" || d === "Pennsylvania") {
+            return '#E31A1C';
+        }
+    }
+    style = (feature) => { //styles all of the US states
+        return {
+            fillColor: this.getColor(feature.properties.name),
+            weight: 2,
+            opacity: 1,
+            color: 'white',
+            dashArray: '3',
+            fillOpacity: 0.7
+        };
+    }
+
     onEachFeature = (feature, layer, e) => {
         layer.on({
             mouseover: this.highlightFeature.bind(this),
@@ -113,8 +133,9 @@ class USMap extends React.Component {
         if (e.target.feature.properties.name === "California" ||
             e.target.feature.properties.name === "Louisiana" ||
             e.target.feature.properties.name === "Pennsylvania") {
+            console.log(e.target);
             var layer = e.target;
-                layer.setStyle({
+            layer.setStyle({
                 weight: 5,
                 color: '#666',
                 dashArray: '',
@@ -134,7 +155,7 @@ class USMap extends React.Component {
             console.log(e);
             this.map.current.leafletElement.setMaxZoom(6.5);
             this.map.current.leafletElement.setMaxZoom(6.5);
-            this.map.current.leafletElement.flyToBounds(e.target.getBounds());
+            this.map.current.leafletElement.setView([36.0, -119], 6.5);
             if(this.state.CA !== "") {
                 this.loadCAPrecincts();
                 this.setState({
@@ -145,7 +166,7 @@ class USMap extends React.Component {
           else if (e.target.feature.properties.name === "Pennsylvania") {
             this.map.current.leafletElement.setMaxZoom(8);
             this.map.current.leafletElement.setMinZoom(8);
-            this.map.current.leafletElement.flyToBounds(e.target.getBounds());
+            this.map.current.leafletElement.setView([41.0, -77], 8);
             if(this.state.PA !== "") {
                 this.loadPAPrecincts();
                 this.setState({
@@ -155,15 +176,13 @@ class USMap extends React.Component {
           } else if(e.target.feature.properties.name === "Louisiana") {
             this.map.current.leafletElement.setMaxZoom(7.5);
             this.map.current.leafletElement.setMinZoom(7.5);
-            this.map.current.leafletElement.flyToBounds(e.target.getBounds());
-            console.log(this.state);
+            this.map.current.leafletElement.setView([31.0, -92], 8);
             if(this.state.LA !== "") {
                 this.loadLAPrecincts();
                 this.setState({
                     zoomedOut:false
                 });
             }
-            this.loadLAPrecincts();
           } else { // if you click any of the other states than you are sent back to the starting position
             this.map.current.leafletElement.setMaxZoom(5);
             this.map.current.leafletElement.setMinZoom(5);
@@ -175,7 +194,16 @@ class USMap extends React.Component {
     }
 
     render() {
-        console.log(this.props);
+        var mapClass;
+        var precinctClass;
+        if(this.state.zoomedOut == true) {
+            mapClass = "front-geojson-class";
+            precinctClass = "back-geojson-class";
+        } else {
+            precinctClass = "front-geojson-class"
+            mapClass = "back-geojson-class";
+        }
+
         return(
             <div class="col bg-white" id="body-col">
                 <div id = "test"></div>
@@ -184,33 +212,38 @@ class USMap extends React.Component {
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg"
                 />
-                <GeoJSON ref = {this.stateGeoJson} data={stateGeoJson} onMouseOver={this.onMouseOver} onEachFeature={this.onEachFeature}></GeoJSON>
+                
+                {/* GeoJSON for IRL Precincts */}
                 {this.state.caPrecinct !== "" && !this.state.zoomedOut && this.props.precinctsIsSet ? 
-					<GeoJSON data={this.state.caPrecinct}></GeoJSON> :
+					<GeoJSON data={this.state.caPrecinct} className={precinctClass}></GeoJSON> :
 					null
 				}
                 {this.state.laPrecinct !== "" && !this.state.zoomedOut && this.props.precinctsIsSet ? 
-					<GeoJSON data={this.state.laPrecinct}></GeoJSON> :
+					<GeoJSON data={this.state.laPrecinct} className={precinctClass}></GeoJSON> :
                     null
                 }
                 {this.state.paPrecinct !== "" && !this.state.zoomedOut && this.props.precinctsIsSet ? 
-					<GeoJSON data={this.state.paPrecinct}></GeoJSON> :
+					<GeoJSON data={this.state.paPrecinct} className={precinctClass}></GeoJSON> :
 					null
 				}
-                {this.state.caDistrict !== "" && this.props.districtsIsSet ? 
-					<GeoJSON data={this.state.caDistrict}></GeoJSON> :
-					null
-				}
-                {this.state.laDistrict !== "" && this.props.districtsIsSet ? 
-					<GeoJSON data={this.state.laDistrict}></GeoJSON> :
+                {/* GeoJSON for State */}
+                <GeoJSON ref = {this.stateGeoJson} data={stateGeoJson} className={mapClass} style={this.style} onEachFeature={this.onEachFeature}></GeoJSON>
+                {/* GeoJSON for IRL Districts */}
+                {this.props.districtsIsSet && this.props.currentIsSet ? 
+                    <GeoJSON ref={this.realDistricts} data={districtGeoJson} className={"back-geojson-class"}></GeoJSON> : 
                     null
                 }
-                {this.state.paDistrict !== "" && this.props.districtsIsSet ? 
-					<GeoJSON data={this.state.paDistrict}></GeoJSON> :
+                {/* GeoJSON for job maps */}
+                {this.props.averageMap !== "" && this.props.districtsIsSet && this.props.averageIsSet ? 
+					<GeoJSON data={this.props.averageMap}></GeoJSON> :
+                    null
+                }
+                {this.state.extremeMap !== "" && this.props.districtsIsSet && this.props.extremeIsSet? 
+					<GeoJSON data={this.props.extremeMap}></GeoJSON> :
 					null
 				}
             </Map>
-            <SummaryData/>
+            {this.props.extremeMap !== "" && this.averageMap !== "" ? <SummaryData boxWhisker={this.props.boxWhisker}/> : null}
             </div>
         );
     }

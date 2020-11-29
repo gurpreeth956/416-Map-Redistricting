@@ -54,18 +54,6 @@ class GenerateMapForm extends React.Component {
 	}
 
   handleSubmit = event => {
-		alert(`
-      ${this.state.state}
-      ${this.state.numMaps}
-      White: ${this.state.white}
-      Black/African American: ${this.state.black}
-      Hispanic or Latino: ${this.state.hispanic}
-      Asian: ${this.state.asian}
-      American Indian or Alaskan Native: ${this.state.native}
-      Native Hawaiian or Other Pacfic Islander: ${this.state.hawaiin}
-      ${this.state.popDiff}
-      ${this.state.compactness}
-      `)
 		event.preventDefault()
     var ethnicity = []
     if(this.state.black){
@@ -86,12 +74,6 @@ class GenerateMapForm extends React.Component {
     if(this.state.hawaiin){
       ethnicity.push("NATIVE_HAWAIIAN_AND_OTHER_PACIFIC")
     }
-    console.log(this.state.state)
-    console.log(this.state.compactness)
-    console.log(this.state.popDiff)
-    console.log(ethnicity.toString())
-    console.log(this.state.numMaps)
-    console.log(ethnicity.toString())
     const data = {stateName: this.state.state, userCompactness: this.state.compactness,
     populationDifferenceLimit: this.state.popDiff, ethnicities: ethnicity.toString(),
     numberOfMaps: this.state.numMaps}
@@ -101,7 +83,7 @@ class GenerateMapForm extends React.Component {
       type:"POST",
       data: data,
       success: (job) => {
-        console.log("Job Created Id: " + job.jobId)
+        alert('Job Created ID# ' + job.id);
         this.props.addJob(job);
       }
     });

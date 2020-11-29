@@ -50,8 +50,6 @@ class Filters extends React.Component {
 
 	render() {
 		const loaded_job = this.props.loadedJob;
-		console.log(this.props.loadedJob);
-		console.log(this.state);
 		var ethnicities = [];
 		var map_filters;
 
