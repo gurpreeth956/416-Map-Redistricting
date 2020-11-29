@@ -44,20 +44,21 @@ class Sidebar extends React.Component {
   }
   
   loadJob(index) {
+    var job;
     if(index === -1) {
+      job = null;
       this.setState({
         loadedJob: null
       });
     } else {
-      var job = this.state.jobs[index];
+      job = this.state.jobs[index];
       this.setState({
         loadedJob: job
       });
     }
     this.filters.current.setDefaultCheckboxes();
     this.props.setDefaultFilters();
-    this.props.loadAverageMap(job);
-    this.props.loadExtremeMap(job);
+    this.props.loadMaps(job);
     this.props.loadBoxWhisker(job);
   }
 
