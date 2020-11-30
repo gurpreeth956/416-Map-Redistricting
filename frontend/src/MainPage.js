@@ -92,7 +92,7 @@ class MainPage extends React.Component {
 			const url = 'http://localhost:8080/getDistricting'
 			$.ajax({
 				url: url,
-				type: "POST",
+				type: "GET",
 				data: data,
 				success: (data) => {
 					this.setState({

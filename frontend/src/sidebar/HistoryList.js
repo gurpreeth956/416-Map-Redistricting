@@ -39,8 +39,8 @@ class HistoryList extends React.Component {
 								</div>
 								<p>State: {job.abbreviation}</p>
 								<p>Maps to Generate: {job.numberOfMaps}</p>
-								<p>Compactness: {job.userCompactness}</p>
-								<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
+								<p>Compactness: {this.props.getCompactnessFromInt(job.userCompactness)}</p>
+								<p>Population Limit Difference: {job.populationDifferenceLimit + "%"}</p>
 								<div class="btn-group">
 									{loaded_id != null && loaded_id != undefined && loaded_id === job.id ?
 										<button type="button" class="btn btn-primary history-item-button text-nowrap" disabled onClick={(e) => { e.stopPropagation(); this.props.loadJob(index); }}>Load Job</button> :
@@ -59,8 +59,8 @@ class HistoryList extends React.Component {
 								</div>
 								<p>State: {job.abbreviation}</p>
 								<p>Maps to Generate: {job.numberOfMaps}</p>
-								<p>Compactness: {job.userCompactness}</p>
-								<p>Population Limit Difference: {job.populationDifferenceLimit}</p>
+								<p>Compactness: {this.props.getCompactnessFromInt(job.userCompactness)}</p>
+								<p>Population Limit Difference: {job.populationDifferenceLimit + "%"}</p>
 								<div class="btn-group">
 									{job.jobStatus === "WAITING" || job.jobStatus === "RUNNING" && job.seaWulfId !== -1 && job.jobStatus !== "PROCESSING" ?
 										<button type="button" class="btn btn-secondary history-item-button text-nowrap enabled" onClick={(e) => this.props.cancelJob(index)}>Cancel Job</button> :
