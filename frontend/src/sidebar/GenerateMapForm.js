@@ -76,7 +76,7 @@ class GenerateMapForm extends React.Component {
 		if (this.state.numMaps > 10000 || this.state.numMaps < 1) {
 			numMapError = true;
 		}
-		if (this.state.popDiff < 0.0 || this.state.popDiff > 100.0) {
+		if (this.state.popDiff < 0.0) {
 			popDiffError = true;
 		}
 		if (ethnicity.length === 0) {

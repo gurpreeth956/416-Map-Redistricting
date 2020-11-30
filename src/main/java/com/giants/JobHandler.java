@@ -86,27 +86,16 @@ public class JobHandler {
                          List<RaceEthnicity> userEthnicities, int numberOfMaps) {
         Job job = new Job(stateName, userEthnicities, userCompactness, populationDifferenceLimit, numberOfMaps);
         int seaWulfThreshold = Integer.parseInt(properties.getProperty("seaWulfThreshold"));
-        boolean runLocally = false;
-        if (numberOfMaps > seaWulfThreshold) {
-            if (!job.executeSeaWulfJob()) return null;
-            job.setJobStatus(JobStatus.WAITING);
-        } else {
-            runLocally = true;
-        }
-
         EntityManager em = JPAUtility.getEntityManager();
-//        EntityTransaction txn = em.getTransaction();
-//        if (txn.isActive()) {
-//            try {
-//                txn.rollback();
-//            } catch (PersistenceException | IllegalStateException e) {
-//                System.out.println(e.getMessage());
-//            }
-//        }
         try {
             em.getTransaction().begin();
             em.persist(job);
-            if (runLocally) {
+            if (numberOfMaps > seaWulfThreshold) {
+                // Run job on SeaWulf
+                if (!job.executeSeaWulfJob()) return null;
+                job.setJobStatus(JobStatus.WAITING);
+            } else {
+                // Run job locally
                 job.setSeaWulfId(-1);
                 job.setJobStatus(JobStatus.RUNNING);
                 Runnable r = new RunLocalJob(job);
@@ -139,15 +128,17 @@ public class JobHandler {
      */
     public List<Job> cancelJobData(int jobId) {
         Job job = jobs.get(jobId);
-        // Make sure valid jobId (to be safe)
+        // Make sure valid jobId and not local job
         if (job != null && job.getSeaWulfId() != -1 && job.getJobStatus() != JobStatus.COMPLETED &&
                 job.getJobStatus() != JobStatus.CANCELLED) {
             Script script = new Script();
             String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                     "'source /etc/profile.d/modules.sh; module load slurm; scancel %d'", job.getSeaWulfId());
             String processOutput = script.createScript(command);
+            job.setJobStatus(JobStatus.CANCELLED);
             jobs.replace(jobId, job);
             jobsToCheckStatus.remove(new Integer(jobId));
+            changeJobStatus(jobId, JobStatus.CANCELLED);
         }
         List<Job> jobList = new ArrayList<>();
         for (Integer id : jobs.keySet()) {
@@ -166,7 +157,7 @@ public class JobHandler {
      */
     public List<Job> deleteJobData(int jobId) {
         Job job = jobs.get(jobId);
-        // If local job then make sure it was cancelled or completed (to be safe)
+        // If local job then make sure it was cancelled or completed
         if (job != null && (job.getSeaWulfId() != -1 || (job.getSeaWulfId() == -1 && job.getJobStatus() != JobStatus.RUNNING))) {
             // If job is running or waiting cancel job first
             if (job.getJobStatus() == JobStatus.RUNNING || job.getJobStatus() == JobStatus.WAITING) {
@@ -212,7 +203,6 @@ public class JobHandler {
     }
 
     public String loadDistrictingData(int jobId) {
-        System.out.println("AAAAA");
 
         /* Return format
 
@@ -279,6 +269,7 @@ public class JobHandler {
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
         }
+        Collections.sort(jobList);
         return jobList;
     }
 
@@ -299,7 +290,6 @@ public class JobHandler {
         while (jobIterator.hasNext()) {
             Script script = new Script();
             Job job = jobIterator.next();
-
             if (job.getSeaWulfId() == -1) {
                 // PROCESSING for local job means it has finished running
                 if (job.getJobStatus() == JobStatus.PROCESSING) {
@@ -313,9 +303,9 @@ public class JobHandler {
             if (job.getJobStatus() == JobStatus.WAITING) {
                 // Check if status changed from waiting
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                        "'source /etc/profile.d/modules.sh; module load slurm; squeue -j %d'", job.getSeaWulfId());
+                        "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getSeaWulfId());
                 String processOutput = script.createScript(command);
-                if (!processOutput.contains("PD")) {
+                if (!processOutput.contains("PENDING")) {
                     changeJobStatus(job.getId(), JobStatus.RUNNING);
                 }
             }
@@ -324,20 +314,12 @@ public class JobHandler {
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                         "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getSeaWulfId());
                 String processOutput = script.createScript(command);
-                if (processOutput != null) {
-                    System.out.println("HEBOI" + job.getId());
+                if (processOutput.contains("COMPLETED")) {
+                    changeJobStatus(job.getId(), JobStatus.PROCESSING);
 
-                    // DO THIS IN A SEPARATE METHOD !!! (make sure to update db)
-                    // Send slurm script to calculate data (avg, extreme, boxwhiskers
+                    // Calculate seawulf job data (transfer files and parse json the same way we parsed local job data)
 
                     changeJobStatus(job.getId(), JobStatus.COMPLETED);
-//                    String filePath = job.retrieveSeaWulfData();
-                    // Methods below here return boolean not sure if check is necessary
-//                    job.countCounties(filePath);
-//                    job.generateJsonFile(filePath);
-//                    job.generateAvgExtDistrictingPlan(filePath);
-//                    job.generateBoxWhiskers(filePath);
-
                 }
             }
         }
@@ -386,7 +368,7 @@ public class JobHandler {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
-            List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job);
+            List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job.getAbbreviation());
             List<State> states = job.getStates();
             int totalSpecifiedStateVap = 0;
             // Iterate through districtings array
@@ -456,9 +438,17 @@ public class JobHandler {
         return true;
     }
 
-    private List<List<Integer>> createBoxWhiskerArray(Job job) {
+    /**
+     *
+     *
+     * @param abbreviation - Job to get state abbreviation
+     * @return List of lists - A box and whiskers plot of a job is X boxes where X is the number
+     * of districts and that is the outside list. Each box will have each generation's district
+     * data for that district and that is the inside list.
+     */
+    private List<List<Integer>> createBoxWhiskerArray(StateAbbreviation abbreviation) {
         int districts = 0;
-        switch (job.getAbbreviation()) {
+        switch (abbreviation) {
             case CA:
                 districts = Integer.parseInt(properties.getProperty("caNumOfDistricts"));
                 break;
@@ -474,10 +464,12 @@ public class JobHandler {
         for (int i = 0; i < districts + 1; i++) {
             boxWhiskersData.add(i, new ArrayList<>());
         }
-        return  boxWhiskersData;
+        return boxWhiskersData;
     }
 
     /**
+     * This method is for caculating the geo coords of generated districts. It will create
+     * a python script to do this.
      *
      * @param job - The job to calculate the geo json
      */
