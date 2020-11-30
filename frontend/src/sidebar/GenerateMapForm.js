@@ -226,17 +226,17 @@ class GenerateMapForm extends React.Component {
 					<div class="btn-group">
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="2"
-								onChange={this.handleCompactnessChange} />
+								onChange={this.handleCompactnessChange} checked={this.state.compactness === '2'}/>
 							<label class="form-check-label" for="inlineRadio1">Very Compact</label>
 						</div>
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1"
-								onChange={this.handleCompactnessChange} checked />
+								onChange={this.handleCompactnessChange} checked={this.state.compactness === '1'} />
 							<label class="form-check-label" for="inlineRadio2">Somewhat Compact</label>
 						</div>
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0"
-								onChange={this.handleCompactnessChange} />
+								onChange={this.handleCompactnessChange} checked={this.state.compactness === '0'}/>
 							<label class="form-check-label" for="inlineRadio3">Not Compact</label>
 						</div>
 					</div>
