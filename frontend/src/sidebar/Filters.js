@@ -4,39 +4,6 @@ window.$ = $;
 
 class Filters extends React.Component {
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			current: true,
-			average: false,
-			extreme: false,
-			black: false,
-			white: false,
-			asian: false,
-			hispanic: false,
-			native: false,
-			hawaiian: false,
-			district: true,
-			precinct: true
-		};
-	}
-
-	setDefaultCheckboxes() {
-		this.setState({
-			current: true,
-			average: false,
-			extreme: false,
-			black: false,
-			white: false,
-			asian: false,
-			hispanic: false,
-			native: false,
-			hawaiian: false,
-			district: true,
-			precinct: true
-		});
-	}
-
 	getEthnicities(job) {
 		var ethnicities = [];
 		var i = 0;
@@ -48,32 +15,41 @@ class Filters extends React.Component {
 		return ethnicities;
 	}
 
+	
+	updateFiltersOnChange(e, recordedValue) {
+		console.log("updating filters")
+		if(recordedValue !== e.target.checked) {
+			this.props.updateFilters(e.target.name);
+			console.log(e.target.name);
+		}
+	}
+
+
 	render() {
+		console.log(this.props);
 		const loaded_job = this.props.loadedJob;
 		var ethnicities = [];
 		var map_filters;
 
 		if(loaded_job !== null) {
 			ethnicities = this.getEthnicities(loaded_job);
-			console.log(ethnicities);
-			console.log(ethnicities.includes("WHITE"));
 			map_filters = 
 			<form>
 				<label class="mr-sm-2" for="inlineFormCustomSelect">Maps</label>
 				<label class="form-check">
-					<input onChange={e => { this.setState({current: !this.state.current}); this.props.updateCheckboxes("current") }} class="form-check-input" type="checkbox" checked={this.state.current}/>
+					<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.currentIsSet)}} name="current" class="form-check-input" type="checkbox" checked={this.props.currentIsSet}/>
 					<span class="form-check-label">
 						Current Map
 					</span>
 				</label>
 				<label class="form-check">
-					<input onChange={e => { this.setState({average: !this.state.average}); this.props.updateCheckboxes("average") }}class="form-check-input" type="checkbox" checked={this.state.average}/>
+					<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.averageIsSet)}} name="average" class="form-check-input" type="checkbox" checked={this.props.averageIsSet}/>
 					<span class="form-check-label">
 						Average Map
 					</span>
 				</label>
 				<label class="form-check">
-					<input onChange={e => { this.setState({extreme: !this.state.extreme}); this.props.updateCheckboxes("extreme") }} class="form-check-input" type="checkbox" checked={this.state.extreme}/>
+					<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.extremeIsSet)}} name="extreme" class="form-check-input" type="checkbox" checked={this.props.extremeIsSet}/>
 					<span class="form-check-label">
 						Extreme Map
 					</span>
@@ -84,7 +60,7 @@ class Filters extends React.Component {
 				<form>
 					<label class="mr-sm-2" for="inlineFormCustomSelect">Maps</label>
 					<label class="form-check">
-						<input onChange={e => { this.setState({current: !this.state.current}); this.props.updateCheckboxes("current") }} class="form-check-input" type="checkbox" checked={this.state.current}/>
+						<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.currentIsSet)}} name="current" class="form-check-input" type="checkbox" checked={this.props.currentIsSet}/>
 						<span class="form-check-label">
 							Current Map
 						</span>
@@ -102,40 +78,40 @@ class Filters extends React.Component {
 						{map_filters}
 
 						<form>
-							{ethnicities.length !== 0 ? 
-							<label class="mr-sm-2" for="inlineFormCustomSelect">Race/Ethnicity</label> : null }
-							{ethnicities.includes("WHITE") ? (<label class="form-check">
-									<input onChange={e => { this.setState({white: !this.state.white}); this.props.updateCheckboxes("white") }} class="form-check-input" type="checkbox" checked={this.state.white}/>
+							{ethnicities.length !== 0 && this.props.heatMapIsSet ?
+								<label class="mr-sm-2" for="inlineFormCustomSelect">Race/Ethnicity</label>: null}
+							{ethnicities.includes("WHITE") && this.props.heatMapIsSet ? (<label class="form-check">
+									<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.whiteIsSet)}} name="white" class="form-check-input" type="checkbox" checked={this.props.whiteIsSet}/>
 									<span class="form-check-label">
 										White
 									</span>
 								</label>) : null}
-							{ethnicities.includes("BLACK_OR_AFRICAN_AMERICAN") ? (<label class="form-check">
-									<input onChange={e => { this.setState({black: !this.state.black}); this.props.updateCheckboxes("black") }} class="form-check-input" type="checkbox" checked={this.state.black}/>
+							{ethnicities.includes("BLACK_OR_AFRICAN_AMERICAN") && this.props.heatMapIsSet ? (<label class="form-check">
+									<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.blackIsSet)}} name="black" class="form-check-input" type="checkbox" checked={this.props.blackIsSet}/>
 									<span class="form-check-label">
 										Black/African American
 									</span>
 								</label>) : null}
-							{ethnicities.includes("ASIAN") ? (<label class="form-check">
-									<input onChange={e => { this.setState({asian: !this.state.asian}); this.props.updateCheckboxes("asian") }} class="form-check-input" type="checkbox" checked={this.state.asian}/>
+							{ethnicities.includes("ASIAN") && this.props.heatMapIsSet ? (<label class="form-check">
+									<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.asianIsSet)}} name="asian" class="form-check-input" type="checkbox" checked={this.props.asianIsSet}/>
 									<span class="form-check-label">
 										Asian
 									</span>
 								</label>) : null}
-							{ethnicities.includes("HISPANIC_OR_LATINO") ? (<label class="form-check">
-									<input onChange={e => { this.setState({hispanic: !this.state.hispanic}); this.props.updateCheckboxes("hispanic") }} class="form-check-input" type="checkbox" checked={this.state.hispanic}/>
+							{ethnicities.includes("HISPANIC_OR_LATINO") && this.props.heatMapIsSet ? (<label class="form-check">
+									<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.hispanicIsSet)}} name="hispanic" class="form-check-input" type="checkbox" checked={this.props.hispanicIsSet}/>
 									<span class="form-check-label">
 										Hispanic or Latino
 									</span>
 								</label>) : null}
-							{ethnicities.includes("AMERICAN_INDIAN") ? (<label class="form-check">
-									<input onChange={e => { this.setState({native: !this.state.native}); this.props.updateCheckboxes("native") }} class="form-check-input" type="checkbox" checked={this.state.native}/>
+							{ethnicities.includes("AMERICAN_INDIAN") && this.props.heatMapIsSet ? (<label class="form-check">
+									<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.nativeIsSet)}} name="native" class="form-check-input" type="checkbox" checked={this.props.nativeIsSet}/>
 									<span class="form-check-label">
 										American Indian or Alaskan Native
 									</span>
 								</label>) : null}
-							{ethnicities.includes("NATIVE_HAWAIIAN_AND_OTHER_PACIFIC") ? (<label class="form-check">
-									<input onChange={e => { this.setState({hawaiian: !this.state.hawaiian}); this.props.updateCheckboxes("hawaiian") }} class="form-check-input" type="checkbox" checked={this.state.hawaiian}/>
+							{ethnicities.includes("NATIVE_HAWAIIAN_AND_OTHER_PACIFIC") && this.props.heatMapIsSet ? (<label class="form-check">
+									<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.hawaiianIsSet)}} name="hawaiian" class="form-check-input" type="checkbox" checked={this.props.hawaiianIsSet}/>
 									<span class="form-check-label">
 										Native Hawaiian or Other Pacfic Islander
 									</span>
@@ -149,15 +125,21 @@ class Filters extends React.Component {
 					</header>
 					<div class="card-body">
 						<label class="form-check">
-							<input onChange={e => { this.setState({district: !this.state.district}); this.props.updateCheckboxes("district") }} class="form-check-input" type="checkbox" checked={this.state.district}/>
+							<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.districtsIsSet)}} name="district" class="form-check-input" type="checkbox" checked={this.props.districtsIsSet}/>
 							<span class="form-check-label">
 								District Boundaries
 							</span>
 						</label>
 						<label class="form-check">
-							<input onChange={e => { this.setState({precinct: !this.state.precinct}); this.props.updateCheckboxes("precinct") }} class="form-check-input" type="checkbox" checked={this.state.precinct}/>
+							<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.precinctsIsSet)}} name="precinct" class="form-check-input" type="checkbox" checked={this.props.precinctsIsSet}/>
 							<span class="form-check-label">
 								Precinct Boundaries
+							</span>
+						</label>
+						<label class="form-check">
+							<input onChange={(e) => {this.updateFiltersOnChange(e, this.props.heatMapIsSet)}} name="heatmap" class="form-check-input" type="checkbox" checked={this.props.heatMapIsSet}/>
+							<span class="form-check-label">
+								Heat Map
 							</span>
 						</label>
 					</div>

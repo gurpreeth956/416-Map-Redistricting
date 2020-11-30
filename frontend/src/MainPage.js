@@ -4,17 +4,6 @@ import Sidebar from './sidebar/Sidebar.js';
 import USMap from './map/USMap.js';
 window.$ = $;
 
-var currentMapChecked = true;
-var averageMapChecked = false;
-var extremeMapChecked = false;
-var black = false;
-var white = false;
-var asian = false;
-var hispanic = false;
-var hawaiian = false;
-var native = false;
-var districts = true;
-var precincts = true;
 class MainPage extends React.Component {
 
 	constructor(props) {
@@ -28,50 +17,89 @@ class MainPage extends React.Component {
 			averageMap: "",
 			extremeMap: "",
 			boxWhisker: [],
-			selectedState: "none"
+			selectedState: "none",
+			currentMapChecked: true,
+			averageMapChecked: false,
+			extremeMapChecked: false,
+			black: false,
+			white: false,
+			asian: false,
+			hispanic: false,
+			hawaiian: false,
+			native: false,
+			districts: true,
+			precincts: false,
+			heatMap: false,
 		};
 	}
 
 	setDefaultFilters() {
-		currentMapChecked = true;
-		averageMapChecked = false;
-		extremeMapChecked = false;
-		black = false;
-		white = false;
-		asian = false;
-		hispanic = false;
-		hawaiian = false;
-		native = false;
-		districts = true;
-		precincts = true;
-		this.forceUpdate();
+		this.setState({
+			currentMapChecked: true,
+			averageMapChecked: false,
+			extremeMapChecked: false,
+			black: false,
+			white: false,
+			asian: false,
+			hispanic: false,
+			hawaiian: false,
+			native: false,
+			districts: true,
+			precincts: false,
+			heatMap: false
+		});
 	}
 
 	updateFilters(box) {
 		if (box === "current") {
-			currentMapChecked = !currentMapChecked;
+			this.setState({
+				currentMapChecked : !this.state.currentMapChecked
+			});
 		} else if (box === "average") {
-			averageMapChecked = !averageMapChecked;
+			this.setState({
+				averageMapChecked : !this.state.averageMapChecked
+			});
 		} else if (box === "extreme") {
-			extremeMapChecked = !extremeMapChecked;
+			this.setState({
+				extremeMapChecked : !this.state.extremeMapChecked
+			});
 		} else if (box === "black") {
-			black = !black;
+			this.setState({
+				black : !this.state.black
+			});
 		} else if (box === "white") {
-			white = !white;
+			this.setState({
+				white : !this.state.white
+			});
 		} else if (box === "asian") {
-			asian = !asian;
+			this.setState({
+				asian : !this.state.asian
+			});
 		} else if (box === "hispanic") {
-			hispanic = !hispanic;
+			this.setState({
+				hispanic : !this.state.hispanic
+			});
 		} else if (box === "native") {
-			native = !native;
+			this.setState({
+				native : !this.state.native
+			});
 		} else if (box === "hawaiian") {
-			hawaiian = !hawaiian;
+			this.setState({
+				hawaiian : !this.state.hawaiian
+			});
 		} else if (box === "district") {
-			districts = !districts;
+			this.setState({
+				districts : !this.state.districts
+			});
 		} else if (box === "precinct") {
-			precincts = !precincts;
+			this.setState({
+				precincts : !this.state.precincts
+			});
+		} else if (box === "heatmap") {
+			this.setState({
+				heatMap : !this.state.heatMap
+			});
 		}
-		this.forceUpdate();
 	}
 
 	updateSelectedState(state) {
@@ -87,7 +115,7 @@ class MainPage extends React.Component {
 				averageMap: "",
 				extremeMap: "",
 			});
-		} else{
+		} else {
 			const data = { jobId: job.averageStateId }
 			const url = 'http://localhost:8080/getDistricting'
 			$.ajax({
@@ -107,11 +135,11 @@ class MainPage extends React.Component {
 
 	loadBoxWhisker(job) {
 		console.log(job);
-		if(job == null) {
+		if (job == null) {
 			this.setState({
 				boxWhisker: []
 			});
-		} else{
+		} else {
 			this.setState({
 				boxWhisker: job.boxWhiskers
 			});
@@ -124,15 +152,21 @@ class MainPage extends React.Component {
 				<div class="row" id="body-row">
 					<Sidebar loadMaps={this.loadMaps} loadBoxWhisker={this.loadBoxWhisker}
 						updateFilters={this.updateFilters} setDefaultFilters={this.setDefaultFilters}
+						currentIsSet={this.state.currentMapChecked} averageIsSet={this.state.averageMapChecked}
+						extremeIsSet={this.state.extremeMapChecked} blackIsSet={this.state.black}
+						whiteIsSet={this.state.white} asianIsSet={this.state.asian}
+						hispanicIsSet={this.state.hispanic} hawaiianIsSet={this.state.hawaiian}
+						nativeIsSet={this.state.native} districtsIsSet={this.state.districts}
+						precinctsIsSet={this.state.precincts} heatMapIsSet={this.state.heatMap}
 						updateSelectedState={this.updateSelectedState} selectedState={this.state.selectedState}></Sidebar>
 					<USMap averageMap={this.state.averageMap} extremeMap={this.state.extremeMap} boxWhisker={this.state.boxWhisker}
-						currentIsSet={currentMapChecked} averageIsSet={averageMapChecked}
-						extremeIsSet={extremeMapChecked} blackIsSet={black}
-						whiteIsSet={white} asianIsSet={asian}
-						hispanicIsSet={hispanic} hawaiianIsSet={hawaiian}
-						nativeIsSet={native} districtsIsSet={districts}
-						precinctsIsSet={precincts} 
-						updateSelectedState={this.updateSelectedState} selectedState={this.state.selectedState}/>
+						currentIsSet={this.state.currentMapChecked} averageIsSet={this.state.averageMapChecked}
+						extremeIsSet={this.state.extremeMapChecked} blackIsSet={this.state.black}
+						whiteIsSet={this.state.white} asianIsSet={this.state.asian}
+						hispanicIsSet={this.state.hispanic} hawaiianIsSet={this.state.hawaiian}
+						nativeIsSet={this.state.native} districtsIsSet={this.state.districts}
+						precinctsIsSet={this.state.precincts} heatMapIsSet={this.state.heatMap}
+						updateSelectedState={this.updateSelectedState} selectedState={this.state.selectedState} />
 				</div>
 			</div>
 		)

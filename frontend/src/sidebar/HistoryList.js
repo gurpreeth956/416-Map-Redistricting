@@ -45,6 +45,10 @@ class HistoryList extends React.Component {
 									{loaded_id != null && loaded_id != undefined && loaded_id === job.id ?
 										<button type="button" class="btn btn-primary history-item-button text-nowrap" disabled onClick={(e) => { e.stopPropagation(); this.props.loadJob(index); }}>Load Job</button> :
 										<button type="button" class="btn btn-primary history-item-button text-nowrap" onClick={(e) => { e.stopPropagation(); this.props.loadJob(index); }}>Load Job</button>}
+									{loaded_id === job.id && loaded_id != null && loaded_id != undefined ? 
+										<button type="button" class="btn btn-secondary history-item-button text-nowrap" onClick={(e) => { e.stopPropagation(); this.props.loadJob(-1); }}>Unload Job</button> :
+										null
+									}
 									<button type="button" class="btn btn-danger history-item-button text-nowrap" onClick={(e) => { e.stopPropagation(); this.props.deleteJob(index); }}>Delete Job</button>
 								</div>
 								{ReactDOM.createPortal(this.generateModal(job), this.el)}
