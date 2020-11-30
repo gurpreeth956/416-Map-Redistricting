@@ -13,6 +13,7 @@ class Sidebar extends React.Component {
     this.deleteJob = this.deleteJob.bind(this);
     this.addJob = this.addJob.bind(this);
     this.updateCheckboxes = this.updateCheckboxes.bind(this);
+    this.getCompactnessFromInt = this.getCompactnessFromInt.bind(this);
     this.state = {
       jobs:[],
       loadedJob:null
@@ -43,6 +44,16 @@ class Sidebar extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.interval);
+  }
+
+  getCompactnessFromInt(compactness) {
+    if(compactness === 0) {
+      return "Not Compact";
+    } else if(compactness === 1) {
+      return "Somewhat Compact";
+    } else{
+      return "Very Compact";
+    }
   }
 
   updateCheckboxes(box) {
@@ -141,7 +152,7 @@ class Sidebar extends React.Component {
               <h6 class="title">Generate Maps</h6>
             </header>
             <GenerateMapForm addJob={this.addJob} updateSelectedState={this.props.updateSelectedState} 
-            selectedState={this.props.selectedState}></GenerateMapForm>
+            selectedState={this.props.selectedState} getCompactnessFromInt={this.getCompactnessFromInt}></GenerateMapForm>
           </article>
         </div>
         <a href="#filter-submenu" data-toggle="collapse" aria-expanded="false"
@@ -167,7 +178,8 @@ class Sidebar extends React.Component {
         <div id='history-submenu' class="collapse sidebar-submenu card">
           <article class="card-group-item">
             <HistoryList loadJob={this.loadJob} cancelJob={this.cancelJob} 
-            deleteJob={this.deleteJob} jobs={this.state.jobs} loadedJob={this.state.loadedJob}></HistoryList>
+            deleteJob={this.deleteJob} jobs={this.state.jobs} 
+            loadedJob={this.state.loadedJob} getCompactnessFromInt={this.getCompactnessFromInt}></HistoryList>
           </article>
         </div>
       </ul>

@@ -16,7 +16,8 @@ class USMap extends React.Component {
         this.state = {
             paPrecinct: '',
             caPrecinct: '',
-            laPrecinct: ''        }
+            laPrecinct: ''        
+        }
         this.map = React.createRef();
         this.stateGeoJson = React.createRef();
         this.realDistricts = React.createRef();
@@ -243,8 +244,6 @@ class USMap extends React.Component {
     }
 
     render() {
-        console.log(this.state);
-        console.log(this.props);
         var mapClass;
         var precinctClass;
         if (this.state.zoomedOut == true) {
@@ -272,7 +271,6 @@ class USMap extends React.Component {
                         null
                     }
 
-                    {console.log(this.props.selectedState === "LA" && this.state.laPrecinct !== "" && this.props.precinctsIsSet)}
                     {this.props.selectedState === "PA" && this.state.paPrecinct !== "" && this.props.precinctsIsSet ?
                         <GeoJSON data={this.state.paPrecinct} className={precinctClass} style={this.precinctStyle}></GeoJSON> :
                         null
