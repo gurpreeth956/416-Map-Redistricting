@@ -41,7 +41,7 @@ def nodeInitialization(graph):
     global RequestedNoOfDistrict
 
     if State == "LA":
-        RequestedNoOfDistrict = 6
+        RequestedNoOfDistrict = 7
         with open('./src/main/resources/Algorithm/PrecinctData/LouisianaNeighbors.json') as f:
             data = json.load(f)
     elif State == "PA":
