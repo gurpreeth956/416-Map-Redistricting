@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "Jobs")
 @NamedQuery(name = "Jobs.getJobs", query = "SELECT j FROM Job j")
-public class Job {
+public class Job implements Comparable<Job> {
 
     private int id;
     private JobStatus jobStatus;
@@ -208,14 +208,6 @@ public class Job {
         return true;
     }
 
-    public String retrieveSeaWulfData() {
-        return "";
-    }
-
-    public boolean countCounties(String filePath) {
-        return true;
-    }
-
     public List<BoxWhisker> generateBoxWhiskers(List<List<Integer>> boxWhiskersData, double totalSpecifiedStateVap) {
         List<BoxWhisker> boxWhiskers = this.getBoxWhiskers();
         for (int i = 1; i < boxWhiskersData.size(); i++) {
@@ -245,6 +237,10 @@ public class Job {
         this.setStates(states);
         this.setAverageStateId(averageStateId);
         this.setExtremeStateId(extremeStateId);
+    }
+
+    public int compareTo(Job job) {
+        return this.getId() - job.getId();
     }
 
 }

@@ -203,7 +203,6 @@ public class JobHandler {
     }
 
     public String loadDistrictingData(int jobId) {
-        System.out.println("AAAAA");
 
         /* Return format
 
@@ -270,6 +269,7 @@ public class JobHandler {
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
         }
+        Collections.sort(jobList);
         return jobList;
     }
 
@@ -368,7 +368,7 @@ public class JobHandler {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
-            List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job);
+            List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job.getAbbreviation());
             List<State> states = job.getStates();
             int totalSpecifiedStateVap = 0;
             // Iterate through districtings array
@@ -388,7 +388,7 @@ public class JobHandler {
                     popAndVap.setAbbreviation(job.getAbbreviation());
                     District district = new District(state.getId(), popAndVap);
 
-                    // NEED TO ADD ALL PRECINCTS VAPS AND POPS TO DISTRICT JSON
+                    // NEED TO ADD ALL PRECINCTS VAPS AND POPS TO DISTRICT GEOJSON
 
                     em.persist(popAndVap);
                     em.persist(district);
@@ -438,9 +438,17 @@ public class JobHandler {
         return true;
     }
 
-    private List<List<Integer>> createBoxWhiskerArray(Job job) {
+    /**
+     *
+     *
+     * @param abbreviation - Job to get state abbreviation
+     * @return List of lists - A box and whiskers plot of a job is X boxes where X is the number
+     * of districts and that is the outside list. Each box will have each generation's district
+     * data for that district and that is the inside list.
+     */
+    private List<List<Integer>> createBoxWhiskerArray(StateAbbreviation abbreviation) {
         int districts = 0;
-        switch (job.getAbbreviation()) {
+        switch (abbreviation) {
             case CA:
                 districts = Integer.parseInt(properties.getProperty("caNumOfDistricts"));
                 break;
@@ -456,10 +464,12 @@ public class JobHandler {
         for (int i = 0; i < districts + 1; i++) {
             boxWhiskersData.add(i, new ArrayList<>());
         }
-        return  boxWhiskersData;
+        return boxWhiskersData;
     }
 
     /**
+     * This method is for caculating the geo coords of generated districts. It will create
+     * a python script to do this.
      *
      * @param job - The job to calculate the geo json
      */

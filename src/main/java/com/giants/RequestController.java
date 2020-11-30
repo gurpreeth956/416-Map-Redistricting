@@ -39,7 +39,7 @@ public class RequestController {
     }
 
     // This will return the specified state's district data
-    @RequestMapping(value = "/getDistricting", method = RequestMethod.POST)
+    @RequestMapping(value = "/getDistricting", method = RequestMethod.GET)
     public String getDistricting(@RequestParam int jobId) {
         return jobHandler.loadDistrictingData(jobId);
     }
