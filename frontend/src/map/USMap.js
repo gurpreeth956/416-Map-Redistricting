@@ -5,6 +5,7 @@ import stateGeoJson from './states-geojson.json';
 import L from 'leaflet';
 import { Map, TileLayer, GeoJSON } from 'react-leaflet';
 import BoxWhisker from '../BoxWhisker';
+import PrecinctHover from "./PrecinctHover";
 
 window.$ = $;
 
@@ -139,7 +140,15 @@ class USMap extends React.Component {
             // mouseout: this.resetHighlight.bind(this),
             click: this.onStateClick.bind(this)
         });
+    }  
+
+    /*onMouseOut = (e) => {
+        this.hover =  '<h4> Hover over a precinct </h4>';
     }
+
+    onMouseOver = (e) => {
+        this.hover =  '<p> test </p>';
+    }*/
 
     // highlightFeature(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
     //     if (e.target.feature.properties.name === "California" ||
@@ -254,6 +263,7 @@ class USMap extends React.Component {
 					<GeoJSON data={this.props.extremeMap} style={this.extremeDistrictStyle}></GeoJSON> :
 					null
 				}
+                <PrecinctHover />
             </Map>
             {this.props.boxWhisker.length !== 0 ? <BoxWhisker plot={this.props.boxWhisker}/> : null}
             </div>
