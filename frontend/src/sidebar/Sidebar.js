@@ -21,22 +21,28 @@ class Sidebar extends React.Component {
   }
 
   componentDidMount() {
-		fetch("http://localhost:8080/getJobHistory", {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				"Access-Control-Allow-Origin": "*"
-			}
-		})
-		.then(response  => response.json())
-		.then(
-			(result) => {
-				this.setState({
-					jobs: result
-        });
-        console.log(result);
-			}
-		)
+    this.interval = setInterval(() =>
+      fetch("http://localhost:8080/getJobHistory", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        }
+      })
+      .then(response  => response.json())
+      .then(
+        (result) => {
+          this.setState({
+            jobs: result
+          });
+          console.log(result);
+        }
+      ), 5000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   updateCheckboxes(box) {
@@ -134,7 +140,8 @@ class Sidebar extends React.Component {
             <header class="card-header">
               <h6 class="title">Generate Maps</h6>
             </header>
-            <GenerateMapForm addJob={this.addJob}></GenerateMapForm>
+            <GenerateMapForm addJob={this.addJob} updateSelectedState={this.props.updateSelectedState} 
+            selectedState={this.props.selectedState}></GenerateMapForm>
           </article>
         </div>
         <a href="#filter-submenu" data-toggle="collapse" aria-expanded="false"
