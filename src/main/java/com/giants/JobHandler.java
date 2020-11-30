@@ -144,6 +144,7 @@ public class JobHandler {
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
         }
+        Collections.sort(jobList);
         return jobList;
     }
 
@@ -181,6 +182,7 @@ public class JobHandler {
         for (Integer id : jobs.keySet()) {
             jobList.add(jobs.get(id));
         }
+        Collections.sort(jobList);
         return jobList;
     }
 
@@ -199,6 +201,7 @@ public class JobHandler {
             System.out.println(e.getMessage());
             return null;
         }
+        Collections.sort(jobs);
         return jobs;
     }
 
@@ -368,58 +371,15 @@ public class JobHandler {
             JSONParser jsonParser = new JSONParser();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
-            List<List<Integer>> boxWhiskersData = createBoxWhiskerArray(job.getAbbreviation());
+            List<List<Double>> boxWhiskersData = createBoxWhiskerArray(job.getAbbreviation());
             List<State> states = job.getStates();
-            int totalSpecifiedStateVap = 0;
-            // Iterate through districtings array
-            for (int i = 0; i < districtingsJson.size(); i++) {
-                JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
-                State state = new State(job.getId(), (int) (long) districtingJson.get("Max Pop Difference"),
-                        ((double) districtingJson.get("Overall Compactness")));
-                em.persist(state);
-                states.add(state);
-                totalSpecifiedStateVap = 0;
-                List<District> districts = state.getDistricts();
-                JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
-                // Iterate through districts array
-                for (int j = 0; j < districtsJson.size(); j++) {
-                    JSONObject districtJson = (JSONObject) districtsJson.get(j);
-                    PopAndVap popAndVap = new PopAndVap();
-                    popAndVap.setAbbreviation(job.getAbbreviation());
-                    District district = new District(state.getId(), popAndVap);
+//            Integer totalSpecifiedStateVap = 0;
 
-                    // NEED TO ADD ALL PRECINCTS VAPS AND POPS TO DISTRICT GEOJSON
+            parseDistrictingJson(districtingsJson, job, states, boxWhiskersData);
 
-                    em.persist(popAndVap);
-                    em.persist(district);
-                    districts.add(district);
-                    List<DistrictPrecinct> districtPrecincts = district.getDistrictPrecincts();
-                    // For counting counties as you iterate through the precincts in each district
-                    Set<Integer> counties = new HashSet<>();
-                    JSONArray precinctsJson = (JSONArray) districtJson.get("precincts");
-                    // Iterate through precincts array
-                    for (int k = 0; k < precinctsJson.size(); k++) {
-                        Precinct precinct = em.find(Precinct.class, precinctsJson.get(k));
-                        System.out.println(precinct.getId() + " " + precinct.getAbbreviation());
-
-                        DistrictPrecinct districtPrecinct = new DistrictPrecinct(district.getId(), precinct.getId());
-                        em.persist(districtPrecinct);
-                        districtPrecincts.add(districtPrecinct);
-                        counties.add(precinct.getCountyId());
-                        // Get pop and vap of the user entered ethnicities
-                        int precinctSpecifiedVap = precinct.getSpecificVap(job.getEthnicities());
-                        district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinctSpecifiedVap);
-                        totalSpecifiedStateVap += precinctSpecifiedVap;
-                    }
-                    district.setDistrictPrecincts(districtPrecincts);
-                    district.setNumberOfCounties(counties.size());
-                }
-                // Sort districts and set box whiskers position number for each state
-                state.sortDistricts(boxWhiskersData, districts);
-            }
             // Calculate average and extreme states and box and whiskers
             job.calculateAvgExtDistrictingPlan(states);
-            List<BoxWhisker> boxWhiskers = job.generateBoxWhiskers(boxWhiskersData, totalSpecifiedStateVap);
+            List<BoxWhisker> boxWhiskers = job.generateBoxWhiskers(boxWhiskersData);
             for (BoxWhisker boxWhisker : boxWhiskers) {
                 em.persist(boxWhisker);
             }
@@ -439,14 +399,75 @@ public class JobHandler {
     }
 
     /**
-     *
+     * This method is called in parseLocalDistrictingJson and parses the districtings array
+     */
+    private void parseDistrictingJson(JSONArray districtingsJson, Job job, List<State> states,
+                                      List<List<Double>> boxWhiskersData) {
+        // Iterate through districtings array
+        EntityManager em = JPAUtility.getEntityManager();
+        for (int i = 0; i < districtingsJson.size(); i++) {
+            JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
+            State state = new State(job.getId(), (int) (long) districtingJson.get("Max Pop Difference"),
+                    ((double) districtingJson.get("Overall Compactness")));
+            em.persist(state);
+            states.add(state);
+            List<District> districts = state.getDistricts();
+            JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
+            parseDistrictJson(districtsJson, job, state, districts);
+            // Sort districts and set box whiskers position number for each state
+            state.sortDistricts(boxWhiskersData, districts);
+        }
+    }
+
+    /**
+     * This method is called in parseDistrictingJson and parses the districts array
+     */
+    private void parseDistrictJson(JSONArray districtsJson, Job job, State state, List<District> districts) {
+        // Iterate through districts array
+        EntityManager em = JPAUtility.getEntityManager();
+        for (int j = 0; j < districtsJson.size(); j++) {
+            JSONObject districtJson = (JSONObject) districtsJson.get(j);
+            PopAndVap popAndVap = new PopAndVap();
+            popAndVap.setAbbreviation(job.getAbbreviation());
+            District district = new District(state.getId(), popAndVap);
+            em.persist(popAndVap);
+            em.persist(district);
+            districts.add(district);
+            List<DistrictPrecinct> districtPrecincts = district.getDistrictPrecincts();
+            // For counting counties as you iterate through the precincts in each district
+            Set<Integer> counties = new HashSet<>();
+            JSONArray precinctsJson = (JSONArray) districtJson.get("precincts");
+            // Iterate through precincts array
+            for (int k = 0; k < precinctsJson.size(); k++) {
+                Precinct precinct = em.find(Precinct.class, precinctsJson.get(k));
+                System.out.println(precinct.getId() + " " + precinct.getAbbreviation());
+
+                // Figure out why pop and vap won't load into precinct
+                // PopAndVap pov = precinct.getPopAndVap();
+
+                DistrictPrecinct districtPrecinct = new DistrictPrecinct(district.getId(), precinct.getId());
+                em.persist(districtPrecinct);
+                districtPrecincts.add(districtPrecinct);
+                // Update counties and popAndVap data
+                counties.add(precinct.getCountyId());
+                popAndVap.addPrecintData(precinct);
+                int precinctSpecifiedVap = precinct.getSpecificVap(job.getEthnicities());
+                district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinctSpecifiedVap);
+            }
+            district.setDistrictPrecincts(districtPrecincts);
+            district.setNumberOfCounties(counties.size());
+        }
+    }
+
+    /**
+     * This method creates an empty Box and Whiskers array
      *
      * @param abbreviation - Job to get state abbreviation
      * @return List of lists - A box and whiskers plot of a job is X boxes where X is the number
      * of districts and that is the outside list. Each box will have each generation's district
      * data for that district and that is the inside list.
      */
-    private List<List<Integer>> createBoxWhiskerArray(StateAbbreviation abbreviation) {
+    private List<List<Double>> createBoxWhiskerArray(StateAbbreviation abbreviation) {
         int districts = 0;
         switch (abbreviation) {
             case CA:
@@ -460,7 +481,7 @@ public class JobHandler {
                 break;
         }
 
-        List<List<Integer>> boxWhiskersData = new ArrayList<>();
+        List<List<Double>> boxWhiskersData = new ArrayList<>();
         for (int i = 0; i < districts + 1; i++) {
             boxWhiskersData.add(i, new ArrayList<>());
         }

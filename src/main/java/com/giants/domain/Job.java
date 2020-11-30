@@ -208,17 +208,17 @@ public class Job implements Comparable<Job> {
         return true;
     }
 
-    public List<BoxWhisker> generateBoxWhiskers(List<List<Integer>> boxWhiskersData, double totalSpecifiedStateVap) {
+    public List<BoxWhisker> generateBoxWhiskers(List<List<Double>> boxWhiskersData) {
         List<BoxWhisker> boxWhiskers = this.getBoxWhiskers();
         for (int i = 1; i < boxWhiskersData.size(); i++) {
-            List<Integer> boxWhiskerData = boxWhiskersData.get(i);
+            List<Double> boxWhiskerData = boxWhiskersData.get(i);
             BoxWhisker boxWhisker = new BoxWhisker(this.getId(), i);
             Collections.sort(boxWhiskerData);
-            double min = (boxWhiskerData.get(0)/totalSpecifiedStateVap)*100;
-            double quart1 = (boxWhiskerData.get((int)(boxWhiskerData.size()/4))/totalSpecifiedStateVap)*100;
-            double median = (boxWhiskerData.get((int)(boxWhiskerData.size()/2))/totalSpecifiedStateVap)*100;
-            double quart3 = (boxWhiskerData.get((int)(boxWhiskerData.size()/2+boxWhiskerData.size()/4))/totalSpecifiedStateVap)*100;
-            double max = (boxWhiskerData.get(boxWhiskerData.size()-1)/totalSpecifiedStateVap)*100;
+            double min = boxWhiskerData.get(0);
+            double quart1 = boxWhiskerData.get((int)(boxWhiskerData.size()/4));
+            double median = boxWhiskerData.get((int)(boxWhiskerData.size()/2));
+            double quart3 = boxWhiskerData.get((int)(boxWhiskerData.size()/2+boxWhiskerData.size()/4));
+            double max = boxWhiskerData.get(boxWhiskerData.size()-1);
             boxWhisker.setMinimum(min);
             boxWhisker.setQuartile1(quart1);
             boxWhisker.setMedian(median);

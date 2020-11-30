@@ -74,11 +74,15 @@ public class State implements Comparable<State> {
         this.districts = districts;
     }
 
-    public void sortDistricts(List<List<Integer>> boxWhiskersData, List<District> districts) {
+    public void sortDistricts(List<List<Double>> boxWhiskersData, List<District> districts) {
         Collections.sort(districts);
         for (int j = 0; j < districts.size(); j++) {
-            districts.get(j).setDistrictNumber(j+1);
-            boxWhiskersData.get(j+1).add(districts.get(j).getTotalUserRequestedVap());
+            District district = districts.get(j);
+            district.setDistrictNumber(j+1);
+            double districtVap = district.getPopAndVap().getTotalVap();
+            // Fix dividing by zero
+            double boxWhiskerPercent = (district.getTotalUserRequestedPop()/districtVap)*100;
+            boxWhiskersData.get(j+1).add(boxWhiskerPercent);
         }
         this.setDistricts(districts);
     }

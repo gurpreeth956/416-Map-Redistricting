@@ -309,4 +309,32 @@ public class PopAndVap {
         this.otherVap = otherVap;
     }
 
+    public void addPrecintData(Precinct precinct) {
+        PopAndVap precinctPopAndVap = precinct.getPopAndVap();
+        this.totalPop += precinctPopAndVap.getTotalPop();
+        this.totalVap += precinctPopAndVap.getTotalVap();
+        this.nativePop += precinctPopAndVap.getNativePop();
+        this.nativeVap += precinctPopAndVap.getNativeVap();
+        this.asianPop += precinctPopAndVap.getAsianPop();
+        this.asianVap += precinctPopAndVap.getAsianVap();
+        this.blackPop += precinctPopAndVap.getBlackPop();
+        this.blackVap += precinctPopAndVap.getBlackVap();
+        this.hawaiianPop += precinctPopAndVap.getHawaiianPop();
+        this.hawaiianVap += precinctPopAndVap.getHawaiianVap();
+        this.whitePop += precinctPopAndVap.getWhitePop();
+        this.whiteVap += precinctPopAndVap.getWhiteVap();
+        this.nativeWhitePop += precinctPopAndVap.getNativeWhitePop();
+        this.nativeWhiteVap += precinctPopAndVap.getNativeWhiteVap();
+        this.asianWhitePop += precinctPopAndVap.getAsianWhitePop();
+        this.asianWhiteVap += precinctPopAndVap.getAsianWhiteVap();
+        this.blackWhitePop += precinctPopAndVap.getBlackWhitePop();
+        this.blackWhiteVap += precinctPopAndVap.getBlackWhiteVap();
+        this.nativeBlackPop += precinctPopAndVap.getNativeBlackPop();
+        this.nativeBlackVap += precinctPopAndVap.getNativeBlackVap();
+        this.hispanicPop += precinctPopAndVap.getHispanicPop();
+        this.hispanicVap += precinctPopAndVap.getHispanicVap();
+        this.otherPop += precinctPopAndVap.getOtherPop();
+        this.otherVap += precinctPopAndVap.getOtherVap();
+    }
+
 }
