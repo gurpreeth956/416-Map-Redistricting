@@ -163,28 +163,24 @@ public class Job {
         this.states = states;
     }
 
-//    public List<RaceEthnicity> getRaceEthnicities() {
-//        return raceEthnicities;
-//    }
-//
-//    public void setRaceEthnicities(List<RaceEthnicity> raceEthnicities) {
-//        this.raceEthnicities = raceEthnicities;
-//    }
-
     public boolean executeSeaWulfJob() {
+        // Decide how to split seawulf job
+        int mapsPerCore = 1;
+        if (this.numberOfMaps > 48) {
+            mapsPerCore = (int) (numberOfMaps / 2);
+            if (numberOfMaps % 2 != 0) numberOfMaps++;
+        }
+
         Script script = new Script();
-
-        // DECIDE HOW TO SPLIT UP SEAWULF JOB
-
         String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
                 "module load slurm; module load anaconda/2; module load mvapich2/gcc/64/2.2rc1; cd ~/Algorithm; " +
                 "sbatch ~/Algorithm/RunAlgo.slurm " + this.id + " " + this.abbreviation + " " + this.userCompactness +
-                " " + this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
+                " " + this.populationDifferenceLimit + " " + mapsPerCore + " " + this.numberOfMaps + "'";
         String processOutput = script.createScript(command);
         if (!processOutput.contains("Submitted batch job")) return false;
         int submittedJobId = Integer.parseInt(processOutput.split("\\s+")[3]);
         // Make folder on seawulf to store job results
-        command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'cd /gpfs/scratch/gurpreetsing/Results; mkdir " + this.id;
+        command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'cd /gpfs/scratch/gurpreetsing/Results; mkdir " + this.id + "'";
         processOutput = script.createScript(command);
         this.setSeaWulfId(submittedJobId);
         return true;
@@ -250,4 +246,5 @@ public class Job {
         this.setAverageStateId(averageStateId);
         this.setExtremeStateId(extremeStateId);
     }
+
 }

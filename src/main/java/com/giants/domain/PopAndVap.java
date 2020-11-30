@@ -309,17 +309,4 @@ public class PopAndVap {
         this.otherVap = otherVap;
     }
 
-    public void addPrecinctsPopsAndVaps(Precinct precinct) {
-
-    }
-
-    //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "geoJsonId", referencedColumnName = "id")
-//    public List<GeoCoord> getGeoCoords() {
-//        return geoCoords;
-//    }
-//
-//    public void setGeoCoords(List<GeoCoord> geoCoords) {
-//        this.geoCoords = geoCoords;
-//    }
 }
