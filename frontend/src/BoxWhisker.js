@@ -15,7 +15,6 @@ class BoxWhisker extends React.Component {
 
     render() {
         var boxes = this.loadData();
-        console.log(boxes);
         const options = {
             animationEnabled: true,
             title: { // Title of the plot

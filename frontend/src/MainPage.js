@@ -23,10 +23,12 @@ class MainPage extends React.Component {
 		this.loadBoxWhisker = this.loadBoxWhisker.bind(this);
 		this.setDefaultFilters = this.setDefaultFilters.bind(this);
 		this.updateFilters = this.updateFilters.bind(this);
+		this.updateSelectedState = this.updateSelectedState.bind(this);
 		this.state = {
 			averageMap: "",
 			extremeMap: "",
-			boxWhisker: []
+			boxWhisker: [],
+			selectedState: "none"
 		};
 	}
 
@@ -72,6 +74,12 @@ class MainPage extends React.Component {
 		this.forceUpdate();
 	}
 
+	updateSelectedState(state) {
+		this.setState({
+			selectedState: state
+		});
+	}
+
 	loadMaps(job) {
 		console.log(job);
 		if (job == null) {
@@ -115,14 +123,16 @@ class MainPage extends React.Component {
 			<div>
 				<div class="row" id="body-row">
 					<Sidebar loadMaps={this.loadMaps} loadBoxWhisker={this.loadBoxWhisker}
-						updateFilters={this.updateFilters} setDefaultFilters={this.setDefaultFilters}></Sidebar>
+						updateFilters={this.updateFilters} setDefaultFilters={this.setDefaultFilters}
+						updateSelectedState={this.updateSelectedState} selectedState={this.state.selectedState}></Sidebar>
 					<USMap averageMap={this.state.averageMap} extremeMap={this.state.extremeMap} boxWhisker={this.state.boxWhisker}
 						currentIsSet={currentMapChecked} averageIsSet={averageMapChecked}
 						extremeIsSet={extremeMapChecked} blackIsSet={black}
 						whiteIsSet={white} asianIsSet={asian}
 						hispanicIsSet={hispanic} hawaiianIsSet={hawaiian}
 						nativeIsSet={native} districtsIsSet={districts}
-						precinctsIsSet={precincts} />
+						precinctsIsSet={precincts} 
+						updateSelectedState={this.updateSelectedState} selectedState={this.state.selectedState}/>
 				</div>
 			</div>
 		)
