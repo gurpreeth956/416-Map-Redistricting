@@ -7,10 +7,8 @@ import com.giants.enums.JobStatus;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import com.giants.threads.RunLocalJob;
 import org.json.simple.*;
@@ -48,19 +46,11 @@ public class JobHandler {
             }
         }
 
-//         Need a to verify format for Precinct GeoJSON
-        System.out.println("1");
-        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA).toString();
-        System.out.println("2");
-        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA).toString();
-        System.out.println("3");
-        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA).toString();
-//        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
-//        System.out.println("2");
-//        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
-//        System.out.println("3");
-//        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
-        System.out.println("Completed");
+        // Load state's precinct data
+        pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
+        louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
+        californiaPrecinctData = loadPrecinctData(StateAbbreviation.CA);
+        System.out.println("Completed Setup");
     }
 
     /**
@@ -70,7 +60,7 @@ public class JobHandler {
      * @return Precinct data as a string
      */
     public String getStateData(StateAbbreviation stateAbbreviation) {
-        // NEED TO WAIT UNTIL PRECINCT DATA DONE LOADING FORM INITIALSETUP() (wait till Completed is printed)
+        // Need to wait until data done loading from initialSetup()
         if (stateAbbreviation == StateAbbreviation.CA) {
             return californiaPrecinctData;
         } else if (stateAbbreviation == StateAbbreviation.PA) {
@@ -221,46 +211,32 @@ public class JobHandler {
         return jobs;
     }
 
-    public String loadDistrictingData(int stateId) {
+    public String loadDistrictingData(int jobId) {
         System.out.println("AAAAA");
-        // Return format
-//        data = {
-//            districtPos: ,
-//            pop (for each):
-//            vap (for each):
-//            geoJson: [
-//                    ]
-//        }
 
-        List<District> districts;
-        EntityManager em = JPAUtility.getEntityManager();
-        try {
-            // Get all District objects where stateId == stateId
-//            Query q = em.createQuery("SELECT d FROM Districts d WHERE stateId = :stateId", Job.class)
-//                    .setParameter("stateId", stateId);
-//            em.getTransaction().commit();
-//            districts = q.getResultList();
-//            Query q = em.createQuery("SELECT Districts WHERE stateId = :stateId");
-//            q.setParameter("stateId", stateId);
-//            q.executeUpdate();
-//            districts = q.getResultList();
-            State state = em.find(State.class, stateId);
-            System.out.println(stateId + " " + state.getId());
-            districts = state.getDistricts();
-            for (District d : districts) {
-                System.out.println("HEHE" + d.getId());
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
+        /* Return format
+
+        data = {
+            districtPos: ,
+            pop (for each):
+            vap (for each):
+            geoJson: [
+                    ]
         }
-        // Return
-        String geoJson = "";
-        for (District district : districts) {
-//            geoJson += district.getPopAndVap();
-//            System.out.println(geoJson);
-        }
-        return geoJson;
+
+        */
+
+        // Will be stored in a folder in resources/jsons/districtings
+//        String filePath = "./src/main/resources/jsons/districtings/" + jobId + ".json";
+//        JSONParser parser = new JSONParser();
+//        try {
+//            Object obj = parser.parse(new FileReader(filePath));
+//            return obj.toString();
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//            return null;
+//        }
+        return null;
     }
 
     /**
@@ -269,7 +245,19 @@ public class JobHandler {
      * @param stateAbbreviation
      * @return
      */
-    public JSONObject loadPrecinctData(StateAbbreviation stateAbbreviation) {
+    public String loadPrecinctData(StateAbbreviation stateAbbreviation) {
+        String filePath = getPrecinctsFile(stateAbbreviation);
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader(filePath));
+            return obj.toString();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public String getPrecinctsFile(StateAbbreviation stateAbbreviation) {
         String filePath = null;
         if (stateAbbreviation == StateAbbreviation.CA) {
             filePath = "./src/main/resources/jsons/precincts/CaliforniaPrecincts.json";
@@ -278,14 +266,7 @@ public class JobHandler {
         } else if (stateAbbreviation == StateAbbreviation.PA) {
             filePath = "./src/main/resources/jsons/precincts/PennsylvaniaPrecincts.json";
         }
-        JSONParser parser = new JSONParser();
-        try {
-            Object obj = parser.parse(new FileReader(filePath));
-            return (JSONObject) obj;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        return filePath;
     }
 
     /**
@@ -344,6 +325,7 @@ public class JobHandler {
                         "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getSeaWulfId());
                 String processOutput = script.createScript(command);
                 if (processOutput != null) {
+                    System.out.println("HEBOI" + job.getId());
 
                     // DO THIS IN A SEPARATE METHOD !!! (make sure to update db)
                     // Send slurm script to calculate data (avg, extreme, boxwhiskers
@@ -469,6 +451,8 @@ public class JobHandler {
             em.getTransaction().rollback();
             return false;
         }
+        // Run python script to calculate district geoJson
+        mapDistrictsGeoJson(job);
         return true;
     }
 
@@ -492,5 +476,16 @@ public class JobHandler {
         }
         return  boxWhiskersData;
     }
-}
 
+    /**
+     *
+     * @param job - The job to calculate the geo json
+     */
+    private void mapDistrictsGeoJson(Job job) {
+
+        // Run a python script to calculate geo json of job
+        // run in another thread if too slow
+
+    }
+
+}
