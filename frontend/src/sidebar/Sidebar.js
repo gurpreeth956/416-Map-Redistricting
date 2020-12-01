@@ -12,13 +12,11 @@ class Sidebar extends React.Component {
     this.cancelJob = this.cancelJob.bind(this);
     this.deleteJob = this.deleteJob.bind(this);
     this.addJob = this.addJob.bind(this);
-    this.updateCheckboxes = this.updateCheckboxes.bind(this);
     this.getCompactnessFromInt = this.getCompactnessFromInt.bind(this);
     this.state = {
       jobs:[],
       loadedJob:null
     };
-    this.filters = React.createRef();
   }
 
   componentDidMount() {
@@ -55,10 +53,6 @@ class Sidebar extends React.Component {
       return "Very Compact";
     }
   }
-
-  updateCheckboxes(box) {
-    this.props.updateFilters(box);
-  }
   
   loadJob(index) {
     var job;
@@ -73,7 +67,6 @@ class Sidebar extends React.Component {
         loadedJob: job
       });
     }
-    this.filters.current.setDefaultCheckboxes();
     this.props.setDefaultFilters();
     this.props.loadMaps(job);
     this.props.loadBoxWhisker(job);
@@ -164,7 +157,13 @@ class Sidebar extends React.Component {
           </div>
         </a>
         <div id='filter-submenu' class="collapse sidebar-submenu card">
-          <Filters ref={this.filters} loadedJob={this.state.loadedJob} updateCheckboxes={this.updateCheckboxes}></Filters>
+          <Filters loadedJob={this.state.loadedJob} updateFilters={this.props.updateFilters}
+          currentIsSet={this.props.currentIsSet} averageIsSet={this.props.averageIsSet}
+          extremeIsSet={this.props.extremeIsSet} blackIsSet={this.props.blackIsSet}
+          whiteIsSet={this.props.whiteIsSet} asianIsSet={this.props.asianIsSet}
+          hispanicIsSet={this.props.hispanicIsSet} hawaiianIsSet={this.props.hawaiianIsSet}
+          nativeIsSet={this.props.nativeIsSet} districtsIsSet={this.props.districtsIsSet}
+          precinctsIsSet={this.props.precinctsIsSet} heatMapIsSet={this.props.heatMapIsSet}></Filters>
         </div>
         <a href="#history-submenu" data-toggle="collapse" aria-expanded="false"
           class="bg-light list-group-item list-group-item-action flex-column align-items-start"
