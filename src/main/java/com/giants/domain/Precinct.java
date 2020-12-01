@@ -57,7 +57,7 @@ public class Precinct {
         this.countyId = countyId;
     }
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "popAndVapId", referencedColumnName = "id")
     public PopAndVap getPopAndVap() {
         return popAndVap;

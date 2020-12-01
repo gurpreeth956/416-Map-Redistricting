@@ -81,13 +81,16 @@ public class State implements Comparable<State> {
             district.setDistrictNumber(j+1);
             double districtVap = district.getPopAndVap().getTotalVap();
             // Fix dividing by zero
-            double boxWhiskerPercent = (district.getTotalUserRequestedPop()/districtVap)*100;
+            double boxWhiskerPercent = (district.getTotalUserRequestedVap()/districtVap)*100;
             boxWhiskersData.get(j+1).add(boxWhiskerPercent);
         }
         this.setDistricts(districts);
     }
 
     public int compareTo(State state) {
+
+        // Change this to use vap and for each district
+
         return (int)((this.getMaxPopulationDifference() / this.getOverallCompactness()) -
                 (state.getMaxPopulationDifference() / state.getOverallCompactness()));
     }

@@ -27,8 +27,7 @@ public class Job implements Comparable<Job> {
     private int seaWulfId;
     private Integer averageStateId;
     private Integer extremeStateId;
-//    private List<RaceEthnicity> raceEthnicities;
-    private List<State> states;
+    private List<State> states; // change name
     private List<Ethnicity> ethnicities;
     private List<BoxWhisker> boxWhiskers;
 

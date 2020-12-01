@@ -109,7 +109,6 @@ public class JobHandler {
             job.setEthnicities(jobEthnicities);
             em.getTransaction().commit();
         } catch (Exception e) {
-            // Return some kind of error here
             System.out.println(e.getMessage());
             em.getTransaction().rollback();
             return null;
@@ -297,7 +296,7 @@ public class JobHandler {
                 // PROCESSING for local job means it has finished running
                 if (job.getJobStatus() == JobStatus.PROCESSING) {
                     System.out.println("Starting Processing...");
-                    parseLocalDistrictingJson(job);
+                    parseAlgoResultsJson(job);
                     System.out.println("Finishing Processing...");
                     changeJobStatus(job.getId(), JobStatus.COMPLETED);
                 }
@@ -364,7 +363,7 @@ public class JobHandler {
      * @param job - The job to parse
      * @return Boolean for success
      */
-    private boolean parseLocalDistrictingJson(Job job) {
+    private boolean parseAlgoResultsJson(Job job) {
         EntityManager em = JPAUtility.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -373,10 +372,7 @@ public class JobHandler {
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
             List<List<Double>> boxWhiskersData = createBoxWhiskerArray(job.getAbbreviation());
             List<State> states = job.getStates();
-//            Integer totalSpecifiedStateVap = 0;
-
-            parseDistrictingJson(districtingsJson, job, states, boxWhiskersData);
-
+            parseDistrictingsJson(districtingsJson, job, states, boxWhiskersData);
             // Calculate average and extreme states and box and whiskers
             job.calculateAvgExtDistrictingPlan(states);
             List<BoxWhisker> boxWhiskers = job.generateBoxWhiskers(boxWhiskersData);
@@ -384,11 +380,7 @@ public class JobHandler {
                 em.persist(boxWhisker);
             }
             em.getTransaction().commit();
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            em.getTransaction().rollback();
-            return false;
-        } catch (ParseException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             em.getTransaction().rollback();
             return false;
@@ -399,12 +391,12 @@ public class JobHandler {
     }
 
     /**
-     * This method is called in parseLocalDistrictingJson and parses the districtings array
+     * This method is called in parseAlgoResultsJson and parses the districtings array
      */
-    private void parseDistrictingJson(JSONArray districtingsJson, Job job, List<State> states,
+    private void parseDistrictingsJson(JSONArray districtingsJson, Job job, List<State> states,
                                       List<List<Double>> boxWhiskersData) {
-        // Iterate through districtings array
         EntityManager em = JPAUtility.getEntityManager();
+        // Iterate through districtings array
         for (int i = 0; i < districtingsJson.size(); i++) {
             JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
             State state = new State(job.getId(), (int) (long) districtingJson.get("Max Pop Difference"),
@@ -413,18 +405,18 @@ public class JobHandler {
             states.add(state);
             List<District> districts = state.getDistricts();
             JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
-            parseDistrictJson(districtsJson, job, state, districts);
+            parseDistrictsJson(districtsJson, job, state, districts);
             // Sort districts and set box whiskers position number for each state
             state.sortDistricts(boxWhiskersData, districts);
         }
     }
 
     /**
-     * This method is called in parseDistrictingJson and parses the districts array
+     * This method is called in parseDistrictingsJson and parses the districts array
      */
-    private void parseDistrictJson(JSONArray districtsJson, Job job, State state, List<District> districts) {
-        // Iterate through districts array
+    private void parseDistrictsJson(JSONArray districtsJson, Job job, State state, List<District> districts) {
         EntityManager em = JPAUtility.getEntityManager();
+        // Iterate through districts array
         for (int j = 0; j < districtsJson.size(); j++) {
             JSONObject districtJson = (JSONObject) districtsJson.get(j);
             PopAndVap popAndVap = new PopAndVap();
@@ -434,28 +426,32 @@ public class JobHandler {
             em.persist(district);
             districts.add(district);
             List<DistrictPrecinct> districtPrecincts = district.getDistrictPrecincts();
-            // For counting counties as you iterate through the precincts in each district
             Set<Integer> counties = new HashSet<>();
             JSONArray precinctsJson = (JSONArray) districtJson.get("precincts");
-            // Iterate through precincts array
-            for (int k = 0; k < precinctsJson.size(); k++) {
-                Precinct precinct = em.find(Precinct.class, precinctsJson.get(k));
-                System.out.println(precinct.getId() + " " + precinct.getAbbreviation());
-
-                // Figure out why pop and vap won't load into precinct
-                // PopAndVap pov = precinct.getPopAndVap();
-
-                DistrictPrecinct districtPrecinct = new DistrictPrecinct(district.getId(), precinct.getId());
-                em.persist(districtPrecinct);
-                districtPrecincts.add(districtPrecinct);
-                // Update counties and popAndVap data
-                counties.add(precinct.getCountyId());
-                popAndVap.addPrecintData(precinct);
-                int precinctSpecifiedVap = precinct.getSpecificVap(job.getEthnicities());
-                district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinctSpecifiedVap);
-            }
+            parsePrecinctsJson(precinctsJson, district, districtPrecincts, counties, popAndVap, job);
+            // Set district information, district's precincts and number of counties
             district.setDistrictPrecincts(districtPrecincts);
             district.setNumberOfCounties(counties.size());
+        }
+    }
+
+    /**
+     * This method is called in parseDistrictsJson and parses the precincts array
+     */
+    private void parsePrecinctsJson(JSONArray precinctsJson, District district, List<DistrictPrecinct> districtPrecincts,
+                                    Set<Integer> counties, PopAndVap popAndVap, Job job) {
+        EntityManager em = JPAUtility.getEntityManager();
+        // Iterate through precincts array
+        for (int k = 0; k < precinctsJson.size(); k++) {
+            Precinct precinct = em.find(Precinct.class, precinctsJson.get(k));
+            System.out.println(precinct.getId() + " " + precinct.getAbbreviation());
+            DistrictPrecinct districtPrecinct = new DistrictPrecinct(district.getId(), precinct.getId());
+            em.persist(districtPrecinct);
+            districtPrecincts.add(districtPrecinct);
+            // Update counties and popAndVap data for each precinct
+            counties.add(precinct.getCountyId());
+            popAndVap.addPrecintData(precinct);
+            district.addPopAndVap(precinct.getSpecificPop(job.getEthnicities()), precinct.getSpecificVap(job.getEthnicities()));
         }
     }
 
@@ -480,7 +476,6 @@ public class JobHandler {
                 districts = Integer.parseInt(properties.getProperty("paNumOfDistricts"));
                 break;
         }
-
         List<List<Double>> boxWhiskersData = new ArrayList<>();
         for (int i = 0; i < districts + 1; i++) {
             boxWhiskersData.add(i, new ArrayList<>());

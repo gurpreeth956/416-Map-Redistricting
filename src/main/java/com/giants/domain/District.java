@@ -104,7 +104,7 @@ public class District implements Comparable<District> {
         this.totalUserRequestedVap = totalUserRequestedVap;
     }
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "popAndVapId", referencedColumnName = "id")
     public PopAndVap getPopAndVap() {
         return popAndVap;
@@ -130,7 +130,13 @@ public class District implements Comparable<District> {
     }
 
     public int compareTo(District district) {
-        return this.getTotalUserRequestedVap() - district.getTotalUserRequestedVap();
+        double thisTotalVap = this.getPopAndVap().getTotalVap();
+        double districtTotalVap = district.getPopAndVap().getTotalVap();
+        double differenceBetweenVapPercentages = ((this.totalUserRequestedVap/thisTotalVap)*100) -
+                ((district.getTotalUserRequestedVap()/districtTotalVap)*100);
+        if (differenceBetweenVapPercentages < 0) return -1;
+        else if (differenceBetweenVapPercentages > 0) return 1;
+        else return 0;
     }
 
 }
