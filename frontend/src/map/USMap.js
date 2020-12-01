@@ -244,6 +244,7 @@ class USMap extends React.Component {
     }
 
     render() {
+        console.log(this.props);
         var mapClass;
         var precinctClass;
         if (this.state.zoomedOut == true) {
