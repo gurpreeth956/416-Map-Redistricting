@@ -16,7 +16,6 @@ public class Precinct {
     private StateAbbreviation abbreviation;
     private int countyId;
     private PopAndVap popAndVap;
-    private List<PrecinctNeighbor> precinctNeighbors;
 
     public Precinct() {
 
@@ -26,7 +25,6 @@ public class Precinct {
         this.id = id;
         this.abbreviation = abbreviation;
         this.countyId = countyId;
-        this.precinctNeighbors = new ArrayList<>();
     }
 
     @Id
@@ -65,16 +63,6 @@ public class Precinct {
 
     public void setPopAndVap(PopAndVap popAndVap) {
         this.popAndVap = popAndVap;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "precinctId", referencedColumnName = "id")
-    public List<PrecinctNeighbor> getPrecinctNeighbors() {
-        return precinctNeighbors;
-    }
-
-    public void setPrecinctNeighbors(List<PrecinctNeighbor> precinctNeighbors) {
-        this.precinctNeighbors = precinctNeighbors;
     }
 
     public int getSpecificPop(List<Ethnicity> ethnicities) {

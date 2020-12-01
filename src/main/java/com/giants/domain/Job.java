@@ -25,9 +25,9 @@ public class Job implements Comparable<Job> {
     private double populationDifferenceLimit;
     private int numberOfMaps;
     private int seaWulfId;
-    private Integer averageStateId;
-    private Integer extremeStateId;
-    private List<State> states; // change name
+    private Integer averageDistrictingId;
+    private Integer extremeDistrictingId;
+    private List<Districting> districtings;
     private List<Ethnicity> ethnicities;
     private List<BoxWhisker> boxWhiskers;
 
@@ -43,7 +43,7 @@ public class Job implements Comparable<Job> {
         this.jobStatus = JobStatus.WAITING;
         this.seaWulfId = -1;
         this.numberOfMaps = numberOfMaps;
-        this.states = new ArrayList<>();
+        this.districtings = new ArrayList<>();
         this.ethnicities = new ArrayList<>();
         this.boxWhiskers = new ArrayList<>();
     }
@@ -113,22 +113,22 @@ public class Job implements Comparable<Job> {
         this.seaWulfId = seaWulfId;
     }
 
-    @Column(name = "averageStateId")
-    public Integer getAverageStateId() {
-        return averageStateId;
+    @Column(name = "averageDistrictingId")
+    public Integer getAverageDistrictingId() {
+        return averageDistrictingId;
     }
 
-    public void setAverageStateId(Integer averageStateId) {
-        this.averageStateId = averageStateId;
+    public void setAverageDistrictingId(Integer averageDistrictingId) {
+        this.averageDistrictingId = averageDistrictingId;
     }
 
-    @Column(name = "extremeStateId")
-    public Integer getExtremeStateId() {
-        return extremeStateId;
+    @Column(name = "extremeDistrictingId")
+    public Integer getExtremeDistrictingId() {
+        return extremeDistrictingId;
     }
 
-    public void setExtremeStateId(Integer extremeStateId) {
-        this.extremeStateId = extremeStateId;
+    public void setExtremeDistrictingId(Integer extremeDistrictingId) {
+        this.extremeDistrictingId = extremeDistrictingId;
     }
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -154,12 +154,12 @@ public class Job implements Comparable<Job> {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "jobId", referencedColumnName = "id")
-    public List<State> getStates() {
-        return states;
+    public List<Districting> getDistrictings() {
+        return districtings;
     }
 
-    public void setStates(List<State> states) {
-        this.states = states;
+    public void setDistrictings(List<Districting> districtings) {
+        this.districtings = districtings;
     }
 
     public boolean executeSeaWulfJob() {
@@ -229,13 +229,13 @@ public class Job implements Comparable<Job> {
         return boxWhiskers;
     }
 
-    public void calculateAvgExtDistrictingPlan(List<State> states) {
-        Collections.sort(states);
-        int averageStateId = (states.get((int)(states.size()/2))).getId();
-        int extremeStateId = (states.get((int)(states.size()-1))).getId();
-        this.setStates(states);
-        this.setAverageStateId(averageStateId);
-        this.setExtremeStateId(extremeStateId);
+    public void calculateAvgExtDistrictingPlan(List<Districting> districtings) {
+        Collections.sort(districtings);
+        int averageDistrictingId = (districtings.get((int)(districtings.size()/2))).getId();
+        int extremeDistrictingId = (districtings.get((int)(districtings.size()-1))).getId();
+        this.setDistrictings(districtings);
+        this.setAverageDistrictingId(averageDistrictingId);
+        this.setExtremeDistrictingId(extremeDistrictingId);
     }
 
     public int compareTo(Job job) {

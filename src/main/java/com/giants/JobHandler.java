@@ -171,6 +171,10 @@ public class JobHandler {
                 q.executeUpdate();
                 em.getTransaction().commit();
                 jobs.remove(jobId);
+
+                // DELETE JSON FILE IN RESULTS IF LOCALLY RAN JOB
+                // if jobid.json file exists then delete
+
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 em.getTransaction().rollback();
@@ -371,10 +375,10 @@ public class JobHandler {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
             List<List<Double>> boxWhiskersData = createBoxWhiskerArray(job.getAbbreviation());
-            List<State> states = job.getStates();
-            parseDistrictingsJson(districtingsJson, job, states, boxWhiskersData);
-            // Calculate average and extreme states and box and whiskers
-            job.calculateAvgExtDistrictingPlan(states);
+            List<Districting> districtings = job.getDistrictings();
+            parseDistrictingsJson(districtingsJson, job, districtings, boxWhiskersData);
+            // Calculate average and extreme districtings and box and whiskers
+            job.calculateAvgExtDistrictingPlan(districtings);
             List<BoxWhisker> boxWhiskers = job.generateBoxWhiskers(boxWhiskersData);
             for (BoxWhisker boxWhisker : boxWhiskers) {
                 em.persist(boxWhisker);
@@ -393,35 +397,35 @@ public class JobHandler {
     /**
      * This method is called in parseAlgoResultsJson and parses the districtings array
      */
-    private void parseDistrictingsJson(JSONArray districtingsJson, Job job, List<State> states,
+    private void parseDistrictingsJson(JSONArray districtingsJson, Job job, List<Districting> districtings,
                                       List<List<Double>> boxWhiskersData) {
         EntityManager em = JPAUtility.getEntityManager();
         // Iterate through districtings array
         for (int i = 0; i < districtingsJson.size(); i++) {
             JSONObject districtingJson = (JSONObject) districtingsJson.get(i);
-            State state = new State(job.getId(), (int) (long) districtingJson.get("Max Pop Difference"),
+            Districting districting = new Districting(job.getId(), (int) (long) districtingJson.get("Max Pop Difference"),
                     ((double) districtingJson.get("Overall Compactness")));
-            em.persist(state);
-            states.add(state);
-            List<District> districts = state.getDistricts();
+            em.persist(districting);
+            districtings.add(districting);
+            List<District> districts = districting.getDistricts();
             JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
-            parseDistrictsJson(districtsJson, job, state, districts);
-            // Sort districts and set box whiskers position number for each state
-            state.sortDistricts(boxWhiskersData, districts);
+            parseDistrictsJson(districtsJson, job, districting, districts);
+            // Sort districts and set box whiskers position number for each districting
+            districting.sortDistricts(boxWhiskersData, districts);
         }
     }
 
     /**
      * This method is called in parseDistrictingsJson and parses the districts array
      */
-    private void parseDistrictsJson(JSONArray districtsJson, Job job, State state, List<District> districts) {
+    private void parseDistrictsJson(JSONArray districtsJson, Job job, Districting districting, List<District> districts) {
         EntityManager em = JPAUtility.getEntityManager();
         // Iterate through districts array
         for (int j = 0; j < districtsJson.size(); j++) {
             JSONObject districtJson = (JSONObject) districtsJson.get(j);
             PopAndVap popAndVap = new PopAndVap();
             popAndVap.setAbbreviation(job.getAbbreviation());
-            District district = new District(state.getId(), popAndVap);
+            District district = new District(districting.getId(), popAndVap);
             em.persist(popAndVap);
             em.persist(district);
             districts.add(district);

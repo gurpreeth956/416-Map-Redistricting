@@ -6,7 +6,7 @@ import Rebalance as Rebalance
 import json
 import sys
 import copy
-# the value is updated depending on the state
+# the value is updated depending on the districting
 
 RequestedNoOfDistrict = 0
 JobId = sys.argv[1]
@@ -37,7 +37,7 @@ def seedDistricting():
 
 
 def nodeInitialization(graph):
-    # checking the state value and loading precinct data from appropriate json file
+    # checking the districting value and loading precinct data from appropriate json file
     global RequestedNoOfDistrict
 
     if State == "LA":
@@ -53,7 +53,7 @@ def nodeInitialization(graph):
         with open('./src/main/resources/Algorithm/PrecinctData/CaliforniaNeighbors.json') as f:
             data = json.load(f)
     else:
-        print("Choose the correct state")
+        print("Choose the correct districting")
         exit(0)
 
     # adding all the nodes to the graph and updating the graph population
