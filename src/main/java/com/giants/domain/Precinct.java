@@ -67,6 +67,10 @@ public class Precinct {
 
     public int getSpecificPop(List<Ethnicity> ethnicities) {
         int total = 0;
+        boolean containsWhite = false;
+        boolean containsAsian = false;
+        boolean containsBlack = false;
+        boolean containsNative = false;
         for (Ethnicity ethnicity : ethnicities) {
             switch (ethnicity.getPrimaryKey().getEthnicity()) {
                 case HISPANIC_OR_LATINO:
@@ -74,26 +78,43 @@ public class Precinct {
                     break;
                 case AMERICAN_INDIAN:
                     total += this.popAndVap.getNativePop();
+                    containsNative = true;
                     break;
                 case ASIAN:
                     total += this.popAndVap.getAsianPop();
+                    containsAsian = true;
                     break;
                 case BLACK_OR_AFRICAN_AMERICAN:
                     total += this.popAndVap.getBlackPop();
+                    containsBlack = true;
                     break;
                 case NATIVE_HAWAIIAN_AND_OTHER_PACIFIC:
                     total += this.popAndVap.getHawaiianPop();
                     break;
                 case WHITE:
                     total += this.popAndVap.getWhitePop();
+                    containsWhite = true;
                     break;
             }
+        }
+        // Check for mixed ethnicities
+        if (containsWhite) {
+            if (containsAsian) total += this.popAndVap.getAsianWhitePop();
+            if (containsBlack) total += this.popAndVap.getBlackWhitePop();
+            if (containsNative) total += this.popAndVap.getNativeWhitePop();
+        }
+        if (containsBlack) {
+            if (containsNative) total += this.popAndVap.getNativeBlackPop();
         }
         return total;
     }
 
     public int getSpecificVap(List<Ethnicity> ethnicities) {
         int total = 0;
+        boolean containsWhite = false;
+        boolean containsAsian = false;
+        boolean containsBlack = false;
+        boolean containsNative = false;
         for (Ethnicity ethnicity : ethnicities) {
             switch (ethnicity.getPrimaryKey().getEthnicity()) {
                 case HISPANIC_OR_LATINO:
@@ -101,20 +122,33 @@ public class Precinct {
                     break;
                 case AMERICAN_INDIAN:
                     total += this.popAndVap.getNativeVap();
+                    containsNative = true;
                     break;
                 case ASIAN:
                     total += this.popAndVap.getAsianVap();
+                    containsAsian = true;
                     break;
                 case BLACK_OR_AFRICAN_AMERICAN:
                     total += this.popAndVap.getBlackVap();
+                    containsBlack = true;
                     break;
                 case NATIVE_HAWAIIAN_AND_OTHER_PACIFIC:
                     total += this.popAndVap.getHawaiianVap();
                     break;
                 case WHITE:
                     total += this.popAndVap.getWhiteVap();
+                    containsWhite = true;
                     break;
             }
+        }
+        // Check for mixed ethnicities
+        if (containsWhite) {
+            if (containsAsian) total += this.popAndVap.getAsianWhiteVap();
+            if (containsBlack) total += this.popAndVap.getBlackWhiteVap();
+            if (containsNative) total += this.popAndVap.getNativeWhiteVap();
+        }
+        if (containsBlack) {
+            if (containsNative) total += this.popAndVap.getNativeBlackVap();
         }
         return total;
     }
