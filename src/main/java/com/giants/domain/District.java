@@ -9,9 +9,8 @@ import java.util.List;
 public class District implements Comparable<District> {
 
     private int id;
-    private int stateId;
+    private int districtingId;
     private int districtNumber;
-    private double compactness;
     private int numberOfCounties;
     private int totalUserRequestedPop;
     private int totalUserRequestedVap;
@@ -22,16 +21,15 @@ public class District implements Comparable<District> {
 
     }
 
-    public District(int stateId, PopAndVap popAndVap) {
-        this.stateId = stateId;
+    public District(int districtingId, PopAndVap popAndVap) {
+        this.districtingId = districtingId;
         this.popAndVap = popAndVap;
         this.districtPrecincts = new ArrayList<>();
     }
 
-    public District(int stateId, int districtNumber, double compactness, int numberOfCounties) {
-        this.stateId = stateId;
+    public District(int districtingId, int districtNumber, double compactness, int numberOfCounties) {
+        this.districtingId = districtingId;
         this.districtNumber = districtNumber;
-        this.compactness = compactness;
         this.numberOfCounties = numberOfCounties;
         this.popAndVap = new PopAndVap();
         this.districtPrecincts = new ArrayList<>();
@@ -50,13 +48,13 @@ public class District implements Comparable<District> {
         this.id = id;
     }
 
-    @Column(name = "stateId")
-    public int getStateId() {
-        return stateId;
+    @Column(name = "districtingId")
+    public int getDistrictingId() {
+        return districtingId;
     }
 
-    public void setStateId(int stateId) {
-        this.stateId = stateId;
+    public void setDistrictingId(int districtingId) {
+        this.districtingId = districtingId;
     }
 
     @Column(name = "districtNumber")
@@ -66,15 +64,6 @@ public class District implements Comparable<District> {
 
     public void setDistrictNumber(int districtNumber) {
         this.districtNumber = districtNumber;
-    }
-
-    @Column(name = "compactness")
-    public double getCompactness() {
-        return compactness;
-    }
-
-    public void setCompactness(double compactness) {
-        this.compactness = compactness;
     }
 
     @Column(name = "numberOfCounties")
@@ -104,7 +93,7 @@ public class District implements Comparable<District> {
         this.totalUserRequestedVap = totalUserRequestedVap;
     }
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "popAndVapId", referencedColumnName = "id")
     public PopAndVap getPopAndVap() {
         return popAndVap;
@@ -130,7 +119,13 @@ public class District implements Comparable<District> {
     }
 
     public int compareTo(District district) {
-        return this.getTotalUserRequestedVap() - district.getTotalUserRequestedVap();
+        double thisTotalVap = this.getPopAndVap().getTotalVap();
+        double districtTotalVap = district.getPopAndVap().getTotalVap();
+        double differenceBetweenVapPercentages = ((this.totalUserRequestedVap/thisTotalVap)*100) -
+                ((district.getTotalUserRequestedVap()/districtTotalVap)*100);
+        if (differenceBetweenVapPercentages < 0) return -1;
+        else if (differenceBetweenVapPercentages > 0) return 1;
+        else return 0;
     }
 
 }

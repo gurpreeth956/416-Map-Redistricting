@@ -1,20 +1,14 @@
 package com.giants;
 
-import com.giants.domain.State;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.bind.annotation.*;
 
 import com.giants.domain.Job;
 import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
-import com.giants.enums.JobStatus;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.*;
 
 @RestController
