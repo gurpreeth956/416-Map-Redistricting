@@ -117,7 +117,7 @@ class MainPage extends React.Component {
 				extremeMap: "",
 			});
 		} else {
-			const data = { jobId: job.averageStateId }
+			const data = { jobId: job.id }
 			const url = 'http://localhost:8080/getDistricting'
 			$.ajax({
 				url: url,
