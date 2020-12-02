@@ -1,12 +1,11 @@
 import React from 'react';
 import $ from 'jquery';
-import districtGeoJson from './districts-geojson.json';
-import stateGeoJson from './states-geojson.json';
+import districtGeoJson from './data/districts-geojson.json';
+import stateGeoJson from './data/states-geojson.json';
 import L from 'leaflet';
 import { Map, TileLayer, GeoJSON } from 'react-leaflet';
 import BoxWhisker from '../BoxWhisker';
-import PrecinctHover from "./PrecinctHover";
-
+import SummaryData from './SummaryData';
 window.$ = $;
 
 class USMap extends React.Component {
@@ -294,7 +293,7 @@ class USMap extends React.Component {
                         }
                     </GeoJSON>
                 </Map>
-                {this.props.boxWhisker.length !== 0 ? <BoxWhisker plot={this.props.boxWhisker} /> : null}
+                {this.props.boxWhisker.length !== 0 ? <SummaryData plot={this.props.boxWhisker} ethnicities={this.props.ethnicities}/> : null}
             </div>
         );
     }

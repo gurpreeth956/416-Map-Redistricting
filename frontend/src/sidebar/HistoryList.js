@@ -21,7 +21,16 @@ class HistoryList extends React.Component {
 		historyModalRoot.removeChild(this.el);
 	}
 
+	gatherEthnicities(jobEthnicities) {
+		var ethnicities = [];
+		for (var i = 0; i<jobEthnicities.length; i++) {
+			ethnicities.push(jobEthnicities[i].primaryKey.ethnicity);
+		}
+		return ethnicities;
+	}
+
 	render() {
+		console.log(this.props.jobs);
 		const jobs = this.props.jobs;
 		var loaded_id = null;
 		if (this.props.loadedJob != null && this.props.loadedJob != undefined) {
@@ -85,6 +94,7 @@ class HistoryList extends React.Component {
 	}
 
 	generateModal(job) {
+		var ethnicities = this.gatherEthnicities(job.ethnicities);
 		return (
 			<div class="modal fade" id={"history-modal-" + job.id} tabindex="-1" role="dialog" aria-labelledby="historyTitle" aria-hidden="true">
 				<div class="modal-dialog modal-lg" role="document">
@@ -95,7 +105,7 @@ class HistoryList extends React.Component {
 						</div>
 						<div class="modal-body">
 							<div>
-								<BoxWhisker plot={job.boxWhiskers} />
+								<BoxWhisker plot={job.boxWhiskers} ethnicities={ethnicities}/>
 							</div>
 						</div>
 						<div class="modal-footer">
