@@ -123,13 +123,6 @@ class Sidebar extends React.Component {
         <li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
           <small>MAIN MENU</small>
         </li>
-        <a href="#" data-toggle="sidebar-collapse"
-          class="bg-light list-group-item list-group-item-action d-flex align-items-center">
-          <div class="d-flex w-100 justify-content-start align-items-center">
-            <span id="collapse-icon" class="fa fa-2x mr-3"></span>
-            <span id="collapse-text" class="menu-collapsed">Collapse</span>
-          </div>
-        </a>
         <a href="#home-submenu" data-toggle="collapse" aria-expanded="false"
           class="bg-light list-group-item list-group-item-action flex-column align-items-start"
           id="generate-sidebar-button">
@@ -141,9 +134,6 @@ class Sidebar extends React.Component {
         </a>
         <div id='home-submenu' class="collapse sidebar-submenu card">
           <article class="card-group-item">
-            <header class="card-header">
-              <h6 class="title">Generate Maps</h6>
-            </header>
             <GenerateMapForm addJob={this.addJob} updateSelectedState={this.props.updateSelectedState} 
             selectedState={this.props.selectedState} getCompactnessFromInt={this.getCompactnessFromInt}></GenerateMapForm>
           </article>
