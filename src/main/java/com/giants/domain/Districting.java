@@ -71,30 +71,32 @@ public class Districting implements Comparable<Districting> {
     }
 
     public void setDistricts(List<District> districts) {
+        Collections.sort(districts);
         this.districts = districts;
     }
 
-    public void sortDistricts(List<List<Double>> boxWhiskersData, List<District> districts) {
-        Collections.sort(districts);
-        for (int j = 0; j < districts.size(); j++) {
-            District district = districts.get(j);
+    public void sortBoxWhiskersData(List<List<Double>> boxWhiskersData) {
+        for (int j = 0; j < this.districts.size(); j++) {
+            District district = this.districts.get(j);
             district.setDistrictNumber(j+1);
             double districtVap = district.getPopAndVap().getTotalVap();
-            // Fix dividing by zero
             double boxWhiskerPercent = (district.getTotalUserRequestedVap()/districtVap)*100;
             if (boxWhiskerPercent > 99) boxWhiskerPercent = 99;
             if (boxWhiskerPercent < 0) boxWhiskerPercent = 0;
             boxWhiskersData.get(j+1).add(boxWhiskerPercent);
         }
-        this.setDistricts(districts);
     }
 
     public int compareTo(Districting districting) {
-
-        // Change this to use vap and for each district
-
-        return (int)((this.getMaxPopulationDifference() / this.getOverallCompactness()) -
-                (districting.getMaxPopulationDifference() / districting.getOverallCompactness()));
+        int thisGreaterVapsCounter = 0;
+        int otherGreaterVapsCounter = 0;
+        for (int i = 0; i < this.districts.size(); i++) {
+            District thisDistrict = this.districts.get(i);
+            District otherDistrict = districting.districts.get(i);
+            if (thisDistrict.compareTo(otherDistrict) > 0) thisGreaterVapsCounter++;
+            else if (otherDistrict.compareTo(thisDistrict) < 0) otherGreaterVapsCounter++;
+        }
+        return thisGreaterVapsCounter - otherGreaterVapsCounter;
     }
 
 }

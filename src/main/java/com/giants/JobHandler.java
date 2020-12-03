@@ -45,7 +45,6 @@ public class JobHandler {
                 jobsToCheckStatus.add(job.getId());
             }
         }
-
         // Load state's precinct data
         pennsylvaniaPrecinctData = loadPrecinctData(StateAbbreviation.PA);
         louisianaPrecinctData = loadPrecinctData(StateAbbreviation.LA);
@@ -171,9 +170,11 @@ public class JobHandler {
                 q.executeUpdate();
                 em.getTransaction().commit();
                 jobs.remove(jobId);
+                // Delete json file for job
+                File resultsFile = new File("./src/main/resources/Algorithm/Results/" + job.getId() + ".json");
+                if (resultsFile.exists()) resultsFile.delete();
 
-                // DELETE JSON FILE IN RESULTS IF LOCALLY RAN JOB
-                // if jobid.json file exists then delete
+                // NEED TO DELETE OTHER FILES RELATED TO JOB (districtings and summaries)
 
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -411,7 +412,8 @@ public class JobHandler {
             JSONArray districtsJson = (JSONArray) districtingJson.get("Districts");
             parseDistrictsJson(districtsJson, job, districting, districts);
             // Sort districts and set box whiskers position number for each districting
-            districting.sortDistricts(boxWhiskersData, districts);
+            districting.setDistricts(districts);
+            districting.sortBoxWhiskersData(boxWhiskersData);
         }
     }
 
