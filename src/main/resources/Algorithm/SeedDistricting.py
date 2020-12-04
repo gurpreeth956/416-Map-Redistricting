@@ -6,8 +6,8 @@ import Rebalance as Rebalance
 import json
 import sys
 import copy
-# the value is updated depending on the districting
 
+# the value is updated depending on the districting
 RequestedNoOfDistrict = 0
 JobId = sys.argv[1]
 State = sys.argv[2]

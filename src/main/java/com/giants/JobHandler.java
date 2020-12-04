@@ -173,6 +173,8 @@ public class JobHandler {
                 // Delete json file for job
                 File resultsFile = new File("./src/main/resources/Algorithm/Results/" + job.getId() + ".json");
                 if (resultsFile.exists()) resultsFile.delete();
+//                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_precincts_data.json");
+//                if (resultsFile.exists()) resultsFile.delete();
 
                 // NEED TO DELETE OTHER FILES RELATED TO JOB (districtings and summaries)
 
@@ -322,6 +324,7 @@ public class JobHandler {
                         "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getSeaWulfId());
                 String processOutput = script.createScript(command);
                 if (processOutput.contains("COMPLETED")) {
+                    System.out.println("COMPLETED");
                     changeJobStatus(job.getId(), JobStatus.PROCESSING);
 
                     // Calculate seawulf job data (transfer files and parse json the same way we parsed local job data)
@@ -390,6 +393,10 @@ public class JobHandler {
             em.getTransaction().rollback();
             return false;
         }
+        // Create jsons for average/extreme districtings to compute geo borders
+        generateAvgExtDistrictings(job);
+
+        // RAYMOND (follow the below method)
         // Run python script to calculate district geoJson
         mapDistrictsGeoJson(job);
         return true;
@@ -490,6 +497,57 @@ public class JobHandler {
     }
 
     /**
+     * This method creates a json for the average state and extreme state in a job. It is then
+     * used in the generating geo coordinates.
+     *
+     * @param job - Job to create districtings json
+     */
+    private void generateAvgExtDistrictings(Job job) {
+        EntityManager em = JPAUtility.getEntityManager();
+        try {
+            String filePath = "./src/main/resources/jsons/districtings/" + job.getId() + "_precincts_data.json";
+            Districting avgDistricting = em.find(Districting.class, job.getAverageDistrictingId());
+            Districting extDistricting = em.find(Districting.class, job.getExtremeDistrictingId());
+            JSONObject jsonObject = new JSONObject();
+            JSONArray districtingsJson = new JSONArray();
+            JSONObject avgDistrictingJson = convertDistrictToJson(avgDistricting);
+            JSONObject extDistrictingJson = convertDistrictToJson(extDistricting);
+            districtingsJson.add(avgDistrictingJson);
+            districtingsJson.add(extDistrictingJson);
+            jsonObject.put("Districtings", districtingsJson);
+            File outputFile = new File(filePath);
+            outputFile.createNewFile();
+            FileWriter fw = new FileWriter(filePath);
+            fw.write(jsonObject.toJSONString());
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            em.getTransaction().rollback();
+        }
+    }
+
+    /**
+     * This method is called in generateAvgExtDistrictings and adds a districting to a JSONObject.
+     */
+    private JSONObject convertDistrictToJson(Districting districitng) {
+        JSONObject districtingJson = new JSONObject();
+        JSONArray districtsJson = new JSONArray();
+        for (District district : districitng.getDistricts()) {
+            JSONObject districtJson = new JSONObject();
+            JSONArray precinctsJson = new JSONArray();
+            for (DistrictPrecinct districtPrecinct : district.getDistrictPrecincts()) {
+                precinctsJson.add(districtPrecinct.getPrimaryKey().getPrecinctId());
+            }
+            districtJson.put("precincts", precinctsJson);
+            districtsJson.add(districtJson);
+        }
+        districtingJson.put("DistrictingId", districitng.getId());
+        districtingJson.put("Districts", districtsJson);
+        return districtingJson;
+    }
+
+    /**
      * This method is for caculating the geo coords of generated districts. It will create
      * a python script to do this.
      *
@@ -498,7 +556,7 @@ public class JobHandler {
     private void mapDistrictsGeoJson(Job job) {
 
         // Run a python script to calculate geo json of job
-        // run in another thread if too slow
+        // NO NEED TO RUN THIS IN ANOTHER THREAD SINCE WE WILL NOT RUN A JOB LOCALLY DURING PRESENTATION
 
     }
 
