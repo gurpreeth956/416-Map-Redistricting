@@ -163,18 +163,11 @@ public class Job implements Comparable<Job> {
     }
 
     public boolean executeSeaWulfJob() {
-        // Decide how to split seawulf job
-        int mapsPerCore = 1;
-        if (this.numberOfMaps > 48) {
-            mapsPerCore = (int) (numberOfMaps / 2);
-            if (numberOfMaps % 2 != 0) numberOfMaps++;
-        }
-
         Script script = new Script();
         String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
                 "module load slurm; module load anaconda/2; module load mvapich2/gcc/64/2.2rc1; cd ~/Algorithm; " +
                 "sbatch ~/Algorithm/RunAlgo.slurm " + this.id + " " + this.abbreviation + " " + this.userCompactness +
-                " " + this.populationDifferenceLimit + " " + mapsPerCore + " " + this.numberOfMaps + "'";
+                " " + this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
         String processOutput = script.createScript(command);
         if (!processOutput.contains("Submitted batch job")) return false;
         int submittedJobId = Integer.parseInt(processOutput.split("\\s+")[3]);
