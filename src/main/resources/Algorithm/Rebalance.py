@@ -6,7 +6,7 @@ import SeedDistricting as SeedDistricting
 import sys
 import json
 
-terminationCondition = 10
+terminationCondition = 0
 JobId = sys.argv[1]
 populationThreshold = float(sys.argv[4])
 idealPopulation = 755501
