@@ -312,24 +312,24 @@ public class JobHandler {
             if (job.getJobStatus() == JobStatus.WAITING) {
                 // Check if status changed from waiting
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                        "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getSeaWulfId());
+                        "'source /etc/profile.d/modules.sh; module load slurm; squeue -j %d'", job.getSeaWulfId());
                 String processOutput = script.createScript(command);
-                if (!processOutput.contains("PENDING")) {
+                if (!processOutput.contains("PD")) {
                     changeJobStatus(job.getId(), JobStatus.RUNNING);
                 }
             }
             if (job.getJobStatus() == JobStatus.RUNNING) {
                 // Check if status change from running
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
-                        "'source /etc/profile.d/modules.sh; module load slurm; sacct -Xj %d'", job.getSeaWulfId());
+                        "'source /etc/profile.d/modules.sh; module load slurm; squeue -j %d'", job.getSeaWulfId());
                 String processOutput = script.createScript(command);
-                if (processOutput.contains("COMPLETED")) {
-                    System.out.println("COMPLETED");
+                if (!processOutput.contains(job.getSeaWulfId() + "")) {
                     changeJobStatus(job.getId(), JobStatus.PROCESSING);
-
-                    // Calculate seawulf job data (transfer files and parse json the same way we parsed local job data)
-
+                    System.out.println("STARTING PROCESSING...");
+                    processSeaWulfData(job);
+                    parseAlgoResultsJson(job);
                     changeJobStatus(job.getId(), JobStatus.COMPLETED);
+                    System.out.println("COMPLETED PROCESSING...");
                 }
             }
         }
@@ -364,8 +364,70 @@ public class JobHandler {
     }
 
     /**
-     * This method is called after a local job is completed. It calculates the number of
-     * counties, the average plan, the extreme plan, orders the districts by user requested
+     * This method is called after a SeaWulf job is completed and then puts all the json data
+     * into one json file so that it can be parsed.
+     *
+     * @param job - Job to process
+     */
+    private void processSeaWulfData(Job job) {
+        int jobId = job.getId();
+        // Transefer the tar file to server and then unzip
+        retreiveSeaWulfData(jobId);
+        try {
+            // Iterate through all the jsons to create one big json file
+            JSONObject jsonObject = new JSONObject();
+            JSONArray districtingsJson = new JSONArray();
+            File dir = new File("./src/main/resources/Algorithm/Results/" + jobId);
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    JSONParser jsonParser = new JSONParser();
+                    JSONObject jsonObjectFile = (JSONObject) jsonParser.parse(new FileReader(file));
+                    JSONArray districtingsJsonFile = (JSONArray) jsonObjectFile.get("Districtings");
+                    for (int i = 0; i < districtingsJsonFile.size(); i++) {
+                        JSONObject districtingJson = (JSONObject) districtingsJsonFile.get(i);
+                        districtingsJson.add(districtingJson);
+                    }
+                }
+            }
+            jsonObject.put("Districtings", districtingsJson);
+            String filePath = "./src/main/resources/Algorithm/Results/" + jobId + ".json";
+            File outputFile = new File(filePath);
+            outputFile.createNewFile();
+            FileWriter fw = new FileWriter(filePath);
+            fw.write(jsonObject.toJSONString());
+            fw.flush();
+            fw.close();
+            // Delete the folder of separate jsons
+            Script script = new Script();
+            String command = String.format("rm -rf ./src/main/resources/Algorithm/Results/" + jobId);
+            String processOutput = script.createScript(command);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /**
+     * This method tars the SeaWulf results json and then transfers the file her and unzips it.
+     */
+    private void retreiveSeaWulfData(int jobId) {
+        Script script = new Script();
+        // Zip up the job results as a tar
+        String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
+                "'cd /gpfs/scratch/gurpreetsing/Results; tar czf " + jobId + ".tar.gz " + jobId + "'");
+        String processOutput = script.createScript(command);
+        // Transfer the tar file to local computer
+        command = String.format("scp gurpreetsing@login.seawulf.stonybrook.edu:/gpfs/scratch/gurpreetsing/Results/" +
+                jobId + ".tar.gz ./src/main/resources/Algorithm/Results/");
+        processOutput = script.createScript(command);
+        // Unzip the tar file
+        command = String.format("cd ./src/main/resources/Algorithm/Results; tar zxvf " + jobId + ".tar.gz");
+        processOutput = script.createScript(command);
+    }
+
+    /**
+     * This method is called after a local/SeaWulf job is completed. It calculates the number of
+     * counties, the average plan, the extreme plan, orders the districts by the user requested
      * VAPs and the box and whiskers data.
      *
      * @param job - The job to parse
@@ -514,6 +576,7 @@ public class JobHandler {
             JSONObject extDistrictingJson = convertDistrictToJson(extDistricting);
             districtingsJson.add(avgDistrictingJson);
             districtingsJson.add(extDistrictingJson);
+            jsonObject.put("State", job.getAbbreviation().toString());
             jsonObject.put("Districtings", districtingsJson);
             File outputFile = new File(filePath);
             outputFile.createNewFile();
