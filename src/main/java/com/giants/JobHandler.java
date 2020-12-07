@@ -618,6 +618,14 @@ public class JobHandler {
      * @param job - The job to calculate the geo json
      */
     private void mapDistrictsGeoJson(Job job) {
+        try {
+            ProcessBuilder pb = new ProcessBuilder("python3", "./src/main/resources/jsons/districtings/DistrictGeoJsonGenerator.py",
+                    job.getId() + "");
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+        } catch(IOException e) {
+            System.out.println(e.getMessage());
+        }
 
         // Run a python script to calculate geo json of job
         // NO NEED TO RUN THIS IN ANOTHER THREAD SINCE WE WILL NOT RUN A JOB LOCALLY DURING PRESENTATION
