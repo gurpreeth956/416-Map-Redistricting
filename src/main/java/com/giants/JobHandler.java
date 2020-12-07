@@ -212,30 +212,16 @@ public class JobHandler {
     }
 
     public String loadDistrictingData(int jobId) {
-
-        /* Return format
-
-        data = {
-            districtPos: ,
-            pop (for each):
-            vap (for each):
-            geoJson: [
-                    ]
-        }
-
-        */
-
         // Will be stored in a folder in resources/jsons/districtings
-//        String filePath = "./src/main/resources/jsons/districtings/" + jobId + ".json";
-//        JSONParser parser = new JSONParser();
-//        try {
-//            Object obj = parser.parse(new FileReader(filePath));
-//            return obj.toString();
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            return null;
-//        }
-        return null;
+        String filePath = "./src/main/resources/jsons/districtings/" + jobId +"_districts_data.json";
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader(filePath));
+            return obj.toString();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -619,17 +605,19 @@ public class JobHandler {
      */
     private void mapDistrictsGeoJson(Job job) {
         try {
+            String filePath = "./src/main/resources/jsons/districtings/" + job.getId() + "_districts_data.json";
+            File outputFile = new File(filePath);
+            outputFile.createNewFile();
             ProcessBuilder pb = new ProcessBuilder("python3", "./src/main/resources/jsons/districtings/DistrictGeoJsonGenerator.py",
                     job.getId() + "");
             pb.redirectErrorStream(true);
             Process process = pb.start();
+            Script script = new Script();
+            String test = script.getProcessOutput(process);
+            System.out.println(test);
         } catch(IOException e) {
             System.out.println(e.getMessage());
         }
-
-        // Run a python script to calculate geo json of job
-        // NO NEED TO RUN THIS IN ANOTHER THREAD SINCE WE WILL NOT RUN A JOB LOCALLY DURING PRESENTATION
-
     }
 
 }

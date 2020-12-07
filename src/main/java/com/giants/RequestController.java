@@ -72,4 +72,9 @@ public class RequestController {
         jobHandler.checkJobStatus();
     }
 
+//    @RequestMapping(value = "/test", method = RequestMethod.POST)
+//    public String test(@RequestParam int jobId)  {
+//        return jobHandler.mapDistrictsGeoJson(jobId);
+//    }
+
 }
