@@ -64,7 +64,6 @@ class BoxWhisker extends React.Component {
         data.sort(function (a, b) {
             return a - b;
         });
-        console.log(data);
         for (var i = 0; i < districtCount; i++) {
             var dot = { label: "Districts " + (i + 1), y: data[i] };
             dots.push(dot);

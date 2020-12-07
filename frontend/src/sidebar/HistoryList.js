@@ -30,7 +30,6 @@ class HistoryList extends React.Component {
 	}
 
 	render() {
-		console.log(this.props.jobs);
 		const jobs = this.props.jobs;
 		var loaded_id = null;
 		if (this.props.loadedJob != null && this.props.loadedJob != undefined) {
