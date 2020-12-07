@@ -34,7 +34,6 @@ class Sidebar extends React.Component {
           this.setState({
             jobs: result
           });
-          console.log(result);
         }
       ), 5000
     );

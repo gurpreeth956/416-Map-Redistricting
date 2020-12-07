@@ -124,11 +124,12 @@ class MainPage extends React.Component {
 				type: "GET",
 				data: data,
 				success: (data) => {
-					this.setState({
-						averageMap: data[0],
-						extremeMap: data[1]
-					});
+					data = JSON.parse(data)
 					console.log(data);
+					this.setState({
+						averageMap: data.Districtings[0].data,
+						extremeMap: data.Districtings[1].data
+					});
 				}
 			});
 		}

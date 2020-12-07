@@ -1,11 +1,9 @@
 import React from 'react';
 import $ from 'jquery';
 import districtGeoJson from './data/districts-geojson.json';
-import test from './data/test.json';
 import stateGeoJson from './data/states-geojson.json';
 import L from 'leaflet';
 import { Map, TileLayer, GeoJSON } from 'react-leaflet';
-import BoxWhisker from '../BoxWhisker';
 import SummaryData from './SummaryData';
 window.$ = $;
 
@@ -85,8 +83,8 @@ class USMap extends React.Component {
             return 'darkcyan';
         } else if (name === "averageDistrict") {
             return 'purple';
-        } else if (name === "extreme District") {
-            return 'yellow';
+        } else if (name === "extremeDistrict") {
+            return 'goldenrod';
         } else if (name === "precinct") {
             return 'orangered';
         }
