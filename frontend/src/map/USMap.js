@@ -21,38 +21,45 @@ class USMap extends React.Component {
         this.state = {
             paPrecinct: '',
             caPrecinct: '',
-            laPrecinct: ''
+            laPrecinct: '',
+            currentState: 'none'
         }
     }
 
     componentDidMount() {
-        map = L.map('map-id').setView([42.0, -96], 5);
+        map = L.map('map-id').setView([40.0, -98], 5);
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: '...',
             id: 'mapbox/light-v9',
             tileSize: 512,
             zoomOffset: -1,
+            // Setting min/max zoom here causes map to grey on state click doing below instead
             scrollWheelZoom: false,
             dragging: false,
             accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
         }).addTo(map);
+        map.setMaxZoom(5);
+        map.setMinZoom(5);
 
         states = L.geoJson(stateGeoJson, { style: this.stateStyle, onEachFeature: this.stateOnEachFeature }).addTo(map);
 
         if (this.props.districtsIsSet && this.props.currentIsSet && !map.hasLayer(realDistrict)) {
             realDistrict = L.geoJson(districtGeoJson, { style: this.realDistrictStyle }).addTo(map);
+            this.setState({
+                realDistrictCurrentlyOn:true
+            });
         } else if ((!this.props.districtsIsSet || !this.props.currentIsSet) && map.hasLayer(realDistrict)) {
             map.removeLayer(realDistrict);
         }
-        if (this.props.districtsIsSet && this.props.averageIsSet && this.state.averageMap !== "" && !map.hasLayer(averageDistrict)) {
-            averageDistrict = L.geoJson(this.state.averageMap, { style: this.averageDistrictStyle }).addTo(map);
-        } else if ((!this.props.districtsIsSet || !this.props.averageIsSet || this.state.averageMap === "") && map.hasLayer(averageDistrict)) {
+        if (this.props.districtsIsSet && this.props.averageIsSet && this.props.averageMap !== "" && !map.hasLayer(averageDistrict)) {
+            averageDistrict = L.geoJson(this.props.averageMap, { style: this.averageDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.averageIsSet || this.props.averageMap === "") && map.hasLayer(averageDistrict)) {
             map.removeLayer(averageDistrict);
         }
 
-        if (this.props.districtsIsSet && this.props.extremeIsSet && this.state.extremeMap !== "" && !map.hasLayer(extremeDistrict)) {
-            extremeDistrict = L.geoJson(this.state.extremeMap, { style: this.extremeDistrictStyle }).addTo(map);
-        } else if ((!this.props.districtsIsSet || !this.props.extremeIsSet || this.state.extremeMap === "") && map.hasLayer(extremeDistrict)) {
+        if (this.props.districtsIsSet && this.props.extremeIsSet && this.props.extremeMap !== "" && !map.hasLayer(extremeDistrict)) {
+            extremeDistrict = L.geoJson(this.props.extremeMap, { style: this.extremeDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.extremeIsSet || this.props.extremeMap === "") && map.hasLayer(extremeDistrict)) {
             map.removeLayer(extremeDistrict);
         }
 
@@ -103,7 +110,6 @@ class USMap extends React.Component {
             data: data,
             success: (data) => {
                 this.setState({ laPrecinct: JSON.parse(data) });
-                console.log("la data set");
             }
         });
     }
@@ -174,8 +180,6 @@ class USMap extends React.Component {
 
     stateOnEachFeature = (feature, layer, e) => {
         layer.on({
-            mouseover: this.highlightFeature.bind(this),
-            mouseout: this.resetHighlight.bind(this),
             click: this.onStateClick.bind(this)
         });
     }
@@ -188,40 +192,22 @@ class USMap extends React.Component {
         this.hover =  '<p> test </p>';
     }*/
 
-    highlightFeature(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
-        if (e.target.feature.properties.name === "California" ||
-            e.target.feature.properties.name === "Louisiana" ||
-            e.target.feature.properties.name === "Pennsylvania") {
-            var layer = e.target;
-            layer.setStyle({
-                weight: 5,
-                color: '#666',
-                dashArray: '',
-                fillOpacity: 0.7
-            });
-
-        }
-    }
-
-    resetHighlight(e) { // listener for when mouse stops hovering state
-        states.resetStyle(e.target);
-    }
-
     componentDidUpdate() {
         if (this.props.districtsIsSet && this.props.currentIsSet && !map.hasLayer(realDistrict)) {
             realDistrict = L.geoJson(districtGeoJson, { style: this.realDistrictStyle }).addTo(map);
         } else if ((!this.props.districtsIsSet || !this.props.currentIsSet) && map.hasLayer(realDistrict)) {
             map.removeLayer(realDistrict);
         }
-        if (this.props.districtsIsSet && this.props.averageIsSet && this.state.averageMap !== "" && !map.hasLayer(averageDistrict)) {
-            averageDistrict = L.geoJson(this.state.averageMap, { style: this.averageDistrictStyle }).addTo(map);
-        } else if ((!this.props.districtsIsSet || !this.props.averageIsSet || this.state.averageMap === "") && map.hasLayer(averageDistrict)) {
+        console.log(this.props.districtsIsSet && this.props.averageIsSet && this.props.averageMap !== "" && !map.hasLayer(averageDistrict));
+        if (this.props.districtsIsSet && this.props.averageIsSet && this.props.averageMap !== "" && !map.hasLayer(averageDistrict)) {
+            averageDistrict = L.geoJson(this.props.averageMap, { style: this.averageDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.averageIsSet || this.props.averageMap === "") && map.hasLayer(averageDistrict)) {
             map.removeLayer(averageDistrict);
         }
 
-        if (this.props.districtsIsSet && this.props.extremeIsSet && this.state.extremeMap !== "" && !map.hasLayer(extremeDistrict)) {
-            extremeDistrict = L.geoJson(this.state.extremeMap, { style: this.extremeDistrictStyle }).addTo(map);
-        } else if ((!this.props.districtsIsSet || !this.props.extremeIsSet || this.state.extremeMap === "") && map.hasLayer(extremeDistrict)) {
+        if (this.props.districtsIsSet && this.props.extremeIsSet && this.props.extremeMap !== "" && !map.hasLayer(extremeDistrict)) {
+            extremeDistrict = L.geoJson(this.props.extremeMap, { style: this.extremeDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.extremeIsSet || this.props.extremeMap === "") && map.hasLayer(extremeDistrict)) {
             map.removeLayer(extremeDistrict);
         }
 
@@ -256,64 +242,110 @@ class USMap extends React.Component {
     }
 
     zoomToCA() {
-        map.setMaxZoom(15);
-        map.setMinZoom(6.35);
-        map.setView([37.5, -119], 6.35);
-        map.setMaxBounds(L.latLngBounds(L.latLng(42.2,-105.4),L.latLng(32,-130.8)));
+        if(this.state.currentState !== this.props.selectedState) {
+            map.setMaxZoom(15);
+            map.setMinZoom(6.35);
+            map.setView([37.5, -119], 6.35);
+            map.setMaxBounds(L.latLngBounds(L.latLng(42.2,-105.4),L.latLng(32,-130.8)));
+            
+            map.scrollWheelZoom.enable();
+            map.dragging.enable();
+
+            this.setState({
+                currentState:"CA"
+            });
+        }
+        if(map.hasLayer(caPrecinct)){
+            caPrecinct.bringToFront();
+        }
         
-        map.scrollWheelZoom.enable();
-        map.dragging.enable();
         if (this.state.caPrecinct === "") {
             this.loadCAPrecincts();
         }
-        caPrecinct = L.geoJson(this.state.caPrecinct, { style: this.precinctStyle }).addTo(map);
-        caPrecinct.bringToFront();
+        if(this.state.caPrecinct !== "" && this.props.precinctsIsSet && !map.hasLayer(caPrecinct)) {
+            caPrecinct = L.geoJson(this.state.caPrecinct, { style: this.precinctStyle }).addTo(map);
+            caPrecinct.bringToFront();
+        } else if((this.state.caPrecinct === "" || !this.props.precinctsIsSet) && map.hasLayer(caPrecinct)){
+            map.removeLayer(caPrecinct);
+        }  
     }
 
     zoomToPA() {
-        map.setMaxZoom(15);
-        map.setMinZoom(8);
-        map.setView([41.0, -77.5], 8);
-        map.setMaxBounds(L.latLngBounds(L.latLng(42.5,-73.45),L.latLng(39.4, -81.5)));
+        if(this.state.currentState !== this.props.selectedState) {
+            map.setMaxZoom(15);
+            map.setMinZoom(8);
+            map.setView([41.0, -77.5], 8);
+            map.setMaxBounds(L.latLngBounds(L.latLng(42.5,-73.45),L.latLng(39.4, -81.5)));
 
-        map.scrollWheelZoom.enable();
-        map.dragging.enable();
+            map.scrollWheelZoom.enable();
+            map.dragging.enable();
+            this.setState({
+                currentState:"PA"
+            });
+        }
+        if(map.hasLayer(paPrecinct)){
+            paPrecinct.bringToFront();
+        }
         if (this.state.paPrecinct === "") {
             this.loadPAPrecincts();
         }
-        paPrecinct = L.geoJson(this.state.paPrecinct, { style: this.precinctStyle }).addTo(map);
-        paPrecinct.bringToFront();
+        if(this.state.paPrecinct !== "" && this.props.precinctsIsSet && !map.hasLayer(paPrecinct)) {
+            paPrecinct = L.geoJson(this.state.paPrecinct, { style: this.precinctStyle }).addTo(map);
+            paPrecinct.bringToFront();
+        } else if((this.state.paPrecinct === "" || !this.props.precinctsIsSet) && map.hasLayer(paPrecinct)){
+            map.removeLayer(paPrecinct);
+        }  
     }
 
     zoomToLA() {
-        map.setMaxZoom(15);
-        map.setMinZoom(7.45);
-        map.setView([31.0, -91], 7.45);
-        map.setMaxBounds(L.latLngBounds(L.latLng(33.5, -85),L.latLng(28, -97)));
+        if(this.state.currentState !== this.props.selectedState) {
+            map.setMaxZoom(15);
+            map.setMinZoom(7.45);
+            map.setView([32.0, -91], 7.45);
+            map.setMaxBounds(L.latLngBounds(L.latLng(33.5, -85),L.latLng(28, -97)));
 
-        map.scrollWheelZoom.enable();
-        map.dragging.enable();
+            map.scrollWheelZoom.enable();
+            map.dragging.enable();
+            this.setState({
+                currentState:"LA"
+            });
+        }
+        if(map.hasLayer(laPrecinct)){
+            laPrecinct.bringToFront();
+        }
         if (this.state.laPrecinct === "") {
             this.loadLAPrecincts();
         }
-        laPrecinct = L.geoJson(this.state.laPrecinct, { style: this.precinctStyle }).addTo(map);
-        laPrecinct.bringToFront();
+        if(this.state.laPrecinct !== "" && this.props.precinctsIsSet && !map.hasLayer(laPrecinct)) {
+            laPrecinct = L.geoJson(this.state.laPrecinct, { style: this.precinctStyle }).addTo(map);
+            laPrecinct.bringToFront();
+        } else if((this.state.laPrecinct === "" || !this.props.precinctsIsSet) && map.hasLayer(laPrecinct)){
+            map.removeLayer(laPrecinct);
+        }  
     }
 
     zoomToMap() {
-        map.setMaxZoom(5);
-        map.setMinZoom(5);
-        map.setView([40.0, -98], 5);
-        map.setMaxBounds(L.latLngBounds(L.latLng(51.5, -65.6),L.latLng(26.2, -130.3)));
+        if(this.state.currentState !== this.props.selectedState) {
+            map.setMaxZoom(5);
+            map.setMinZoom(5);
+            map.setView([40.0, -98], 5);
+            map.setMaxBounds(L.latLngBounds(L.latLng(51.5, -65.6),L.latLng(26.2, -130.3)));
 
+            map.scrollWheelZoom.disable();
+            map.dragging.disable();
+            this.setState({
+                currentState:"none"
+            });
+        }
         states.bringToFront();
-        map.scrollWheelZoom.disable();
-        map.dragging.disable();
+
         if(map.hasLayer(caPrecinct)){
             map.removeLayer(caPrecinct);
-        } else if(map.hasLayer(paPrecinct)) {
+        }
+        if(map.hasLayer(paPrecinct)) {
             map.removeLayer(paPrecinct);
-        } else if(map.hasLayer(laPrecinct)) {
+        }
+        if(map.hasLayer(laPrecinct)) {
             map.removeLayer(laPrecinct);
         }
     }
