@@ -37,7 +37,7 @@ class USMap extends React.Component {
             accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
         }).addTo(map);
 
-        states = L.geoJson(stateGeoJson, { style: this.stateStyle, onEachFeature: this.onEachFeature }).addTo(map);
+        states = L.geoJson(stateGeoJson, { style: this.stateStyle, onEachFeature: this.stateOnEachFeature }).addTo(map);
 
         if (this.props.districtsIsSet && this.props.currentIsSet && !map.hasLayer(realDistrict)) {
             realDistrict = L.geoJson(districtGeoJson, { style: this.realDistrictStyle }).addTo(map);
@@ -172,7 +172,7 @@ class USMap extends React.Component {
         };
     }
 
-    onEachFeature = (feature, layer, e) => {
+    stateOnEachFeature = (feature, layer, e) => {
         layer.on({
             mouseover: this.highlightFeature.bind(this),
             mouseout: this.resetHighlight.bind(this),
@@ -256,9 +256,11 @@ class USMap extends React.Component {
     }
 
     zoomToCA() {
-        map.setView([37.0, -119], 6.35);
+        map.setMaxZoom(15);
         map.setMinZoom(6.35);
-        map.setMaxZoom(6.35);
+        map.setView([37.5, -119], 6.35);
+        map.setMaxBounds(L.latLngBounds(L.latLng(42.2,-105.4),L.latLng(32,-130.8)));
+        
         map.scrollWheelZoom.enable();
         map.dragging.enable();
         if (this.state.caPrecinct === "") {
@@ -269,9 +271,11 @@ class USMap extends React.Component {
     }
 
     zoomToPA() {
-        map.setMaxZoom(8);
+        map.setMaxZoom(15);
         map.setMinZoom(8);
-        map.setView([41.0, -77], 8);
+        map.setView([41.0, -77.5], 8);
+        map.setMaxBounds(L.latLngBounds(L.latLng(42.5,-73.45),L.latLng(39.4, -81.5)));
+
         map.scrollWheelZoom.enable();
         map.dragging.enable();
         if (this.state.paPrecinct === "") {
@@ -282,9 +286,11 @@ class USMap extends React.Component {
     }
 
     zoomToLA() {
-        map.setMaxZoom(7.5);
-        map.setMinZoom(7.5);
-        map.setView([31.0, -92], 8);
+        map.setMaxZoom(15);
+        map.setMinZoom(7.45);
+        map.setView([31.0, -91], 7.45);
+        map.setMaxBounds(L.latLngBounds(L.latLng(33.5, -85),L.latLng(28, -97)));
+
         map.scrollWheelZoom.enable();
         map.dragging.enable();
         if (this.state.laPrecinct === "") {
@@ -298,14 +304,16 @@ class USMap extends React.Component {
         map.setMaxZoom(5);
         map.setMinZoom(5);
         map.setView([40.0, -98], 5);
+        map.setMaxBounds(L.latLngBounds(L.latLng(51.5, -65.6),L.latLng(26.2, -130.3)));
+
         states.bringToFront();
         map.scrollWheelZoom.disable();
         map.dragging.disable();
-        if(states.hasLayer(caPrecinct)){
+        if(map.hasLayer(caPrecinct)){
             map.removeLayer(caPrecinct);
-        } else if(states.hasLayer(paPrecinct)) {
+        } else if(map.hasLayer(paPrecinct)) {
             map.removeLayer(paPrecinct);
-        } else if(states.hasLayer(laPrecinct)) {
+        } else if(map.hasLayer(laPrecinct)) {
             map.removeLayer(laPrecinct);
         }
     }
