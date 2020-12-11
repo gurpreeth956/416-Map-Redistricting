@@ -125,7 +125,6 @@ class MainPage extends React.Component {
 				data: data,
 				success: (data) => {
 					data = JSON.parse(data)
-					console.log(data);
 					this.setState({
 						averageMap: data.Districtings[0].data,
 						extremeMap: data.Districtings[1].data
