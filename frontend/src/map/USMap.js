@@ -3,10 +3,17 @@ import $ from 'jquery';
 import districtGeoJson from './data/districts-geojson.json';
 import stateGeoJson from './data/states-geojson.json';
 import L from 'leaflet';
-import { Map, TileLayer, GeoJSON } from 'react-leaflet';
 import SummaryData from './SummaryData';
 window.$ = $;
 
+var map;
+var states;
+var realDistrict;
+var extremeDistrict;
+var averageDistrict;
+var laPrecinct;
+var caPrecinct;
+var paPrecinct;
 class USMap extends React.Component {
 
     constructor(props) {
@@ -14,16 +21,41 @@ class USMap extends React.Component {
         this.state = {
             paPrecinct: '',
             caPrecinct: '',
-            laPrecinct: ''        
+            laPrecinct: ''
         }
-        this.map = React.createRef();
-        this.stateGeoJson = React.createRef();
-        this.realDistricts = React.createRef();
     }
 
     componentDidMount() {
-        var districts = L.geoJson(stateGeoJson);
-        console.log(districts);
+        map = L.map('map-id').setView([42.0, -96], 5);
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: '...',
+            id: 'mapbox/light-v9',
+            tileSize: 512,
+            zoomOffset: -1,
+            scrollWheelZoom: false,
+            dragging: false,
+            accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
+        }).addTo(map);
+
+        states = L.geoJson(stateGeoJson, { style: this.stateStyle, onEachFeature: this.stateOnEachFeature }).addTo(map);
+
+        if (this.props.districtsIsSet && this.props.currentIsSet && !map.hasLayer(realDistrict)) {
+            realDistrict = L.geoJson(districtGeoJson, { style: this.realDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.currentIsSet) && map.hasLayer(realDistrict)) {
+            map.removeLayer(realDistrict);
+        }
+        if (this.props.districtsIsSet && this.props.averageIsSet && this.state.averageMap !== "" && !map.hasLayer(averageDistrict)) {
+            averageDistrict = L.geoJson(this.state.averageMap, { style: this.averageDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.averageIsSet || this.state.averageMap === "") && map.hasLayer(averageDistrict)) {
+            map.removeLayer(averageDistrict);
+        }
+
+        if (this.props.districtsIsSet && this.props.extremeIsSet && this.state.extremeMap !== "" && !map.hasLayer(extremeDistrict)) {
+            extremeDistrict = L.geoJson(this.state.extremeMap, { style: this.extremeDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.extremeIsSet || this.state.extremeMap === "") && map.hasLayer(extremeDistrict)) {
+            map.removeLayer(extremeDistrict);
+        }
+
         if (this.props.selectedState === "CA") {
             this.zoomToCA();
         } else if (this.props.selectedState === "PA") {
@@ -140,13 +172,13 @@ class USMap extends React.Component {
         };
     }
 
-    onEachFeature = (feature, layer, e) => {
+    stateOnEachFeature = (feature, layer, e) => {
         layer.on({
-            // mouseover: this.highlightFeature.bind(this),
-            // mouseout: this.resetHighlight.bind(this),
+            mouseover: this.highlightFeature.bind(this),
+            mouseout: this.resetHighlight.bind(this),
             click: this.onStateClick.bind(this)
         });
-    }  
+    }
 
     /*onMouseOut = (e) => {
         this.hover =  '<h4> Hover over a precinct </h4>';
@@ -156,28 +188,43 @@ class USMap extends React.Component {
         this.hover =  '<p> test </p>';
     }*/
 
-    // highlightFeature(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
-    //     if (e.target.feature.properties.name === "California" ||
-    //         e.target.feature.properties.name === "Louisiana" ||
-    //         e.target.feature.properties.name === "Pennsylvania") {
-    //         console.log(e.target);
-    //         var layer = e.target;
-    //         layer.setStyle({
-    //             weight: 5,
-    //             color: '#666',
-    //             dashArray: '',
-    //             fillOpacity: 0.7
-    //         });
+    highlightFeature(e) { //when mouse hovers on one of the 3 states, border is outlined and hover info in top right is updated
+        if (e.target.feature.properties.name === "California" ||
+            e.target.feature.properties.name === "Louisiana" ||
+            e.target.feature.properties.name === "Pennsylvania") {
+            var layer = e.target;
+            layer.setStyle({
+                weight: 5,
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
 
-    //     }
-    // }
+        }
+    }
 
-    // resetHighlight(e) { // listener for when mouse stops hovering state
-    //     // console.log(this.stateGeoJson);
-    //     // this.stateGeoJson.leafletElement.resetStyle(e.target);
-    // }
+    resetHighlight(e) { // listener for when mouse stops hovering state
+        states.resetStyle(e.target);
+    }
 
     componentDidUpdate() {
+        if (this.props.districtsIsSet && this.props.currentIsSet && !map.hasLayer(realDistrict)) {
+            realDistrict = L.geoJson(districtGeoJson, { style: this.realDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.currentIsSet) && map.hasLayer(realDistrict)) {
+            map.removeLayer(realDistrict);
+        }
+        if (this.props.districtsIsSet && this.props.averageIsSet && this.state.averageMap !== "" && !map.hasLayer(averageDistrict)) {
+            averageDistrict = L.geoJson(this.state.averageMap, { style: this.averageDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.averageIsSet || this.state.averageMap === "") && map.hasLayer(averageDistrict)) {
+            map.removeLayer(averageDistrict);
+        }
+
+        if (this.props.districtsIsSet && this.props.extremeIsSet && this.state.extremeMap !== "" && !map.hasLayer(extremeDistrict)) {
+            extremeDistrict = L.geoJson(this.state.extremeMap, { style: this.extremeDistrictStyle }).addTo(map);
+        } else if ((!this.props.districtsIsSet || !this.props.extremeIsSet || this.state.extremeMap === "") && map.hasLayer(extremeDistrict)) {
+            map.removeLayer(extremeDistrict);
+        }
+
         if (this.props.selectedState === "CA") {
             this.zoomToCA();
         } else if (this.props.selectedState === "PA") {
@@ -209,90 +256,75 @@ class USMap extends React.Component {
     }
 
     zoomToCA() {
-        this.map.current.leafletElement.setMaxZoom(6.35);
-        this.map.current.leafletElement.setMaxZoom(6.35);
-        this.map.current.leafletElement.setView([37.0, -119], 6.35);
+        map.setMaxZoom(15);
+        map.setMinZoom(6.35);
+        map.setView([37.5, -119], 6.35);
+        map.setMaxBounds(L.latLngBounds(L.latLng(42.2,-105.4),L.latLng(32,-130.8)));
+        
+        map.scrollWheelZoom.enable();
+        map.dragging.enable();
         if (this.state.caPrecinct === "") {
             this.loadCAPrecincts();
         }
+        caPrecinct = L.geoJson(this.state.caPrecinct, { style: this.precinctStyle }).addTo(map);
+        caPrecinct.bringToFront();
     }
 
     zoomToPA() {
-        this.map.current.leafletElement.setMaxZoom(8);
-        this.map.current.leafletElement.setMinZoom(8);
-        this.map.current.leafletElement.setView([41.0, -77], 8);
+        map.setMaxZoom(15);
+        map.setMinZoom(8);
+        map.setView([41.0, -77.5], 8);
+        map.setMaxBounds(L.latLngBounds(L.latLng(42.5,-73.45),L.latLng(39.4, -81.5)));
+
+        map.scrollWheelZoom.enable();
+        map.dragging.enable();
         if (this.state.paPrecinct === "") {
             this.loadPAPrecincts();
         }
+        paPrecinct = L.geoJson(this.state.paPrecinct, { style: this.precinctStyle }).addTo(map);
+        paPrecinct.bringToFront();
     }
 
     zoomToLA() {
-        this.map.current.leafletElement.setMaxZoom(7.5);
-        this.map.current.leafletElement.setMinZoom(7.5);
-        this.map.current.leafletElement.setView([31.0, -92], 8);
+        map.setMaxZoom(15);
+        map.setMinZoom(7.45);
+        map.setView([31.0, -91], 7.45);
+        map.setMaxBounds(L.latLngBounds(L.latLng(33.5, -85),L.latLng(28, -97)));
+
+        map.scrollWheelZoom.enable();
+        map.dragging.enable();
         if (this.state.laPrecinct === "") {
             this.loadLAPrecincts();
         }
+        laPrecinct = L.geoJson(this.state.laPrecinct, { style: this.precinctStyle }).addTo(map);
+        laPrecinct.bringToFront();
     }
 
     zoomToMap() {
-        this.map.current.leafletElement.setMaxZoom(5);
-        this.map.current.leafletElement.setMinZoom(5);
-        this.map.current.leafletElement.setView([40.0, -98], 5);
+        map.setMaxZoom(5);
+        map.setMinZoom(5);
+        map.setView([40.0, -98], 5);
+        map.setMaxBounds(L.latLngBounds(L.latLng(51.5, -65.6),L.latLng(26.2, -130.3)));
+
+        states.bringToFront();
+        map.scrollWheelZoom.disable();
+        map.dragging.disable();
+        if(map.hasLayer(caPrecinct)){
+            map.removeLayer(caPrecinct);
+        } else if(map.hasLayer(paPrecinct)) {
+            map.removeLayer(paPrecinct);
+        } else if(map.hasLayer(laPrecinct)) {
+            map.removeLayer(laPrecinct);
+        }
     }
 
     render() {
         console.log(this.props);
-        var mapClass;
-        var precinctClass;
-        if (this.state.zoomedOut == true) {
-            mapClass = "front-geojson-class";
-            precinctClass = "back-geojson-class";
-        } else {
-            precinctClass = "front-geojson-class"
-            mapClass = "back-geojson-class";
-        }
+
         return (
             <div class="col bg-white" id="body-col">
-                <Map ref={this.map} center={[40.0, -98]} zoom={5} scrollWheelZoom={false} minZoom={5} maxZoom={5} dragging={false} doubleClickZoom={false}>
-                    <TileLayer
-                        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg"
-                    />
-
-                    {/* GeoJSON for IRL Precincts */}
-                    {this.props.selectedState === "CA" && this.state.caPrecinct !== "" && this.props.precinctsIsSet ?
-                        <GeoJSON data={this.state.caPrecinct} className={precinctClass} style={this.precinctStyle}></GeoJSON> :
-                        null
-                    }
-                    {this.props.selectedState === "LA" && this.state.laPrecinct !== "" && this.props.precinctsIsSet ?
-                        <GeoJSON data={this.state.laPrecinct} className={precinctClass} style={this.precinctStyle}></GeoJSON> :
-                        null
-                    }
-
-                    {this.props.selectedState === "PA" && this.state.paPrecinct !== "" && this.props.precinctsIsSet ?
-                        <GeoJSON data={this.state.paPrecinct} className={precinctClass} style={this.precinctStyle}></GeoJSON> :
-                        null
-                    }
-                    {/* GeoJSON for State */}
-                    <GeoJSON ref={this.stateGeoJson} data={stateGeoJson} className={mapClass} style={this.stateStyle} onEachFeature={this.onEachFeature}>
-                        {/* GeoJSON for IRL Districts */}
-                        {this.props.districtsIsSet && this.props.currentIsSet ?
-                            <GeoJSON ref={this.realDistricts} data={districtGeoJson} style={this.realDistrictStyle} className={"back-geojson-class"}></GeoJSON> :
-                            null
-                        }
-                        {/* GeoJSON for job maps */}
-                        {this.props.averageMap !== "" && this.props.districtsIsSet && this.props.averageIsSet ?
-                            <GeoJSON data={this.props.averageMap} style={this.averageDistrictStyle}></GeoJSON> :
-                            null
-                        }
-                        {this.state.extremeMap !== "" && this.props.districtsIsSet && this.props.extremeIsSet ?
-                            <GeoJSON data={this.props.extremeMap} style={this.extremeDistrictStyle}></GeoJSON> :
-                            null
-                        }
-                    </GeoJSON>
-                </Map>
-                {this.props.boxWhisker.length !== 0 ? <SummaryData plot={this.props.boxWhisker} ethnicities={this.props.ethnicities}/> : null}
+                <div id="map-id"></div>
+                {this.props.boxWhisker.length !== 0 ? <SummaryData plot={this.props.boxWhisker} ethnicities={this.props.ethnicities} /> : null}
             </div>
         );
     }
