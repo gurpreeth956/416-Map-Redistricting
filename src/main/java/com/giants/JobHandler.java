@@ -91,7 +91,10 @@ public class JobHandler {
             em.persist(job);
             if (numberOfMaps > seaWulfThreshold) {
                 // Run job on SeaWulf
-                if (!job.executeSeaWulfJob()) return null;
+                if (!job.executeSeaWulfJob()) {
+                    em.getTransaction().rollback();
+                    return null;
+                }
                 job.setJobStatus(JobStatus.WAITING);
             } else {
                 // Run job locally
@@ -173,8 +176,10 @@ public class JobHandler {
                 // Delete json file for job
                 File resultsFile = new File("./src/main/resources/Algorithm/Results/" + job.getId() + ".json");
                 if (resultsFile.exists()) resultsFile.delete();
-//                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_precincts_data.json");
-//                if (resultsFile.exists()) resultsFile.delete();
+                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_precincts_data.json");
+                if (resultsFile.exists()) resultsFile.delete();
+                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_districts_data.json");
+                if (resultsFile.exists()) resultsFile.delete();
 
                 // NEED TO DELETE OTHER FILES RELATED TO JOB (districtings and summaries)
 
@@ -614,7 +619,6 @@ public class JobHandler {
             Process process = pb.start();
             Script script = new Script();
             String test = script.getProcessOutput(process);
-            System.out.println(test);
         } catch(IOException e) {
             System.out.println(e.getMessage());
         }

@@ -190,7 +190,6 @@ public class Job implements Comparable<Job> {
             pb.redirectErrorStream(true);
             Process process = pb.start();
             String test = script.getProcessOutput(process);
-            System.out.println(test);
             this.setJobStatus(JobStatus.PROCESSING);
         } catch (IOException e) {
             System.out.println(e.getMessage());
