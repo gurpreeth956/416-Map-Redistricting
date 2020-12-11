@@ -64,7 +64,7 @@ def nodeInitialization(graph):
 
     # updating the precinct neighbors
     for i, j in zip(graph.nodes, data):
-        neighbors = j["neighbors"]
+        neighbors = j["neighbors"].split(',')
         for k in graph.nodes:
             if k.id in neighbors:
                 i.neighbors.add(k)
