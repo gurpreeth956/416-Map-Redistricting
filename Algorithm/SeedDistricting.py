@@ -5,9 +5,17 @@ from Graph import Graph
 import Rebalance as Rebalance
 import json
 import sys
-import copy
-# the value is updated depending on the state
 
+'''
+Arguments:
+JobId
+State Abbreviation
+User Compactness
+Pop Different Percent
+No of maps
+'''
+
+# the value is updated depending on the state
 RequestedNoOfDistrict = 0
 State = sys.argv[2]
 NoOfMaps = int(sys.argv[5])
@@ -15,9 +23,10 @@ NoOfMaps = int(sys.argv[5])
 
 def seedDistricting():
     graph = Graph(1001)
-    nodeInitialization(graph)
-    graphInitialization(graph)
+    graph = nodeInitialization(graph)
+    graph = graphInitialization(graph)
 
+    # till we have required no of districts
     while len(graph.clusters) > RequestedNoOfDistrict:
         index = randint(0, len(graph.clusters)-1)
         cluster1 = graph.clusters[index]
@@ -30,8 +39,7 @@ def seedDistricting():
 
     # updating the compactness of each cluster before sending for rebalance
     for i in graph.clusters:
-        Rebalance.updateClusterCompactness(graph, i)
-
+        Rebalance.updateClusterCompactness(i)
     return graph
 
 
@@ -40,7 +48,7 @@ def nodeInitialization(graph):
     global RequestedNoOfDistrict
 
     if State == "LA":
-        RequestedNoOfDistrict = 20
+        RequestedNoOfDistrict = 6
         with open('PrecinctData/LouisianaNeighbors.json') as f:
             data = json.load(f)
     elif State == "PA":
@@ -63,7 +71,7 @@ def nodeInitialization(graph):
 
     # updating the precinct neighbors
     for i, j in zip(graph.nodes, data):
-        neighbors = j["neighbors"]
+        neighbors = j["neighbors"].split(",")
         for k in graph.nodes:
             if k.id in neighbors:
                 i.neighbors.add(k)
@@ -75,6 +83,7 @@ def nodeInitialization(graph):
             addGraphEdge(graph, i, j)
 
     print("Graph is: ", graph.id, "population is", graph.population)
+    return graph
 
 
 def addGraphEdge(graph, node1, node2):
@@ -102,6 +111,7 @@ def graphInitialization(graph):
                     if i is not k:
                         i.neighbors.add(k)
                         k.neighbors.add(i)
+    return graph
 
 
 def combineClusters(graph, cluster1, cluster2):
