@@ -314,8 +314,8 @@ public class JobHandler {
                 String command = String.format("ssh gurpreetsing@login.seawulf.stonybrook.edu " +
                         "'source /etc/profile.d/modules.sh; module load slurm; squeue -j %d'", job.getSeaWulfId());
                 String processOutput = script.createScript(command);
-                if (!processOutput.contains(job.getSeaWulfId() + "") && !processOutput.contains("kex_exchange_identification")
-                        && processOutput.contains("JOBID")) {
+                if ((!processOutput.contains(job.getSeaWulfId() + "") && !processOutput.contains("kex_exchange_identification")
+                        && processOutput.contains("JOBID")) || processOutput.contains("error")) {
                     changeJobStatus(job.getId(), JobStatus.PROCESSING);
                     System.out.println("STARTING PROCESSING...");
                     processSeaWulfData(job);
