@@ -65,7 +65,7 @@ class BoxWhisker extends React.Component {
             return a - b;
         });
         for (var i = 0; i < districtCount; i++) {
-            var dot = { label: "Districts " + (i + 1), y: data[i] };
+            var dot = { label: "District " + (i + 1), y: data[i] };
             dots.push(dot);
         }
         return dots;
