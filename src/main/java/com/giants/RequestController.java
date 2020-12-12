@@ -74,7 +74,7 @@ public class RequestController {
 
 //    @RequestMapping(value = "/test", method = RequestMethod.POST)
 //    public String test(@RequestParam int jobId)  {
-//        return jobHandler.mapDistrictsGeoJson(jobId);
+//        return jobHandler.createSummaryJson(jobId);
 //    }
 
 }

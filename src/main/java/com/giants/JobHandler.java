@@ -1,5 +1,6 @@
 package com.giants;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.giants.domain.*;
 import com.giants.enums.RaceEthnicity;
 import com.giants.enums.StateAbbreviation;
@@ -180,9 +181,8 @@ public class JobHandler {
                 if (resultsFile.exists()) resultsFile.delete();
                 resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_districts_data.json");
                 if (resultsFile.exists()) resultsFile.delete();
-
-                // NEED TO DELETE OTHER FILES RELATED TO JOB (districtings and summaries)
-
+                resultsFile = new File("./src/main/resources/jsons/summaries/" + job.getId() + "_summary.json");
+                if (resultsFile.exists()) resultsFile.delete();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 em.getTransaction().rollback();
@@ -430,7 +430,8 @@ public class JobHandler {
         try {
             em.getTransaction().begin();
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(
+                    new FileReader("./src/main/resources/Algorithm/Results/" + job.getId() + ".json"));
             JSONArray districtingsJson = (JSONArray) jsonObject.get("Districtings");
             List<List<Double>> boxWhiskersData = createBoxWhiskerArray(job.getAbbreviation());
             List<Districting> districtings = job.getDistrictings();
@@ -447,12 +448,10 @@ public class JobHandler {
             em.getTransaction().rollback();
             return false;
         }
-        // Create jsons for average/extreme districtings to compute geo borders
+        // Create jsons for average/extreme districtings and summary data
         generateAvgExtDistrictings(job);
-
-        // RAYMOND (follow the below method)
-        // Run python script to calculate district geoJson
         mapDistrictsGeoJson(job);
+        createSummaryJson(job);
         return true;
     }
 
@@ -620,6 +619,110 @@ public class JobHandler {
             Script script = new Script();
             String test = script.getProcessOutput(process);
         } catch(IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void createSummaryJson(Job job) {
+        EntityManager em = JPAUtility.getEntityManager();
+        try {
+            JSONObject jsonObject = new JSONObject();
+            // Put state name and state id
+            String stateName = null;
+            String stateId = null;
+            if (job.getAbbreviation() == StateAbbreviation.CA) {
+                stateName = "California";
+                stateId = "CA";
+            }
+            else if (job.getAbbreviation() == StateAbbreviation.LA) {
+                stateName = "Louisiana";
+                stateId = "LA";
+            }
+            else if (job.getAbbreviation() == StateAbbreviation.PA) {
+                stateName = "Pennsylvania";
+                stateId = "PA";
+            }
+            jsonObject.put("stateName", stateName);
+            jsonObject.put("stateId", stateId);
+            // Put job data
+            jsonObject.put("averageDistricting", job.getAverageDistrictingId());
+            jsonObject.put("extremeDistricting", job.getExtremeDistrictingId());
+            JSONObject constraintsJson = new JSONObject();
+            String compactnessLimit = null;
+            if (job.getUserCompactness() == 0) {
+                compactnessLimit = "Not Compact";
+            }
+            else if (job.getUserCompactness() == 1) {
+                compactnessLimit = "Somewhat Compact";
+            }
+            else if (job.getUserCompactness() == 2) {
+                compactnessLimit = "Very Compact";
+            }
+            constraintsJson.put("compactnessLimit", compactnessLimit);
+            constraintsJson.put("populationDifferenceLimit", job.getPopulationDifferenceLimit());
+            JSONArray ethnicitiesJson = new JSONArray();
+            for (Ethnicity ethnicity : job.getEthnicities()) {
+                ethnicitiesJson.add(ethnicity.getPrimaryKey().getEthnicity().toString());
+            }
+            constraintsJson.put("minorityGroups", ethnicitiesJson);
+            jsonObject.put("constraints", constraintsJson);
+            // Put precincts data
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonPrecinctsObject = (JSONObject) jsonParser.parse(new FileReader(getPrecinctsFile(job.getAbbreviation())));
+            jsonObject.put("precinctsGeoJson", jsonPrecinctsObject);
+            // Put districtings geo json
+            JSONObject jsonDistrictingsObject = (JSONObject) jsonParser.parse(
+                    new FileReader("./src/main/resources/jsons/districtings/" + job.getId() + "_districts_data.json"));
+            JSONArray districtingsJson = (JSONArray) jsonDistrictingsObject.get("Districtings");
+            jsonObject.put("congressionalDistrictsGeoJSON", districtingsJson);
+            // Put districts data
+            JSONArray districtsJson = new JSONArray();
+            Districting districting = em.find(Districting.class, job.getAverageDistrictingId());
+            for (District district : districting.getDistricts()) {
+                JSONObject districtJson = new JSONObject();
+                districtJson.put("DistrictId", district.getDistrictNumber());
+                PopAndVap popAndVap = district.getPopAndVap();
+                districtJson.put("Population", popAndVap.getTotalPop());
+                districtJson.put("MinorityPopulation", district.getTotalUserRequestedPop());
+                districtJson.put("VotingAgePopulation", popAndVap.getTotalVap());
+                districtJson.put("MinorityVotingAgePopulation", district.getTotalUserRequestedVap());
+                districtJson.put("NumberOfCounties", district.getNumberOfCounties());
+                JSONArray precinctsJson = new JSONArray();
+                for (DistrictPrecinct districtPrecinct : district.getDistrictPrecincts()) {
+                    precinctsJson.add(districtPrecinct.getPrimaryKey().getPrecinctId());
+                }
+                districtJson.put("PrecinctsInfo", precinctsJson);
+                districtsJson.add(districtJson);
+            }
+            jsonObject.put("AverageDistrictingDistricts", districtsJson);
+            districtsJson = new JSONArray();
+            districting = em.find(Districting.class, job.getExtremeDistrictingId());
+            for (District district : districting.getDistricts()) {
+                JSONObject districtJson = new JSONObject();
+                districtJson.put("DistrictId", district.getDistrictNumber());
+                PopAndVap popAndVap = district.getPopAndVap();
+                districtJson.put("Population", popAndVap.getTotalPop());
+                districtJson.put("MinorityPopulation", district.getTotalUserRequestedPop());
+                districtJson.put("VotingAgePopulation", popAndVap.getTotalVap());
+                districtJson.put("MinorityVotingAgePopulation", district.getTotalUserRequestedVap());
+                districtJson.put("NumberOfCounties", district.getNumberOfCounties());
+                JSONArray precinctsJson = new JSONArray();
+                for (DistrictPrecinct districtPrecinct : district.getDistrictPrecincts()) {
+                    precinctsJson.add(districtPrecinct.getPrimaryKey().getPrecinctId());
+                }
+                districtJson.put("PrecinctsInfo", precinctsJson);
+                districtsJson.add(districtJson);
+            }
+            jsonObject.put("ExtremeDistrictingDistricts", districtsJson);
+            // Now write everything to the summary file
+            String filePath = "./src/main/resources/jsons/summaries/" + job.getId() + "_summary.json";
+            File outputFile = new File(filePath);
+            outputFile.createNewFile();
+            FileWriter fw = new FileWriter(filePath);
+            fw.write(jsonObject.toJSONString());
+            fw.flush();
+            fw.close();
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
