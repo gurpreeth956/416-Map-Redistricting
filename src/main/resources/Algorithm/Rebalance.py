@@ -3,7 +3,7 @@ from Cluster import Cluster
 import sys
 import json
 
-terminationCondition = 10
+terminationCondition = 0
 populationThreshold = float(sys.argv[4])
 
 # gets updated first thing in the rebalance method.

@@ -80,9 +80,10 @@ public class Districting implements Comparable<Districting> {
             District district = this.districts.get(j);
             district.setDistrictNumber(j+1);
             double districtVap = district.getPopAndVap().getTotalVap();
-            double boxWhiskerPercent = (district.getTotalUserRequestedVap()/districtVap)*100;
-            if (boxWhiskerPercent > 99) boxWhiskerPercent = 99;
-            if (boxWhiskerPercent < 0) boxWhiskerPercent = 0;
+            double boxWhiskerPercent = 0;
+            if (districtVap != 0) boxWhiskerPercent = (district.getTotalUserRequestedVap()/districtVap)*100;
+            if (boxWhiskerPercent >= 99) boxWhiskerPercent = 99;
+            if (boxWhiskerPercent <= 0) boxWhiskerPercent = 0;
             boxWhiskersData.get(j+1).add(boxWhiskerPercent);
         }
     }

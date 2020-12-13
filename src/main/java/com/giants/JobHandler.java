@@ -75,7 +75,7 @@ public class JobHandler {
      * the job to the jobs table and list of jobs to check if it will run on SeaWulf. It
      * also adds the job to the database.
      *
-     * @param stateName - user specified state for the jb=ob
+     * @param stateName - user specified state for the job
      * @param userCompactness - user specified compactness
      * @param populationDifferenceLimit - user specified population percent difference
      * @param userEthnicities - user specified ethnicities
@@ -442,6 +442,7 @@ public class JobHandler {
             for (BoxWhisker boxWhisker : boxWhiskers) {
                 em.persist(boxWhisker);
             }
+            System.out.println("BLAH");
             em.getTransaction().commit();
         } catch (Exception e) {
             System.out.println(e.getMessage());
