@@ -22,6 +22,7 @@ var precinctHover;
 var laPrecinct;
 var caPrecinct;
 var paPrecinct;
+var popAvg;
 class USMap extends React.Component {
 
     constructor(props) {
@@ -72,16 +73,19 @@ class USMap extends React.Component {
         }
 
         if (this.props.heatMapIsSet && this.props.precinctsIsSet && !map.hasLayer(heatMap) && this.props.selectedState !== "none"){
-            heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: 'blue', 0.5: 'lime', 0.8: 'red'}, radius: 25}).addTo(map);
+            heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: '#dcc4ff', 0.4: '#b38bff', 0.6: '#7e52ff', 0.8: '#0000ff'}, radius: 30}).addTo(map)
             //heatMap.bringToFront();
-            this.addHeatMapLegend()
-            
+            this.addHeatMapLegend()    
         } else if (this.props.heatMapIsSet && this.props.precinctsIsSet && map.hasLayer(heatMap) && this.props.selectedState !== "none") {
             heatMap.setLatLngs(this.loadHeatMapData());
-        } else if ((!this.props.heatMapIsSet || !this.props.precinctsIsSet || this.props.heatMap === "" || this.props.selectedState === "none") && map.hasLayer(heatMap)) {
+        } else if ((!this.props.heatMapIsSet || (this.props.heatMap === "" || this.props.selectedState === "none")) && map.hasLayer(heatMap)) {
             map.removeLayer(heatMap);
-            //map.removeControl(heatMapLegend);
+           // map.removeControl(heatMapLegend);
+           this.removeHeatMapLegend();
+        } else if (!this.props.precinctsIsSet && map.hasLayer(heatMap)){
+            map.removeLayer(heatMap);
             this.removeHeatMapLegend();
+            this.props.updateFilters("heatmap");
         }
 
         if (this.props.selectedState === "CA") {
@@ -282,7 +286,9 @@ class USMap extends React.Component {
             // loop through our density intervals and generate a label with a colored square for each interval
             div.innerHTML = '<b> Legend </b> <br>' +
             '<i style="background: darkcyan;"></i> District Boundary<br>' +
-            '<i style="background: orangered;"></i> Precinct Boundary<br>';
+            '<i style="background: orangered;"></i> Precinct Boundary<br>' +
+            '<i style="background: purple;"></i> Average Boundary<br>' +
+            '<i style="background: goldenrod;"></i> Extreme Boundary<br>';
             return div;
         };
         mapLegend = legend.addTo(map);
@@ -290,16 +296,19 @@ class USMap extends React.Component {
 
     addHeatMapLegend() {
         mapLegend._container.innerHTML += '<br><b> Heat Map </b> <br>'
-        mapLegend._container.innerHTML += '<i style="background: #FF0000;"></i> ' + 80 + '% <br>' 
-        mapLegend._container.innerHTML += '<i style="background: #00FF00;"></i> ' + 50 + '% <br>' 
-        mapLegend._container.innerHTML += '<i style="background: #0000FF;"></i> ' + 20 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #0000ff;"></i> ' + 80 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #7e52ff;"></i> ' + 60 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #b38bff;"></i> ' + 40 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #dcc4ff;"></i> ' + 20 + '% <br>' 
     }
 
     removeHeatMapLegend(){
         if(mapLegend){
             mapLegend._container.innerHTML = '<b> Legend </b> <br>' +
-                '<i style="background: darkcyan;"></i> District Boundary<br>' +
-                '<i style="background: orangered;"></i> Precinct Boundary<br>';
+            '<i style="background: darkcyan;"></i> District Boundary<br>' +
+            '<i style="background: orangered;"></i> Precinct Boundary<br>' +
+            '<i style="background: purple;"></i> Average Boundary<br>' +
+            '<i style="background: goldenrod;"></i> Extreme Boundary<br>';
         }
     }
 
@@ -329,7 +338,6 @@ class USMap extends React.Component {
         console.log(props)
         precinctHover._container.innerHTML = 
                 '<b>Precinct ID:</b> '+ props.VTDST10 +  '<br />' +
-                '<b>County ID:</b> '+ props.COUNTYFP10 +  '<br />' +
                 '<b>Total Population:</b> '+ props.total_pop + '<br />' +
                 '<b>Total VAP:</b> '+ props.total_vap + '<br />' +
                 '<b>White Pop.:</b> '+ props.white_pop + '<br />' +
@@ -371,16 +379,18 @@ class USMap extends React.Component {
         }
 
         if (this.props.heatMapIsSet && this.props.precinctsIsSet && !map.hasLayer(heatMap) && this.props.selectedState !== "none"){
-            heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: '#0000FF', 0.5: '#00FF00',  0.8: '#FF0000'}, radius: 25}).addTo(map);
-            //heatMap.bringToFront();
-            this.addHeatMapLegend();
-            
+            heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: '#dcc4ff', 0.4: '#b38bff', 0.6: '#7e52ff', 0.8: '#0000ff'}, radius: 30}).addTo(map)
+            this.addHeatMapLegend();   
         } else if (this.props.heatMapIsSet && this.props.precinctsIsSet && map.hasLayer(heatMap) && this.props.selectedState !== "none") {
             heatMap.setLatLngs(this.loadHeatMapData());
-        } else if ((!this.props.heatMapIsSet || !this.props.precinctsIsSet || this.props.heatMap === "" || this.props.selectedState === "none") && map.hasLayer(heatMap)) {
+        } else if ((!this.props.heatMapIsSet || (this.props.heatMap === "" || this.props.selectedState === "none")) && map.hasLayer(heatMap)) {
             map.removeLayer(heatMap);
            // map.removeControl(heatMapLegend);
            this.removeHeatMapLegend();
+        } else if (!this.props.precinctsIsSet && map.hasLayer(heatMap)){
+            map.removeLayer(heatMap);
+            this.removeHeatMapLegend();
+            this.props.updateFilters("heatmap");
         }
 
         if (this.props.selectedState === "CA") {
