@@ -164,15 +164,25 @@ public class Job implements Comparable<Job> {
 
     public boolean executeSeaWulfJob() {
         Script script = new Script();
-        String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
-                "module load slurm; cd ~/Algorithm; sbatch RunAlgo.slurm " + this.id + " " + this.abbreviation + " " +
-                this.userCompactness + " " + this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
+        // Make folder on seawulf to store job results
+        String command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'cd /gpfs/scratch/gurpreetsing/Results; mkdir " + this.id + "'";
         String processOutput = script.createScript(command);
+        if (this.numberOfMaps <= 96) {
+            command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
+                    "module load slurm; cd ~/Algorithm; sbatch RunAlgoFinal.slurm " + this.id + " " + this.abbreviation + " " +
+                    this.userCompactness + " " + this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
+        } else if (this.numberOfMaps <= 168) {
+            command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
+                    "module load slurm; cd ~/Algorithm; sbatch RunAlgo28.slurm " + this.id + " " + this.abbreviation + " " +
+                    this.userCompactness + " " + this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
+        } else {
+            command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
+                    "module load slurm; cd ~/Algorithm; sbatch RunAlgo40.slurm " + this.id + " " + this.abbreviation + " " +
+                    this.userCompactness + " " + this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
+        }
+        processOutput = script.createScript(command);
         if (!processOutput.contains("Submitted batch job")) return false;
         int submittedJobId = Integer.parseInt(processOutput.split("\\s+")[3]);
-        // Make folder on seawulf to store job results
-        command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'cd /gpfs/scratch/gurpreetsing/Results; mkdir " + this.id + "'";
-        processOutput = script.createScript(command);
         this.setSeaWulfId(submittedJobId);
         return true;
     }
@@ -190,6 +200,7 @@ public class Job implements Comparable<Job> {
             pb.redirectErrorStream(true);
             Process process = pb.start();
             String test = script.getProcessOutput(process);
+            System.out.println(test);
             this.setJobStatus(JobStatus.PROCESSING);
         } catch (IOException e) {
             System.out.println(e.getMessage());
