@@ -3,7 +3,7 @@ from Cluster import Cluster
 import sys
 import json
 
-terminationCondition = 0
+terminationCondition = 10
 populationThreshold = float(sys.argv[4])
 
 # gets updated first thing in the rebalance method.
@@ -11,8 +11,11 @@ idealPopulation = 0
 compactnessThreshold = int(sys.argv[3])
 
 # Map Id or rebalance Id
-RebalanceId = 0
+RebalanceId = 10
 JobId = sys.argv[1]
+EdgeTried = 0
+EdgeSuccessful = 0
+TreesMade = 0
 
 
 def rebalance(graph):
@@ -34,7 +37,7 @@ def rebalance(graph):
 
         # Creating a spanning tree with the two clusters
         tree = createSpanningTree(graph, cluster1, cluster2)
-        print('Returned from spanning tree, and the tree is: ')
+#         print('Returned from spanning tree, and the tree is: ')
         tree.toString()
 
         counter2 = 0  # counter for the following loop
@@ -50,6 +53,11 @@ def rebalance(graph):
 
                 # updating the graph if both population and compactness improved
                 if compactnessImproved(compactnessRange, cluster1, cluster2, new1, new2):
+
+                    # For edge cut performance
+                    global EdgeSuccessful
+                    EdgeSuccessful = EdgeSuccessful + 1
+
                     updateClusterNeighborFromTree(tree, new1)
                     updateClusterNeighborFromTree(tree, new2)
 
@@ -60,19 +68,24 @@ def rebalance(graph):
                     # removing both the cluster to the graph
                     removeClusterFromGraph(graph, cluster1)
                     removeClusterFromGraph(graph, cluster2)
-                    print('Tree is ')
+#                     print('Tree is ')
                     tree.toString()
                     graph.toString()
                     break
-                else:
-                    print("Compactness not improved")
-            else:
-                print("not improved!")
+#                 else:
+#                     print("Compactness not improved")
+#             else:
+#                 print("not improved!")
             counter2 = counter2 + 1
         counter = counter + 1
 
     # writing the map to Json
     writeToJson(graph)
+
+    print("Number of edges tried to cut", EdgeTried)
+    print("Number of edges successfully cut", EdgeSuccessful)
+    print("Success rate", round((EdgeSuccessful/EdgeTried), 2)*100)
+    print("Edges not found", round(((TreesMade - EdgeSuccessful)/TreesMade), 2)*100, "% of the time")
 
     return graph
 
@@ -95,7 +108,7 @@ def updateClusterPopulation(cluster):
 
 
 def removeClusterFromGraph(graph, cluster):
-    print("removing ", cluster.id)
+#     print("removing ", cluster.id)
 
     for i in graph.clusters:
         if cluster in i.neighbors:
@@ -105,7 +118,10 @@ def removeClusterFromGraph(graph, cluster):
 
 
 def createSpanningTree(graph, cluster1, cluster2):
-    print('Create spanning tree entered with ', cluster1.id, ' and ', cluster2.id)
+#     print('Create spanning tree entered with ', cluster1.id, ' and ', cluster2.id)
+    global TreesMade
+    TreesMade = TreesMade + 1
+
     id = cluster1.id + cluster2.id
     joint = Cluster(id)
     for i in cluster1.nodes:
@@ -155,13 +171,17 @@ def updateInternalEdge(cluster):
 
 
 def cutRandomEdge(graph, cluster):
+
+    # For edge cut performance
+    global EdgeTried
+    EdgeTried = EdgeTried + 1
     cluster1 = Cluster(randint(30000, 40000))
     cluster2 = Cluster(randint(40000, 50000))
 
     # picking a random edge to cut
     index = randint(0, len(cluster.edges) - 1)
     edge = cluster.edges[index]
-    print("cutting edges: ", edge[0].id, edge[1].id)
+#     print("cutting edges: ", edge[0].id, edge[1].id)
 
     edges = list()
     for i in cluster.edges:
@@ -251,12 +271,12 @@ def determineIdealPopulationRange(graph):
 
 def determineCompactnessRange():
     global compactnessThreshold
-    if compactnessThreshold == 0:
-        return [0, 30]
+    if compactnessThreshold == 2:
+        return [0, 15]
     elif compactnessThreshold == 1:
-        return [31, 60]
+        return [15, 30]
     else:
-        return [61, 100]
+        return [30, 100]
 
 def writeToJson(graph):
     global RebalanceId

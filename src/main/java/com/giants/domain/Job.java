@@ -169,7 +169,7 @@ public class Job implements Comparable<Job> {
         String processOutput = script.createScript(command);
         if (this.numberOfMaps <= 96) {
             command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +
-                    "module load slurm; cd ~/Algorithm; sbatch RunAlgo24.slurm " + this.id + " " + this.abbreviation + " " +
+                    "module load slurm; cd ~/Algorithm; sbatch RunAlgoFinal.slurm " + this.id + " " + this.abbreviation + " " +
                     this.userCompactness + " " + this.populationDifferenceLimit + " " + this.numberOfMaps + "'";
         } else if (this.numberOfMaps <= 168) {
             command = "ssh gurpreetsing@login.seawulf.stonybrook.edu 'source /etc/profile.d/modules.sh; " +

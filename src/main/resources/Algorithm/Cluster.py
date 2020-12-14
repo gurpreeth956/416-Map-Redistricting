@@ -18,5 +18,5 @@ class Cluster:
         self.edgeNodes = edgeNodes
 
     def toString(self):
-        print("cluster:", self.id, " population is:", self.population, " compactness:", self.compactness, "and neighbors:", [i.id for i in self.neighbors], " no of nodes:", [i.id for i in self.nodes if len(self.neighbors) == 0])
+        print("cluster:", self.id, " population is:", self.population, " compactness:", self.compactness, "and neighbors:", [i.id for i in self.neighbors], " no of nodes:", len(self.nodes))
         # [i.id for i in self.nodes if len(self.neighbors) == 0]

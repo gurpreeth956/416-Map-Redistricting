@@ -175,14 +175,14 @@ public class JobHandler {
                 em.getTransaction().commit();
                 jobs.remove(jobId);
                 // Delete json file for job
-                File resultsFile = new File("./src/main/resources/Algorithm/Results/" + job.getId() + ".json");
-                if (resultsFile.exists()) resultsFile.delete();
-                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_precincts_data.json");
-                if (resultsFile.exists()) resultsFile.delete();
-                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_districts_data.json");
-                if (resultsFile.exists()) resultsFile.delete();
-                resultsFile = new File("./src/main/resources/jsons/summaries/" + job.getId() + "_summary.json");
-                if (resultsFile.exists()) resultsFile.delete();
+//                File resultsFile = new File("./src/main/resources/Algorithm/Results/" + job.getId() + ".json");
+//                if (resultsFile.exists()) resultsFile.delete();
+//                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_precincts_data.json");
+//                if (resultsFile.exists()) resultsFile.delete();
+//                resultsFile = new File("./src/main/resources/jsons/districtings/" + job.getId() + "_districts_data.json");
+//                if (resultsFile.exists()) resultsFile.delete();
+//                resultsFile = new File("./src/main/resources/jsons/summaries/" + job.getId() + "_summary.json");
+//                if (resultsFile.exists()) resultsFile.delete();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 em.getTransaction().rollback();
@@ -442,8 +442,9 @@ public class JobHandler {
             for (BoxWhisker boxWhisker : boxWhiskers) {
                 em.persist(boxWhisker);
             }
-            System.out.println("BLAH");
+            System.out.println("DONE PARSING...");
             em.getTransaction().commit();
+            System.out.println("CREATING JSONS...");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             em.getTransaction().rollback();
