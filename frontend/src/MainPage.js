@@ -174,7 +174,7 @@ class MainPage extends React.Component {
 						nativeIsSet={this.state.native} districtsIsSet={this.state.districts}
 						precinctsIsSet={this.state.precincts} heatMapIsSet={this.state.heatMap}
 						updateSelectedState={this.updateSelectedState} selectedState={this.state.selectedState}
-						ethnicities={this.state.ethnicities} />
+						ethnicities={this.state.ethnicities} updateFilters={this.updateFilters}/>
 				</div>
 			</div>
 		)
