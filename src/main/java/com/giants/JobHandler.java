@@ -670,8 +670,8 @@ public class JobHandler {
             jsonObject.put("constraints", constraintsJson);
             // Put precincts data
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonPrecinctsObject = (JSONObject) jsonParser.parse(new FileReader(getPrecinctsFile(job.getAbbreviation())));
-            jsonObject.put("precinctsGeoJson", jsonPrecinctsObject);
+//            JSONObject jsonPrecinctsObject = (JSONObject) jsonParser.parse(new FileReader(getPrecinctsFile(job.getAbbreviation())));
+//            jsonObject.put("precinctsGeoJson", jsonPrecinctsObject);
             // Put districtings geo json
             JSONObject jsonDistrictingsObject = (JSONObject) jsonParser.parse(
                     new FileReader("./src/main/resources/jsons/districtings/" + job.getId() + "_districts_data.json"));

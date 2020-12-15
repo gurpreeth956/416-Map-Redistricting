@@ -65,9 +65,9 @@ public class RequestController {
         return jobHandler.deleteJobData(jobId);
     }
 
-    // Current scheduled for every 5 seconds (fixedDelay is in milliseconds)
+    // Current scheduled for every 10 seconds (fixedDelay is in milliseconds)
     // https://www.baeldung.com/spring-scheduled-tasks
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 10000)
     public void checkJobStatus()  {
         jobHandler.checkJobStatus();
     }
