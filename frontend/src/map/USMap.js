@@ -198,7 +198,7 @@ class USMap extends React.Component {
             weight: 1,
             opacity: 1,
             color: this.getColor("precinct", "precinct"),
-            fillOpacity: 0.8
+            fillOpacity: 0.5
         };
     }
 
@@ -250,7 +250,7 @@ class USMap extends React.Component {
         intensity > 0.6   ? '#0052ff' :
         intensity > 0.4   ? '#007aff' :
         intensity > 0.2   ? '#009cff' :
-                            '#69baff';
+                            '#bfd9ff';
     }
     
 
@@ -358,7 +358,7 @@ class USMap extends React.Component {
         mapLegend._container.innerHTML += '<i style="background: #0052ff;"></i> ' + 60 + '% <br>' 
         mapLegend._container.innerHTML += '<i style="background: #007aff;"></i> ' + 40 + '% <br>' 
         mapLegend._container.innerHTML += '<i style="background: #009cff;"></i> ' + 20 + '% <br>' 
-        mapLegend._container.innerHTML += '<i style="background: #69baff;"></i> ' + 0 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #bfd9ff;"></i> ' + 0 + '% <br>' 
     }
 
     removeHeatMapLegend(){
