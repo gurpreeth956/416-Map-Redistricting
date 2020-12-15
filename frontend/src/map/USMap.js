@@ -43,12 +43,11 @@ class USMap extends React.Component {
             tileSize: 512,
             zoomOffset: -1,
             // Setting min/max zoom here causes map to grey on state click doing below instead
-            scrollWheelZoom: false,
-            dragging: false,
             accessToken: 'pk.eyJ1IjoidGVuemlubG9kZW4iLCJhIjoiY2tmZ3F5YmgzMDA5MDMybGF1dHNnN2JxNiJ9.7lGyZksjGSE669Hsufhtjg'
         }).addTo(map);
-        map.setMaxZoom(5);
+        map.setMaxZoom(6.34);
         map.setMinZoom(5);
+        map.setMaxBounds(L.latLngBounds(L.latLng(51.5, -65.6),L.latLng(26.2, -130.3)));
 
         states = L.geoJson(stateGeoJson, { style: this.stateStyle, onEachFeature: this.stateOnEachFeature }).addTo(map);
 
@@ -429,9 +428,6 @@ class USMap extends React.Component {
             map.setMinZoom(6.35);
             map.setView([37.5, -119], 6.35);
             map.setMaxBounds(L.latLngBounds(L.latLng(42.2,-105.4),L.latLng(32,-130.8)));
-            
-            map.scrollWheelZoom.enable();
-            map.dragging.enable();
 
             this.setState({
                 currentState:"CA"
@@ -464,8 +460,6 @@ class USMap extends React.Component {
             map.setView([41.0, -77.5], 8);
             map.setMaxBounds(L.latLngBounds(L.latLng(42.5,-73.45),L.latLng(39.4, -81.5)));
 
-            map.scrollWheelZoom.enable();
-            map.dragging.enable();
             this.setState({
                 currentState:"PA"
             });
@@ -496,8 +490,6 @@ class USMap extends React.Component {
             map.setView([32.0, -91], 7.45);
             map.setMaxBounds(L.latLngBounds(L.latLng(33.5, -85),L.latLng(28, -97)));
 
-            map.scrollWheelZoom.enable();
-            map.dragging.enable();
             this.setState({
                 currentState:"LA"
             });
@@ -523,13 +515,11 @@ class USMap extends React.Component {
 
     zoomToMap() {
         if(this.state.currentState !== this.props.selectedState) {
-            map.setMaxZoom(5);
+            map.setMaxBounds(L.latLngBounds(L.latLng(51.5, -65.6),L.latLng(26.2, -130.3)));
+            map.setMaxZoom(6.34);
             map.setMinZoom(5);
             map.setView([40.0, -98], 5);
-            map.setMaxBounds(L.latLngBounds(L.latLng(51.5, -65.6),L.latLng(26.2, -130.3)));
 
-            map.scrollWheelZoom.disable();
-            map.dragging.disable();
             this.setState({
                 currentState:"none"
             });
