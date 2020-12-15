@@ -71,18 +71,18 @@ class USMap extends React.Component {
             map.removeLayer(extremeDistrict);
         }
 
-        if (this.props.heatMapIsSet && this.props.precinctsIsSet && !map.hasLayer(heatMap) && this.props.selectedState !== "none"){
-            heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: '#dcc4ff', 0.4: '#b38bff', 0.6: '#7e52ff', 0.8: '#0000ff'}, radius: 30}).addTo(map)
+        if (this.props.heatMapIsSet && this.props.precinctsIsSet && !heatMap && this.props.selectedState !== "none"){
+            //heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: '#dcc4ff', 0.4: '#b38bff', 0.6: '#7e52ff', 0.8: '#0000ff'}, radius: 30}).addTo(map)
             //heatMap.bringToFront();
             this.addHeatMapLegend()    
-        } else if (this.props.heatMapIsSet && this.props.precinctsIsSet && map.hasLayer(heatMap) && this.props.selectedState !== "none") {
-            heatMap.setLatLngs(this.loadHeatMapData());
-        } else if ((!this.props.heatMapIsSet || (this.props.heatMap === "" || this.props.selectedState === "none")) && map.hasLayer(heatMap)) {
-            map.removeLayer(heatMap);
+        } else if (this.props.heatMapIsSet && this.props.precinctsIsSet && heatMap && this.props.selectedState !== "none") {
+            //heatMap.setLatLngs(this.loadHeatMapData());
+        } else if ((!this.props.heatMapIsSet || (this.props.heatMap === "" || this.props.selectedState === "none")) && heatMap) {
+            //map.removeLayer(heatMap);
            // map.removeControl(heatMapLegend);
            this.removeHeatMapLegend();
-        } else if (!this.props.precinctsIsSet && map.hasLayer(heatMap)){
-            map.removeLayer(heatMap);
+        } else if (!this.props.precinctsIsSet && heatMap){
+            //map.removeLayer(heatMap);
             this.removeHeatMapLegend();
             this.props.updateFilters("heatmap");
         }
@@ -194,11 +194,11 @@ class USMap extends React.Component {
 
     precinctStyle = (feature) => { //styles all of the US states
         return {
-            // fillColor: this.getColor(feature.properties.name),
+            fillColor: this.getHeatMapColor(feature.properties),
             weight: 1,
             opacity: 1,
             color: this.getColor("precinct", "precinct"),
-            fillOpacity: 0.0
+            fillOpacity: 0.8
         };
     }
 
@@ -206,6 +206,65 @@ class USMap extends React.Component {
         layer.on({
             click: this.onStateClick.bind(this)
         });
+    }
+    
+    getHeatMapColor(d) {
+  //  if(this.heatMapIsSet)
+        var pop = 0;
+        var total = d.total_pop;
+        if (this.props.blackIsSet){
+            pop += d.black_pop;
+            if (this.props.nativeIsSet) {
+                pop += d.native_and_black_pop;
+            }
+        }  
+        if (this.props.whiteIsSet){
+            pop += d.white_pop;
+            if (this.props.nativeIsSet) {
+                pop += d.native_and_white_pop;
+            }
+            if (this.props.asianIsSet) {
+                pop += d.asian_and_white_pop;
+            }
+            if (this.props.blackIsSet) {
+                pop += d.black_and_white_pop;
+            }
+        }
+        if (this.props.asianIsSet){
+            pop += d.asian_pop;
+        }
+        if (this.props.hawaiianIsSet){
+            pop += d.hawaiian_pop;
+        }
+        if (this.props.nativeIsSet){
+            pop += d.native_pop;
+        }
+        if (this.props.hispanicIsSet){
+            pop += d.hispanic_pop;
+        }
+        if(!heatMap){
+            return '#00000000';
+        }
+        var intensity= pop / total;
+        return intensity > 0.8   ? '#0000ff' :
+        intensity > 0.6   ? '#0052ff' :
+        intensity > 0.4   ? '#007aff' :
+        intensity > 0.2   ? '#009cff' :
+                            '#69baff';
+    }
+    
+
+    updatePrecinctHeatMap(){
+        if (this.props.selectedState === "CA") {
+            map.removeLayer(caPrecinct)
+            caPrecinct = L.geoJson(this.state.caPrecinct, { style: this.precinctStyle, onEachFeature: this.precinctOnEachFeature}).addTo(map);
+        } else if (this.props.selectedState === "PA") {
+            map.removeLayer(paPrecinct)
+            paPrecinct = L.geoJson(this.state.paPrecinct, { style: this.precinctStyle, onEachFeature: this.precinctOnEachFeature}).addTo(map);
+        } else if (this.props.selectedState === "LA") {
+            map.removeLayer(laPrecinct)
+            laPrecinct = L.geoJson(this.state.laPrecinct, { style: this.precinctStyle, onEachFeature: this.precinctOnEachFeature}).addTo(map);
+        } 
     }
 
     /*onMouseOut = (e) => {
@@ -296,9 +355,10 @@ class USMap extends React.Component {
     addHeatMapLegend() {
         mapLegend._container.innerHTML += '<br><b> Heat Map </b> <br>'
         mapLegend._container.innerHTML += '<i style="background: #0000ff;"></i> ' + 80 + '% <br>' 
-        mapLegend._container.innerHTML += '<i style="background: #7e52ff;"></i> ' + 60 + '% <br>' 
-        mapLegend._container.innerHTML += '<i style="background: #b38bff;"></i> ' + 40 + '% <br>' 
-        mapLegend._container.innerHTML += '<i style="background: #dcc4ff;"></i> ' + 20 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #0052ff;"></i> ' + 60 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #007aff;"></i> ' + 40 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #009cff;"></i> ' + 20 + '% <br>' 
+        mapLegend._container.innerHTML += '<i style="background: #69baff;"></i> ' + 0 + '% <br>' 
     }
 
     removeHeatMapLegend(){
@@ -377,20 +437,41 @@ class USMap extends React.Component {
             map.removeLayer(extremeDistrict);
         }
 
-        if (this.props.heatMapIsSet && this.props.precinctsIsSet && !map.hasLayer(heatMap) && this.props.selectedState !== "none"){
-            heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: '#dcc4ff', 0.4: '#b38bff', 0.6: '#7e52ff', 0.8: '#0000ff'}, radius: 30}).addTo(map)
+        if (this.props.heatMapIsSet && this.props.precinctsIsSet && !heatMap && this.props.selectedState !== "none"){
+            //heatMap =  L.heatLayer(this.loadHeatMapData(),  {gradient: {0.2: '#dcc4ff', 0.4: '#b38bff', 0.6: '#7e52ff', 0.8: '#0000ff'}, radius: 30}).addTo(map)
+            heatMap = true;
             this.addHeatMapLegend();   
-        } else if (this.props.heatMapIsSet && this.props.precinctsIsSet && map.hasLayer(heatMap) && this.props.selectedState !== "none") {
-            heatMap.setLatLngs(this.loadHeatMapData());
-        } else if ((!this.props.heatMapIsSet || (this.props.heatMap === "" || this.props.selectedState === "none")) && map.hasLayer(heatMap)) {
-            map.removeLayer(heatMap);
+        } else if (this.props.heatMapIsSet && this.props.precinctsIsSet && heatMap && this.props.selectedState !== "none") {
+            this.updatePrecinctHeatMap();
+            //heatMap.setLatLngs(this.loadHeatMapData());
+        } else if ((!this.props.heatMapIsSet || (this.props.heatMap === "" || this.props.selectedState === "none")) && heatMap) {
+            //map.removeLayer(heatMap);
+            heatMap = false;
+            this.updatePrecinctHeatMap();
            // map.removeControl(heatMapLegend);
            this.removeHeatMapLegend();
-        } else if (!this.props.precinctsIsSet && map.hasLayer(heatMap)){
-            map.removeLayer(heatMap);
+        } else if (!this.props.precinctsIsSet && heatMap){
+            //map.removeLayer(heatMap);
+            heatMap = false;
+            this.updatePrecinctHeatMap();
             this.removeHeatMapLegend();
             this.props.updateFilters("heatmap");
         }
+        /*
+        if (this.props.heatMapIsSet && this.props.precinctsIsSet && this.props.selectedState !== "none"){
+            if (this.props.selectedState === "CA") {
+                map.removeLayer(caPrecinct)
+                caPrecinct = L.geoJson(this.state.caPrecinct, { style: this.precinctStyle, onEachFeature: this.precinctOnEachFeature}).addTo(map);
+            } else if (this.props.selectedState === "PA") {
+                map.removeLayer(paPrecinct)
+                paPrecinct = L.geoJson(this.state.paPrecinct, { style: this.precinctStyle, onEachFeature: this.precinctOnEachFeature}).addTo(map);
+            } else if (this.props.selectedState === "LA") {
+                map.removeLayer(laPrecinct)
+                laPrecinct = L.geoJson(this.state.laPrecinct, { style: this.precinctStyle, onEachFeature: this.precinctOnEachFeature}).addTo(map);
+            } 
+
+        }
+        */
 
         if (this.props.selectedState === "CA") {
             this.zoomToCA();
@@ -476,6 +557,8 @@ class USMap extends React.Component {
         if(this.state.paPrecinct !== "" && this.props.precinctsIsSet && !map.hasLayer(paPrecinct)) {
             this.addPrecinctHover();
             paPrecinct = L.geoJson(this.state.paPrecinct, { style: this.precinctStyle, onEachFeature: this.precinctOnEachFeature}).addTo(map);
+            console.log("Print precinctstyle")
+            console.log(this.precinctStyle)
             paPrecinct.bringToFront();
         } else if((this.state.paPrecinct === "" || !this.props.precinctsIsSet) && map.hasLayer(paPrecinct)){
             map.removeLayer(paPrecinct);
@@ -546,6 +629,33 @@ class USMap extends React.Component {
             if(precinctHover){
                 map.removeControl(precinctHover);
             }
+        }
+        if(this.props.averageIsSet){
+            this.props.updateFilters('average');
+        }
+        if(this.props.extremeIsSet){
+            this.props.updateFilters('extreme');
+        }
+        if(this.props.blackIsSet){
+            this.props.updateFilters('black');
+        }
+        if(this.props.whiteIsSet){
+            this.props.updateFilters('white');
+        }
+        if(this.props.asianIsSet){
+            this.props.updateFilters('asian');
+        }
+        if(this.props.hispanicIsSet){
+            this.props.updateFilters('hispanic');
+        }
+        if(this.props.nativeIsSet){
+            this.props.updateFilters('native');
+        }
+        if(this.props.hawaiianIsSet){
+            this.props.updateFilters('hawaiian');
+        }
+        if(this.props.heatMapIsSet){
+            this.props.updateFilters('heatmap');
         }
     }
 
